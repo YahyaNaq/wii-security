@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fffbfc;
+  --foreground: #2b2530;
+  --brand: #d6688b;
+  --brand-dark: #b8496a;
+  --brand-light: #f7d9e2;
+  --blush: #fdf1f4;
+  --surface: #ffffff;
+}
+
+.dark {
+  --background: #1b141a;
+  --foreground: #f5eaef;
+  --brand: #e0688f;
+  --brand-dark: #f3a8c1;
+  --brand-light: #402934;
+  --blush: #241922;
+  --surface: #251b23;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-light: var(--brand-light);
+  --color-blush: var(--blush);
+  --color-surface: var(--surface);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-playfair);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+[dir="rtl"] {
+  --font-sans: var(--font-urdu);
+  --font-display: var(--font-urdu);
+}
+
+.dark input[type="time"],
+.dark input[type="date"],
+.dark input[type="datetime-local"] {
+  color-scheme: dark;
 }
