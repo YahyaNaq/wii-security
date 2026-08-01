@@ -18,6 +18,7 @@ type BookingForm = Translations["booking"]["form"];
 
 const EVENT_FIELDS = ["city", "reportingTime", "venue", "eventType", "femaleGuests", "package"];
 const TOP_LEVEL_REQUIRED = ["name", "phone", "totalAmount"];
+const MAX_EVENTS = 10;
 
 function formatTime12h(time: string) {
   const [hoursStr, minutes] = time.split(":");
@@ -267,6 +268,7 @@ export default function BookingForm() {
     : null;
 
   const addEvent = () => {
+    if (eventIds.length >= MAX_EVENTS) return;
     const id = nextId.current++;
     setEventIds((prev) => [...prev, id]);
     setOpenIds((prev) => [...prev, String(id)]);
@@ -416,15 +418,17 @@ export default function BookingForm() {
                 ))}
               </Accordion.Root>
 
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={addEvent}
-                className="self-start"
-              >
-                + {form.addEvent}
-              </Button>
+              {eventIds.length < MAX_EVENTS && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={addEvent}
+                  className="self-start"
+                >
+                  + {form.addEvent}
+                </Button>
+              )}
 
               <div className="flex flex-col gap-1.5">
                 <TextField

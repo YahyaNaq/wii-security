@@ -22,6 +22,8 @@ import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/va
 
 type BookCtaForm = Translations["bookCta"]["form"];
 
+const MAX_EVENTS = 10;
+
 type ReviewEvent = {
   city: string;
   date: string;
@@ -273,6 +275,7 @@ export default function PreBookingForm() {
   };
 
   const addEvent = () => {
+    if (eventIds.length >= MAX_EVENTS) return;
     const id = nextId.current++;
     setEventIds((prev) => [...prev, id]);
     setOpenIds((prev) => [...prev, String(id)]);
@@ -392,15 +395,17 @@ export default function PreBookingForm() {
                 ))}
               </Accordion.Root>
 
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={addEvent}
-                className="self-start"
-              >
-                + {form.addEvent}
-              </Button>
+              {eventIds.length < MAX_EVENTS && (
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={addEvent}
+                  className="self-start"
+                >
+                  + {form.addEvent}
+                </Button>
+              )}
 
               <Button type="submit" size="compact" className="mt-2">
                 {form.submit}
