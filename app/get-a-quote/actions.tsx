@@ -137,8 +137,8 @@ export async function submitQuoteRequest(formData: FormData): Promise<SubmitQuot
   //     },
   //   },
   // });
-  const quoteId = `DRAFT-${Date.now()}`;
   const createdAt = new Date();
+  const quoteId = `WII-${createdAt.getFullYear()}${String(createdAt.getMonth() + 1).padStart(2, "0")}${String(createdAt.getDate()).padStart(2, "0")}-${String(createdAt.getHours()).padStart(2, "0")}${String(createdAt.getMinutes()).padStart(2, "0")}${String(createdAt.getSeconds()).padStart(2, "0")}`;
 
   const pdfBuffer = await renderToBuffer(
     <QuotePdf

@@ -273,14 +273,14 @@ const en = {
       contactHeading: "Your details",
       edit: "Edit",
       confirm: "Confirm & Submit",
-      confirming: "Submitting…",
+      confirming: "Getting your quote…",
       notProvided: "Not specified",
       submitError: "Something went wrong submitting your request. Please try again.",
     },
     success: {
       title: "Request received",
       message:
-        "Thanks! We've emailed you a PDF with your estimated quote. Our team will follow up within 24 hours.",
+        "Thanks! Your estimated quote has been downloaded as a PDF. Our team will follow up within 24 hours.",
     },
   },
   booking: {
@@ -642,14 +642,14 @@ const ur: typeof en = {
       contactHeading: "آپ کی تفصیلات",
       edit: "ترمیم کریں",
       confirm: "تصدیق اور جمع کروائیں",
-      confirming: "جمع ہو رہا ہے…",
+      confirming: "آپ کی قیمت حاصل کی جا رہی ہے…",
       notProvided: "فراہم نہیں کیا گیا",
       submitError: "آپ کی درخواست جمع کرانے میں مسئلہ پیش آیا۔ براہ کرم دوبارہ کوشش کریں۔",
     },
     success: {
       title: "درخواست موصول ہو گئی",
       message:
-        "شکریہ! ہم نے آپ کو ای میل پر آپ کی تخمینی قیمت کی PDF بھیج دی ہے۔ ہماری ٹیم 24 گھنٹوں میں رابطہ کرے گی۔",
+        "شکریہ! آپ کی تخمینی قیمت PDF کے طور پر ڈاؤن لوڈ ہو گئی ہے۔ ہماری ٹیم 24 گھنٹوں میں رابطہ کرے گی۔",
     },
   },
   booking: {
