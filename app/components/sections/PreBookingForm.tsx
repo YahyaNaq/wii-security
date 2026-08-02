@@ -22,15 +22,15 @@ type BookCtaForm = Translations["bookCta"]["form"];
 
 const MAX_EVENTS = 10;
 
-function downloadPdf(base64: string, filename: string) {
+function openPdf(win: Window | null, base64: string) {
   const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
   const blob = new Blob([bytes], { type: "application/pdf" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
+  if (win) {
+    win.location.href = url;
+  } else {
+    window.open(url, "_blank");
+  }
 }
 
 type ReviewEvent = {
@@ -430,16 +430,19 @@ export default function PreBookingForm({
     if (!pendingFormData) return;
     setSubmitting(true);
     setSubmitError(null);
+    const pdfTab = window.open("", "_blank");
     try {
       pendingFormData.set("eventCount", String(eventIds.length));
       const result = await submitQuoteRequest(pendingFormData);
       if (result.success) {
-        downloadPdf(result.pdfBase64, `quote-${result.quoteId}.pdf`);
+        openPdf(pdfTab, result.pdfBase64);
         setStep("success");
       } else {
+        pdfTab?.close();
         setSubmitError(result.error);
       }
     } catch {
+      pdfTab?.close();
       setSubmitError(t.bookCta.review.submitError);
     } finally {
       setSubmitting(false);
