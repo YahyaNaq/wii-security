@@ -3,12 +3,7 @@
 import { useRef, useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import Button from "../ui/Button";
-import {
-  TextField,
-  TextareaField,
-  RadioGroupField,
-  CheckboxGroupField,
-} from "../ui/fields";
+import { TextField, TextareaField, RadioGroupField } from "../ui/fields";
 import { SelectField } from "../ui/Select";
 import { DateField } from "../ui/DateField";
 import { PhoneField } from "../ui/PhoneField";
@@ -19,16 +14,33 @@ import { theme } from "../ui/theme";
 import { useLanguage } from "../../i18n/LanguageContext";
 import type { Translations } from "../../i18n/translations";
 import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
+import type { ServiceOption } from "../../lib/pricing";
+import { submitQuoteRequest } from "../../get-a-quote/actions";
 
 type BookCtaForm = Translations["bookCta"]["form"];
 
 const MAX_EVENTS = 10;
 
+function downloadPdf(base64: string, filename: string) {
+  const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+  const blob = new Blob([bytes], { type: "application/pdf" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 type ReviewEvent = {
   city: string;
   date: string;
   femaleGuests: string;
-  services: string[];
+  guestService: string;
+  photography: boolean;
+  photographyTier: string;
+  videography: boolean;
+  videographyTier: string;
   details: string;
 };
 
@@ -52,6 +64,8 @@ function EventFields({
   date,
   onDateChange,
   errors,
+  photographyOptions,
+  videographyOptions,
 }: {
   form: BookCtaForm;
   index: number;
@@ -63,8 +77,12 @@ function EventFields({
   date: Date | undefined;
   onDateChange: (date: Date | undefined) => void;
   errors: Record<string, string>;
+  photographyOptions: ServiceOption[];
+  videographyOptions: ServiceOption[];
 }) {
   const prefix = `events[${index}]`;
+  const [photography, setPhotography] = useState(false);
+  const [videography, setVideography] = useState(false);
   const summary = [
     city || null,
     date ? date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : null,
@@ -141,11 +159,54 @@ function EventFields({
               error={errors[`${prefix}[femaleGuests]`]}
               required
             />
-            <CheckboxGroupField
-              label={form.servicesInterested}
-              name={`${prefix}[services]`}
-              options={form.serviceOptions}
+
+            <RadioGroupField
+              label={form.guestServiceLabel}
+              name={`${prefix}[guestService]`}
+              options={form.guestServiceOptions}
+              error={errors[`${prefix}[guestService]`]}
             />
+
+            <label className="flex items-center gap-2 text-sm text-foreground/70">
+              <input
+                type="checkbox"
+                name={`${prefix}[photography]`}
+                checked={photography}
+                onChange={(e) => setPhotography(e.target.checked)}
+                className="accent-brand"
+              />
+              {form.photographyLabel}
+            </label>
+            {photography && (
+              <RadioGroupField
+                label={form.photographyTierLabel}
+                name={`${prefix}[photographyTier]`}
+                options={photographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
+                error={errors[`${prefix}[photographyTier]`]}
+                required
+              />
+            )}
+
+            <label className="flex items-center gap-2 text-sm text-foreground/70">
+              <input
+                type="checkbox"
+                name={`${prefix}[videography]`}
+                checked={videography}
+                onChange={(e) => setVideography(e.target.checked)}
+                className="accent-brand"
+              />
+              {form.videographyLabel}
+            </label>
+            {videography && (
+              <RadioGroupField
+                label={form.videographyTierLabel}
+                name={`${prefix}[videographyTier]`}
+                options={videographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
+                error={errors[`${prefix}[videographyTier]`]}
+                required
+              />
+            )}
+
             <TextareaField
               label={form.details}
               name={`${prefix}[details]`}
@@ -165,14 +226,28 @@ function Review({
   data,
   onEdit,
   onConfirm,
+  submitting,
+  submitError,
+  photographyOptions,
+  videographyOptions,
 }: {
   form: BookCtaForm;
   review: Translations["bookCta"]["review"];
   data: ReviewData;
   onEdit: () => void;
   onConfirm: () => void;
+  submitting: boolean;
+  submitError: string | null;
+  photographyOptions: ServiceOption[];
+  videographyOptions: ServiceOption[];
 }) {
   const notProvided = review.notProvided;
+  const guestServiceLabel = (value: string) =>
+    form.guestServiceOptions.find((o) => o.value === value)?.label ?? notProvided;
+  const photographyTierLabel = (value: string) =>
+    photographyOptions.find((o) => o.slug === value)?.label ?? notProvided;
+  const videographyTierLabel = (value: string) =>
+    videographyOptions.find((o) => o.slug === value)?.label ?? notProvided;
 
   return (
     <div className="flex flex-col gap-6">
@@ -207,9 +282,15 @@ function Review({
             <ReviewField label={form.eventDate} value={event.date || notProvided} />
             <ReviewField label={form.femaleGuests} value={event.femaleGuests || notProvided} />
             <ReviewField
-              label={form.servicesInterested}
-              value={event.services.length ? event.services.join(", ") : notProvided}
+              label={form.guestServiceLabel}
+              value={event.guestService ? guestServiceLabel(event.guestService) : notProvided}
             />
+            {event.photography && (
+              <ReviewField label={form.photographyLabel} value={photographyTierLabel(event.photographyTier)} />
+            )}
+            {event.videography && (
+              <ReviewField label={form.videographyLabel} value={videographyTierLabel(event.videographyTier)} />
+            )}
             {event.details && (
               <div className="col-span-full flex flex-col gap-0.5">
                 <dt className="text-xs font-medium uppercase tracking-wide text-foreground/45">
@@ -222,19 +303,27 @@ function Review({
         </div>
       ))}
 
+      {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+
       <div className="flex gap-3">
-        <Button type="button" variant="secondary" size="sm" onClick={onEdit}>
+        <Button type="button" variant="secondary" size="sm" onClick={onEdit} disabled={submitting}>
           {review.edit}
         </Button>
-        <Button type="button" size="compact" onClick={onConfirm}>
-          {review.confirm}
+        <Button type="button" size="compact" onClick={onConfirm} disabled={submitting}>
+          {submitting ? review.confirming : review.confirm}
         </Button>
       </div>
     </div>
   );
 }
 
-export default function PreBookingForm() {
+export default function PreBookingForm({
+  photographyOptions,
+  videographyOptions,
+}: {
+  photographyOptions: ServiceOption[];
+  videographyOptions: ServiceOption[];
+}) {
   const { t } = useLanguage();
   const form = t.bookCta.form;
 
@@ -245,7 +334,10 @@ export default function PreBookingForm() {
   const [dates, setDates] = useState<Record<number, Date | undefined>>({});
   const [step, setStep] = useState<"form" | "review" | "success">("form");
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
+  const [pendingFormData, setPendingFormData] = useState<FormData | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const validate = (fd: FormData) => {
     const nextErrors: Record<string, string> = {};
@@ -269,6 +361,13 @@ export default function PreBookingForm() {
         } else if (field === "femaleGuests" && !isPositiveNumber(rawValue)) {
           nextErrors[key] = t.common.invalidNumberError;
         }
+      }
+
+      if (fd.get(`events[${i}][photography]`) === "on" && !fd.get(`events[${i}][photographyTier]`)) {
+        nextErrors[`events[${i}][photographyTier]`] = t.common.requiredError;
+      }
+      if (fd.get(`events[${i}][videography]`) === "on" && !fd.get(`events[${i}][videographyTier]`)) {
+        nextErrors[`events[${i}][videographyTier]`] = t.common.requiredError;
       }
     });
     return nextErrors;
@@ -298,6 +397,7 @@ export default function PreBookingForm() {
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
+    setPendingFormData(fd);
     setReviewData({
       name: String(fd.get("name") ?? ""),
       phone: String(fd.get("phone") ?? ""),
@@ -310,11 +410,36 @@ export default function PreBookingForm() {
           ? dates[id]!.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })
           : "",
         femaleGuests: String(fd.get(`events[${i}][femaleGuests]`) ?? ""),
-        services: fd.getAll(`events[${i}][services]`).map(String),
+        guestService: String(fd.get(`events[${i}][guestService]`) ?? ""),
+        photography: fd.get(`events[${i}][photography]`) === "on",
+        photographyTier: String(fd.get(`events[${i}][photographyTier]`) ?? ""),
+        videography: fd.get(`events[${i}][videography]`) === "on",
+        videographyTier: String(fd.get(`events[${i}][videographyTier]`) ?? ""),
         details: String(fd.get(`events[${i}][details]`) ?? ""),
       })),
     });
+    setSubmitError(null);
     setStep("review");
+  };
+
+  const handleConfirm = async () => {
+    if (!pendingFormData) return;
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      pendingFormData.set("eventCount", String(eventIds.length));
+      const result = await submitQuoteRequest(pendingFormData);
+      if (result.success) {
+        downloadPdf(result.pdfBase64, `quote-${result.quoteId}.pdf`);
+        setStep("success");
+      } else {
+        setSubmitError(result.error);
+      }
+    } catch {
+      setSubmitError(t.bookCta.review.submitError);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -353,7 +478,11 @@ export default function PreBookingForm() {
               review={t.bookCta.review}
               data={reviewData}
               onEdit={() => setStep("form")}
-              onConfirm={() => setStep("success")}
+              onConfirm={handleConfirm}
+              submitting={submitting}
+              submitError={submitError}
+              photographyOptions={photographyOptions}
+              videographyOptions={videographyOptions}
             />
           ) : (
             <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
@@ -391,6 +520,8 @@ export default function PreBookingForm() {
                     date={dates[id]}
                     onDateChange={(d) => setDates((prev) => ({ ...prev, [id]: d }))}
                     errors={errors}
+                    photographyOptions={photographyOptions}
+                    videographyOptions={videographyOptions}
                   />
                 ))}
               </Accordion.Root>

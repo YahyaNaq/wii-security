@@ -46,10 +46,12 @@ export function TextField({
   );
 }
 
-type Option = string | { value: string; description?: string };
+type Option = string | { value: string; label?: string; description?: string };
 
 function normalizeOption(option: Option) {
-  return typeof option === "string" ? { value: option, description: undefined } : option;
+  return typeof option === "string"
+    ? { value: option, label: option, description: undefined }
+    : { label: option.value, ...option };
 }
 
 function OptionTooltip({ label, description }: { label: string; description: string }) {
@@ -105,7 +107,7 @@ function OptionGroupField({
       <legend className="mb-0.5">{label}</legend>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => {
-          const { value, description } = normalizeOption(option);
+          const { value, label: optionLabel, description } = normalizeOption(option);
           return (
             <span
               key={value}
@@ -124,9 +126,9 @@ function OptionGroupField({
                   data-other={value === otherOption ? "" : undefined}
                   className="accent-brand"
                 />
-                {value}
+                {optionLabel}
               </label>
-              {description && <OptionTooltip label={value} description={description} />}
+              {description && <OptionTooltip label={optionLabel!} description={description} />}
             </span>
           );
         })}

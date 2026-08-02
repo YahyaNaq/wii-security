@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ServiceType {
+  PHONE_POUCHES
+  MONITORING
+  PHOTOGRAPHY
+  VIDEOGRAPHY
+}
+
+enum PricedServiceType {
+  PHOTOGRAPHY
+  VIDEOGRAPHY
+}
+
+// Shared guest-count-based pricing for Phone Pouches / Monitoring.
+model GuestTierPrice {
+  id         String  @id @default(cuid())
+  slug       String  @unique
+  minGuests  Int
+  maxGuests  Int
+  price      Int
+  sortOrder  Int
+  active     Boolean @default(true)
+}
+
+// Flat-price named options for Photography / Videography.
+model ServiceOptionPrice {
+  id          String            @id @default(cuid())
+  serviceType PricedServiceType
+  slug        String
+  label       String
+  price       Int
+  sortOrder   Int
+  active      Boolean           @default(true)
+
+  @@unique([serviceType, slug])
+}
+
+model QuoteRequest {
+  id               String   @id @default(cuid())
+  name             String
+  phone            String
+  email            String
+  hearAboutUs      String
+  hearAboutUsOther String?
+  totalAmount      Int
+  createdAt        DateTime @default(now())
+
+  events QuoteEvent[]
+}
+
+model QuoteEvent {
+  id             String   @id @default(cuid())
+  quoteRequestId String
+  quoteRequest   QuoteRequest @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
+  city           String
+  date           DateTime
+  femaleGuests   Int
+  details        String?
+  subtotal       Int
+
+  services QuoteService[]
+}
+
+model QuoteService {
+  id           String      @id @default(cuid())
+  quoteEventId String
+  quoteEvent   QuoteEvent  @relation(fields: [quoteEventId], references: [id], onDelete: Cascade)
+  type         ServiceType
+  tier         String
+  price        Int
+}

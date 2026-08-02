@@ -240,24 +240,25 @@ const en = {
       hearAboutUsOptions: ["LinkedIn", "Instagram", "Friend/Relative", "Other"],
       otherOptionValue: "Other",
       otherPlaceholder: "Please specify",
-      servicesInterested: "Which service are you interested in?",
-      serviceOptions: [
+      guestServiceLabel: "Phone pouches or monitoring",
+      guestServiceOptions: [
         {
-          value: "Phone Pouches",
+          value: "phone-pouches",
+          label: "Phone Pouches",
           description:
             "Guest phones and cameras are securely pouched at entry, preventing unauthorized photos or recordings.",
         },
         {
-          value: "Monitoring (Non-Pouches)",
+          value: "monitoring",
+          label: "Monitoring (Non-Pouches)",
           description:
             "On-site privacy monitoring and access control without pouching — our team watches for unauthorized photography instead.",
         },
-        {
-          value: "Female Photography",
-          description:
-            "Professional all-female photography and videography coverage for your event.",
-        },
       ],
+      photographyLabel: "Female Photography",
+      photographyTierLabel: "Photography package",
+      videographyLabel: "Videography",
+      videographyTierLabel: "Videography package",
       details: "Special requests or details",
       detailsPlaceholder:
         "Special instructions, event type, or anything else we should know",
@@ -265,18 +266,21 @@ const en = {
       addEvent: "Add another event",
       removeEvent: "Remove",
       submit: "Request a Quote",
+      submitting: "Submitting…",
     },
     review: {
       title: "Review your request",
       contactHeading: "Your details",
       edit: "Edit",
       confirm: "Confirm & Submit",
+      confirming: "Submitting…",
       notProvided: "Not specified",
+      submitError: "Something went wrong submitting your request. Please try again.",
     },
     success: {
       title: "Request received",
       message:
-        "Thanks! Our team will review your details and send you a tailored quote within 24 hours.",
+        "Thanks! We've emailed you a PDF with your estimated quote. Our team will follow up within 24 hours.",
     },
   },
   booking: {
@@ -605,24 +609,25 @@ const ur: typeof en = {
       hearAboutUsOptions: ["لنکڈان", "انسٹاگرام", "دوست/رشتہ دار", "دیگر"],
       otherOptionValue: "دیگر",
       otherPlaceholder: "براہ کرم وضاحت کریں",
-      servicesInterested: "آپ کس سروس میں دلچسپی رکھتے ہیں؟",
-      serviceOptions: [
+      guestServiceLabel: "فون پاؤچز یا نگرانی",
+      guestServiceOptions: [
         {
-          value: "فون پاؤچز",
+          value: "phone-pouches",
+          label: "فون پاؤچز",
           description:
             "مہمانوں کے فون اور کیمرے داخلے پر محفوظ طریقے سے پاؤچ میں بند کیے جاتے ہیں، جس سے غیر مجاز تصاویر یا ریکارڈنگ روکی جاتی ہے۔",
         },
         {
-          value: "نگرانی (بغیر پاؤچ)",
+          value: "monitoring",
+          label: "نگرانی (بغیر پاؤچ)",
           description:
             "پاؤچنگ کے بغیر موقع پر پرائیویسی نگرانی اور رسائی کنٹرول — ہماری ٹیم غیر مجاز فوٹوگرافی پر نظر رکھتی ہے۔",
         },
-        {
-          value: "خواتین فوٹوگرافی",
-          description:
-            "آپ کی تقریب کے لیے پیشہ ورانہ مکمل خواتین فوٹوگرافی اور ویڈیوگرافی کوریج۔",
-        },
       ],
+      photographyLabel: "خواتین فوٹوگرافی",
+      photographyTierLabel: "فوٹوگرافی پیکج",
+      videographyLabel: "ویڈیوگرافی",
+      videographyTierLabel: "ویڈیوگرافی پیکج",
       details: "خصوصی درخواست یا تفصیلات",
       detailsPlaceholder:
         "خصوصی ہدایات، تقریب کی قسم، یا کوئی اور بات جو ہمیں معلوم ہونی چاہیے",
@@ -630,18 +635,21 @@ const ur: typeof en = {
       addEvent: "ایک اور تقریب شامل کریں",
       removeEvent: "حذف کریں",
       submit: "قیمت کی درخواست دیں",
+      submitting: "جمع ہو رہا ہے…",
     },
     review: {
       title: "اپنی درخواست کا جائزہ لیں",
       contactHeading: "آپ کی تفصیلات",
       edit: "ترمیم کریں",
       confirm: "تصدیق اور جمع کروائیں",
+      confirming: "جمع ہو رہا ہے…",
       notProvided: "فراہم نہیں کیا گیا",
+      submitError: "آپ کی درخواست جمع کرانے میں مسئلہ پیش آیا۔ براہ کرم دوبارہ کوشش کریں۔",
     },
     success: {
       title: "درخواست موصول ہو گئی",
       message:
-        "شکریہ! ہماری ٹیم آپ کی تفصیلات کا جائزہ لے کر 24 گھنٹوں میں آپ کو مخصوص قیمت بھیجے گی۔",
+        "شکریہ! ہم نے آپ کو ای میل پر آپ کی تخمینی قیمت کی PDF بھیج دی ہے۔ ہماری ٹیم 24 گھنٹوں میں رابطہ کرے گی۔",
     },
   },
   booking: {
