@@ -190,6 +190,15 @@ const styles = StyleSheet.create({
   brandGroup: { flexDirection: "row", alignItems: "center", gap: 12 },
   logo: { width: 39, height: 52 },
   brandBlock: { justifyContent: "center" },
+  pageMark: { flexDirection: "row", alignItems: "center", gap: 6, opacity: 0.35, marginBottom: 14 },
+  pageMarkLogo: { width: 12, height: 16 },
+  pageMarkText: {
+    fontSize: 10,
+    fontFamily: "Poppins",
+    fontWeight: 600,
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
   metaCard: {
     border: "0.75pt solid #e0688f",
     borderRadius: 8,
@@ -336,6 +345,22 @@ export function QuotePdf({ name, quoteId, createdAt, events, total, tables }: Qu
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        <View
+          style={styles.pageMark}
+          fixed
+          render={({ pageNumber }) =>
+            pageNumber === 1 ? null : (
+              <>
+                {/* eslint-disable-next-line jsx-a11y/alt-text -- react-pdf's Image, not an HTML img */}
+                <Image src={LOGO_SRC} style={styles.pageMarkLogo} />
+                <Text style={styles.pageMarkText}>
+                  <Text style={styles.brandNameAccent}>WII</Text> Security
+                </Text>
+              </>
+            )
+          }
+        />
+
         <View style={styles.header}>
           <View style={styles.brandGroup}>
             {/* eslint-disable-next-line jsx-a11y/alt-text -- react-pdf's Image, not an HTML img */}
