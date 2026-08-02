@@ -13,6 +13,7 @@ import { theme } from "../ui/theme";
 import { useLanguage } from "../../i18n/LanguageContext";
 import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 import type { Translations } from "../../i18n/translations";
+import { formatPkr } from "../../lib/format";
 
 type BookingForm = Translations["booking"]["form"];
 
@@ -205,7 +206,7 @@ function Review({
           <ReviewField label={form.contactNumber} value={data.phone || notProvided} />
           <ReviewField
             label={form.totalAmount}
-            value={data.totalAmount ? `PKR ${data.totalAmount}` : notProvided}
+            value={data.totalAmount ? formatPkr(Number(data.totalAmount)) : notProvided}
           />
           <ReviewField label={form.receiptLabel} value={data.receiptFileName || notProvided} />
           <ReviewField
@@ -264,7 +265,7 @@ export default function BookingForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const dueNow = totalAmount && !Number.isNaN(Number(totalAmount))
-    ? Math.round(Number(totalAmount) * 0.5).toLocaleString()
+    ? formatPkr(Math.round(Number(totalAmount) * 0.5))
     : null;
 
   const addEvent = () => {
@@ -443,7 +444,7 @@ export default function BookingForm() {
                   required
                 />
                 <p className={`text-xs ${dueNow ? theme.text.accent : "text-foreground/45"}`}>
-                  {dueNow ? `${form.dueNowPrefix} PKR ${dueNow}` : form.dueNowExample}
+                  {dueNow ? `${form.dueNowPrefix} ${dueNow}` : form.dueNowExample}
                 </p>
               </div>
 

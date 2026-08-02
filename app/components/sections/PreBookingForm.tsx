@@ -16,6 +16,7 @@ import type { Translations } from "../../i18n/translations";
 import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 import type { ServiceOption } from "../../lib/pricing";
 import { submitQuoteRequest } from "../../get-a-quote/actions";
+import { formatDateShort } from "../../lib/format";
 
 type BookCtaForm = Translations["bookCta"]["form"];
 
@@ -85,7 +86,7 @@ function EventFields({
   const [videography, setVideography] = useState(false);
   const summary = [
     city || null,
-    date ? date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : null,
+    date ? formatDateShort(date) : null,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -406,9 +407,7 @@ export default function PreBookingForm({
       hearAboutUsOther: String(fd.get("hearAboutUsOther") ?? ""),
       events: eventIds.map((id, i) => ({
         city: String(fd.get(`events[${i}][city]`) ?? ""),
-        date: dates[id]
-          ? dates[id]!.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })
-          : "",
+        date: dates[id] ? formatDateShort(dates[id]!) : "",
         femaleGuests: String(fd.get(`events[${i}][femaleGuests]`) ?? ""),
         guestService: String(fd.get(`events[${i}][guestService]`) ?? ""),
         photography: fd.get(`events[${i}][photography]`) === "on",
