@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { renderToBuffer } from "@react-pdf/renderer";
+import { ServiceType } from "@prisma/client";
 // import { prisma } from "../lib/db";
 import { priceQuote, PricingError, type EventInput, type ServiceSelection } from "../lib/pricing";
 import { loadPricingTables } from "../lib/pricingData";
@@ -47,13 +48,13 @@ type QuoteFormValues = z.infer<typeof quoteSchema>;
 function eventsToPricingInput(events: QuoteFormValues["events"]): EventInput[] {
   return events.map((event) => {
     const services: ServiceSelection[] = [];
-    if (event.guestService === "phone-pouches") services.push({ type: "PHONE_POUCHES" });
-    if (event.guestService === "monitoring") services.push({ type: "MONITORING" });
+    if (event.guestService === "phone-pouches") services.push({ type: ServiceType.PHONE_POUCHES });
+    if (event.guestService === "monitoring") services.push({ type: ServiceType.MONITORING });
     if (event.photography && event.photographyTier) {
-      services.push({ type: "PHOTOGRAPHY", tier: event.photographyTier });
+      services.push({ type: ServiceType.PHOTOGRAPHY, tier: event.photographyTier });
     }
     if (event.videography && event.videographyTier) {
-      services.push({ type: "VIDEOGRAPHY", tier: event.videographyTier });
+      services.push({ type: ServiceType.VIDEOGRAPHY, tier: event.videographyTier });
     }
     return { femaleGuests: event.femaleGuests, services };
   });

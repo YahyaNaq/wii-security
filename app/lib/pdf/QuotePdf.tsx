@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { Document, Page, Text, View, Image, Svg, Circle, StyleSheet } from "@react-pdf/renderer";
+import { ServiceType } from "@prisma/client";
 import { serviceLabel, tierLabel, type PricedEvent, type PricedService, type PricingTables } from "../pricing";
 import { colors } from "./colors";
 import { CalendarIcon, DocumentIcon, PhoneIcon, MailIcon, GlobeIcon, PinIcon, InfoIcon } from "./icons";
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
 });
 
 function serviceDetail(tables: PricingTables, service: PricedService, femaleGuests: number): string {
-  if (service.type === "PHONE_POUCHES" || service.type === "MONITORING") {
+  if (service.type === ServiceType.PHONE_POUCHES || service.type === ServiceType.MONITORING) {
     return `${femaleGuests} guests`;
   }
   return tierLabel(tables, service.type, service.tier);

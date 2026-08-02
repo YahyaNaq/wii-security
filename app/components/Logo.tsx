@@ -2,7 +2,7 @@ import Image from "next/image";
 import { useTheme } from "../theme/ThemeContext";
 
 export default function Logo({ className = "h-9 w-9" }: { className?: string }) {
-  const { mode, toggleMode } = useTheme();
+  const { mode } = useTheme();
 
   return (
     <Image

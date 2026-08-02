@@ -1,3 +1,5 @@
+import { ServiceType } from "@prisma/client";
+
 export type GuestTier = {
   slug: string;
   minGuests: number;
@@ -18,10 +20,10 @@ export type PricingTables = {
 };
 
 export type ServiceSelection =
-  | { type: "PHONE_POUCHES" }
-  | { type: "MONITORING" }
-  | { type: "PHOTOGRAPHY"; tier: string }
-  | { type: "VIDEOGRAPHY"; tier: string };
+  | { type: typeof ServiceType.PHONE_POUCHES }
+  | { type: typeof ServiceType.MONITORING }
+  | { type: typeof ServiceType.PHOTOGRAPHY; tier: string }
+  | { type: typeof ServiceType.VIDEOGRAPHY; tier: string };
 
 export type PricedService = {
   type: ServiceSelection["type"];
@@ -51,7 +53,7 @@ function serviceOptionFor(options: ServiceOption[], slug: string): ServiceOption
 
 export function priceEvent(tables: PricingTables, event: EventInput): PricedEvent {
   const services: PricedService[] = event.services.map((service) => {
-    if (service.type === "PHONE_POUCHES" || service.type === "MONITORING") {
+    if (service.type === ServiceType.PHONE_POUCHES || service.type === ServiceType.MONITORING) {
       const guestTier = guestTierFor(tables.guestTiers, event.femaleGuests);
       if (!guestTier) {
         throw new PricingError(
@@ -61,7 +63,7 @@ export function priceEvent(tables: PricingTables, event: EventInput): PricedEven
       return { type: service.type, tier: guestTier.slug, price: guestTier.price };
     }
 
-    const options = service.type === "PHOTOGRAPHY" ? tables.photographyOptions : tables.videographyOptions;
+    const options = service.type === ServiceType.PHOTOGRAPHY ? tables.photographyOptions : tables.videographyOptions;
     const option = serviceOptionFor(options, service.tier);
     if (!option) {
       throw new PricingError(`Unknown ${service.type.toLowerCase()} option "${service.tier}".`);
@@ -81,10 +83,10 @@ export function priceQuote(
 }
 
 const SERVICE_LABELS: Record<ServiceSelection["type"], string> = {
-  PHONE_POUCHES: "Phone Pouches",
-  MONITORING: "Monitoring (Non-Pouches)",
-  PHOTOGRAPHY: "Female Photography",
-  VIDEOGRAPHY: "Videography",
+  [ServiceType.PHONE_POUCHES]: "Phone Pouches",
+  [ServiceType.MONITORING]: "Monitoring (Non-Pouches)",
+  [ServiceType.PHOTOGRAPHY]: "Female Photography",
+  [ServiceType.VIDEOGRAPHY]: "Videography",
 };
 
 export function serviceLabel(type: ServiceSelection["type"]): string {
@@ -96,11 +98,11 @@ export function guestTierLabel(tier: GuestTier): string {
 }
 
 export function tierLabel(tables: PricingTables, type: ServiceSelection["type"], slug: string): string {
-  if (type === "PHONE_POUCHES" || type === "MONITORING") {
+  if (type === ServiceType.PHONE_POUCHES || type === ServiceType.MONITORING) {
     const tier = serviceOptionForGuestSlug(tables.guestTiers, slug);
     return tier ? guestTierLabel(tier) : slug;
   }
-  const options = type === "PHOTOGRAPHY" ? tables.photographyOptions : tables.videographyOptions;
+  const options = type === ServiceType.PHOTOGRAPHY ? tables.photographyOptions : tables.videographyOptions;
   return serviceOptionFor(options, slug)?.label ?? slug;
 }
 
