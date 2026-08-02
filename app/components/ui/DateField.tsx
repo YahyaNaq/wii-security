@@ -6,6 +6,7 @@ import { DayPicker } from "react-day-picker";
 import { FieldLabel, fieldClasses } from "./fields";
 import { theme } from "./theme";
 import { cn } from "./cn";
+import { formatDateShort } from "../../lib/format";
 
 const calendarClassNames = {
   months: "relative flex flex-col",
@@ -53,9 +54,7 @@ export function DateField({
   const [open, setOpen] = useState(false);
   const id = useId();
 
-  const formatted = date
-    ? date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })
-    : "";
+  const formatted = date ? formatDateShort(date) : "";
   const isoValue = date
     ? `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
     : "";
