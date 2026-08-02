@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import Button from "../ui/Button";
 import { TextField, TextareaField, RadioGroupField } from "../ui/fields";
@@ -334,6 +334,11 @@ export default function PreBookingForm({
   const [city, setCity] = useState("");
   const [dates, setDates] = useState<Record<number, Date | undefined>>({});
   const [step, setStep] = useState<"form" | "review" | "success">("form");
+  const stepRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    stepRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [step]);
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
   const [pendingFormData, setPendingFormData] = useState<FormData | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -464,7 +469,7 @@ export default function PreBookingForm({
           </ul>
         </div>
 
-        <div className={`flex flex-col gap-4 ${theme.surface} p-6 sm:p-10 lg:p-14`}>
+        <div ref={stepRef} className={`flex flex-col gap-4 scroll-mt-24 ${theme.surface} p-6 sm:p-10 lg:p-14`}>
           {step === "success" ? (
             <div className="flex flex-col items-center gap-3 py-10 text-center">
               <SuccessBadge />
