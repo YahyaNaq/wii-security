@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
   },
   totalValue: { fontSize: 26, fontFamily: "Playfair Display", fontWeight: 600, color: "#1a1a1a" },
   totalDots: { position: "absolute", right: -10, top: 0 },
-  footer: { marginTop: 32, fontSize: 9, color: "#888" },
+  footer: { marginTop: 32, fontSize: 9, color: "#424242" },
   footerRow: { flexDirection: "row", gap: 5, marginTop: 12 },
   footerIcon: { backgroundColor: "rgb(247 217 226, 0.5)", padding: 6, marginTop: 1, borderRadius: 15 },
   footerText: { flex: 1 },
