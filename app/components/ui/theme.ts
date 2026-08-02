@@ -21,6 +21,9 @@ export const theme = {
     soft: "bg-gradient-to-br from-brand-light via-blush to-surface",
     brand: "bg-gradient-to-br from-brand to-brand-dark",
   },
+  // Card chrome (rounding/clipping/shadow) applied only at lg+, so split-panel
+  // forms stack as plain, flat sections on mobile instead of a boxed card.
+  cardDesktop: "lg:overflow-hidden lg:rounded-[2.5rem] lg:shadow-xl lg:shadow-brand/20",
   text: {
     accent: "text-brand-dark",
     hoverAccent: "hover:text-brand-dark",

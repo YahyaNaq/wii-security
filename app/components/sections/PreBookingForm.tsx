@@ -93,9 +93,9 @@ function EventFields({
   return (
     <Accordion.Item
       value={String(eventId)}
-      className={`overflow-hidden rounded-2xl border ${theme.border.subtle}`}
+      className={`border-b ${theme.border.subtle} sm:overflow-hidden sm:rounded-2xl sm:border`}
     >
-      <Accordion.Header className="flex items-center justify-between gap-2 px-4 sm:px-5">
+      <Accordion.Header className="flex items-center justify-between gap-2 px-1 sm:px-5">
         <Accordion.Trigger className="group flex flex-1 cursor-pointer items-center justify-between gap-2 py-3.5 text-left">
           <span className="flex items-center gap-2">
             <svg
@@ -130,7 +130,7 @@ function EventFields({
         className="grid transition-[grid-template-rows] duration-200 ease-out data-[state=closed]:grid-rows-[0fr] data-[state=open]:grid-rows-[1fr]"
       >
         <div className="overflow-hidden">
-          <div className="flex flex-col gap-4 px-4 pb-4 sm:px-5 sm:pb-5">
+          <div className="flex flex-col gap-4 px-1 pb-4 sm:px-5 sm:pb-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <SelectField
                 label={form.city}
@@ -443,9 +443,9 @@ export default function PreBookingForm({
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
-      <div className={`grid overflow-hidden rounded-[2.5rem] ${theme.gradient.brand} shadow-xl ${theme.shadow.md} lg:grid-cols-2`}>
-        <div className="p-10 text-white sm:p-14">
+    <section className="mx-auto max-w-7xl pt-12 pb-24 lg:px-8">
+      <div className={`grid ${theme.cardDesktop} lg:grid-cols-2`}>
+        <div className={`${theme.gradient.brand} p-6 text-white sm:p-10 lg:p-14`}>
           <span className="text-xs font-semibold uppercase tracking-widest text-white/70">
             {t.bookCta.eyebrow}
           </span>
@@ -465,7 +465,7 @@ export default function PreBookingForm({
           </ul>
         </div>
 
-        <div className={`flex flex-col gap-4 ${theme.surface} p-10 sm:p-14`}>
+        <div className={`flex flex-col gap-4 ${theme.surface} p-6 sm:p-10 lg:p-14`}>
           {step === "success" ? (
             <div className="flex flex-col items-center gap-3 py-10 text-center">
               <SuccessBadge />
@@ -505,7 +505,7 @@ export default function PreBookingForm({
                 type="multiple"
                 value={openIds}
                 onValueChange={setOpenIds}
-                className="mt-2 flex flex-col gap-3"
+                className="mt-2 flex flex-col sm:gap-3"
               >
                 {eventIds.map((id, i) => (
                   <EventFields
