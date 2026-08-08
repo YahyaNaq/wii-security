@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getCurrentAdmin } from "../../lib/admin/dal";
 import LogoutButton from "./LogoutButton";
@@ -12,9 +13,19 @@ export default async function AdminProtectedLayout({
   return (
     <div className="flex min-h-screen bg-neutral-950 text-white">
       <aside className="flex w-56 shrink-0 flex-col border-r border-neutral-800 p-4">
-        <div className="mb-8">
-          <p className="text-sm font-semibold">WII Security</p>
-          <p className="text-xs text-neutral-500">Admin Portal</p>
+        <div className="mb-8 flex items-center gap-2">
+          <Image
+            src="/wii-security-logo.png"
+            alt="WII Security"
+            width={48}
+            height={48}
+            className="h-12 w-12 shrink-0 rounded-md bg-white object-contain"
+            priority
+          />
+          <div>
+            <p className="text-sm font-semibold">WII Security</p>
+            <p className="text-xs text-neutral-500">Admin Portal</p>
+          </div>
         </div>
         <nav className="flex flex-1 flex-col gap-1 text-sm">
           <Link href="/admin" className="rounded-md px-3 py-2 hover:bg-neutral-900">

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState } from "react";
 import { login } from "./actions";
 
@@ -12,8 +13,18 @@ export default function AdminLoginPage() {
         action={formAction}
         className="w-full max-w-sm rounded-lg border border-neutral-800 bg-neutral-900 p-8 shadow-lg"
       >
-        <h1 className="mb-1 text-xl font-semibold text-white">WII Security Admin</h1>
-        <p className="mb-6 text-sm text-neutral-400">Sign in to manage quotes and bookings.</p>
+        <div className="mb-6 flex flex-col items-center text-center">
+          <Image
+            src="/wii-security-logo.png"
+            alt="WII Security"
+            width={70}
+            height={70}
+            className="mb-3 h-12 w-12 shrink-0 rounded-md bg-white object-contain"
+            priority
+          />
+          <h1 className="text-xl font-semibold text-white">WII Security Admin</h1>
+          <p className="text-sm text-neutral-400">Sign in to manage quotes and bookings.</p>
+        </div>
 
         <label htmlFor="email" className="mb-1 block text-sm text-neutral-300">
           Email
