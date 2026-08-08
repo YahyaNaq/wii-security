@@ -282,6 +282,7 @@ const en = {
       title: "Request received",
       message:
         "Thanks! Your estimated quote has been downloaded as a PDF. Our team will follow up within 24 hours.",
+      downloadPdf: "Didn't get your PDF? Download it here",
     },
   },
   booking: {
@@ -653,6 +654,7 @@ const ur: typeof en = {
       title: "درخواست موصول ہو گئی",
       message:
         "شکریہ! آپ کی تخمینی قیمت PDF کے طور پر ڈاؤن لوڈ ہو گئی ہے۔ ہماری ٹیم 24 گھنٹوں میں رابطہ کرے گی۔",
+      downloadPdf: "PDF نہیں ملی؟ یہاں سے ڈاؤن لوڈ کریں",
     },
   },
   booking: {

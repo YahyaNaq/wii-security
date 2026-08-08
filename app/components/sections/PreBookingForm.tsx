@@ -22,15 +22,48 @@ type BookCtaForm = Translations["bookCta"]["form"];
 
 const MAX_EVENTS = 10;
 
-function openPdf(win: Window | null, base64: string) {
+function pdfBase64ToUrl(base64: string) {
   const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
   const blob = new Blob([bytes], { type: "application/pdf" });
-  const url = URL.createObjectURL(blob);
-  if (win) {
-    win.location.href = url;
-  } else {
-    window.open(url, "_blank");
+  return URL.createObjectURL(blob);
+}
+
+// Opened synchronously in the click handler (before any await) so browsers don't
+// treat it as a blocked popup; we then fill it with a loading state and later
+// navigate it to the finished PDF once the server action resolves.
+function openLoadingTab() {
+  const win = window.open("", "_blank");
+  if (!win) return null;
+  win.document.write(`<!doctype html>
+<html>
+<head>
+<title>Preparing your quote…</title>
+<style>
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex; align-items: center; justify-content: center;
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #18181b; color: #f4f4f5;
   }
+  .wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .spinner {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.2); border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+  }
+  p { margin: 0; font-size: 14px; opacity: 0.75; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="spinner"></div>
+    <p>Preparing your quote PDF&hellip;</p>
+  </div>
+</body>
+</html>`);
+  win.document.close();
+  return win;
 }
 
 type ReviewEvent = {
@@ -344,6 +377,13 @@ export default function PreBookingForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+    };
+  }, [pdfUrl]);
 
   const validate = (fd: FormData) => {
     const nextErrors: Record<string, string> = {};
@@ -430,19 +470,26 @@ export default function PreBookingForm({
     if (!pendingFormData) return;
     setSubmitting(true);
     setSubmitError(null);
-    const pdfTab = window.open("", "_blank");
+    const pdfTab = openLoadingTab();
     try {
       pendingFormData.set("eventCount", String(eventIds.length));
       const result = await submitQuoteRequest(pendingFormData);
       if (result.success) {
-        openPdf(pdfTab, result.pdfBase64);
+        const url = pdfBase64ToUrl(result.pdfBase64);
+        setPdfUrl(url);
+        // If the tab is missing or was closed while we waited, don't retry opening one —
+        // a window.open() this far from the click is reliably popup-blocked. The success
+        // screen's fallback download link covers that case instead.
+        if (pdfTab && !pdfTab.closed) {
+          pdfTab.location.href = url;
+        }
         setStep("success");
       } else {
-        pdfTab?.close();
+        if (pdfTab && !pdfTab.closed) pdfTab.close();
         setSubmitError(result.error);
       }
     } catch {
-      pdfTab?.close();
+      if (pdfTab && !pdfTab.closed) pdfTab.close();
       setSubmitError(t.bookCta.review.submitError);
     } finally {
       setSubmitting(false);
@@ -478,6 +525,17 @@ export default function PreBookingForm({
               <SuccessBadge />
               <h3 className="font-display text-xl text-foreground">{t.bookCta.success.title}</h3>
               <p className="max-w-sm text-sm leading-6 text-foreground/65">{t.bookCta.success.message}</p>
+              {pdfUrl && (
+                <a
+                  href={pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download="quote.pdf"
+                  className={`text-sm font-medium underline ${theme.text.accent}`}
+                >
+                  {t.bookCta.success.downloadPdf}
+                </a>
+              )}
             </div>
           ) : step === "review" && reviewData ? (
             <Review
