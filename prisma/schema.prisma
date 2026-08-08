@@ -20,7 +20,7 @@ enum PricedServiceType {
 
 enum BookingStatus {
   IN_REVIEW
-  APPROVED
+  ACCEPTED
   REJECTED
 }
 

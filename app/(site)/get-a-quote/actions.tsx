@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { ServiceType } from "@prisma/client";
-// import { prisma } from "../../lib/db";
+import { prisma } from "../../lib/db";
 import { priceQuote, PricingError, type EventInput, type ServiceSelection } from "../../lib/pricing";
 import { loadPricingTables } from "../../lib/pricingData";
 import { QuotePdf } from "../../lib/pdf/QuotePdf";
@@ -111,35 +111,34 @@ export async function submitQuoteRequest(formData: FormData): Promise<SubmitQuot
     throw err;
   }
 
-  // TODO: re-enable DB persistence once the PDF layout is finalized.
-  // const quoteRequest = await prisma.quoteRequest.create({
-  //   data: {
-  //     name: data.name,
-  //     phone: data.phone,
-  //     email: data.email,
-  //     hearAboutUs: data.hearAboutUs,
-  //     hearAboutUsOther: data.hearAboutUsOther || null,
-  //     totalAmount: priced.total,
-  //     events: {
-  //       create: data.events.map((event, i) => ({
-  //         city: event.city,
-  //         date: new Date(event.date),
-  //         femaleGuests: event.femaleGuests,
-  //         details: event.details || null,
-  //         subtotal: priced.events[i].subtotal,
-  //         services: {
-  //           create: priced.events[i].services.map((service) => ({
-  //             type: service.type,
-  //             tier: service.tier,
-  //             price: service.price,
-  //           })),
-  //         },
-  //       })),
-  //     },
-  //   },
-  // });
-  const createdAt = new Date();
-  const quoteId = `WII-${createdAt.getFullYear()}${String(createdAt.getMonth() + 1).padStart(2, "0")}${String(createdAt.getDate()).padStart(2, "0")}-${String(createdAt.getHours()).padStart(2, "0")}${String(createdAt.getMinutes()).padStart(2, "0")}${String(createdAt.getSeconds()).padStart(2, "0")}`;
+  const quoteRequest = await prisma.quoteRequest.create({
+    data: {
+      name: data.name,
+      phone: data.phone,
+      email: data.email,
+      hearAboutUs: data.hearAboutUs,
+      hearAboutUsOther: data.hearAboutUsOther || null,
+      totalAmount: priced.total,
+      events: {
+        create: data.events.map((event, i) => ({
+          city: event.city,
+          date: new Date(event.date),
+          femaleGuests: event.femaleGuests,
+          details: event.details || null,
+          subtotal: priced.events[i].subtotal,
+          services: {
+            create: priced.events[i].services.map((service) => ({
+              type: service.type,
+              tier: service.tier,
+              price: service.price,
+            })),
+          },
+        })),
+      },
+    },
+  });
+  const quoteId = quoteRequest.id;
+  const createdAt = quoteRequest.createdAt;
 
   const pdfBuffer = await renderToBuffer(
     <QuotePdf

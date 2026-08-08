@@ -1,3 +1,4 @@
+import { BookingStatus } from "@prisma/client";
 import { prisma } from "../../lib/db";
 import { formatPkr } from "../../lib/format";
 
@@ -22,12 +23,12 @@ export default async function AdminDashboardPage() {
 
   const statusCounts = Object.fromEntries(
     bookingsByStatus.map((row) => [row.status, row._count._all])
-  );
+  ) as Partial<Record<BookingStatus, number>>;
 
   const stats = [
     { label: "Quote requests", value: quoteCount },
     { label: "Bookings", value: bookingCount },
-    { label: "Bookings in review", value: statusCounts.IN_REVIEW ?? 0 },
+    { label: "Bookings in review", value: statusCounts[BookingStatus.IN_REVIEW] ?? 0 },
     { label: "Quoted value", value: formatPkr(quoteTotal._sum.totalAmount ?? 0) },
   ];
 
