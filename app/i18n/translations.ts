@@ -11,6 +11,7 @@ const en = {
     invalidEmailError: "Please enter a valid email address.",
     invalidPhoneError: "Please enter a valid phone number.",
     invalidNumberError: "Please enter a valid number greater than 0.",
+    submitError: "Something went wrong. Please try again.",
   },
   nav: {
     links: {
@@ -342,6 +343,7 @@ const en = {
       title: "Review your booking",
       edit: "Edit",
       confirm: "Confirm & Submit",
+      submitting: "Submitting...",
       notProvided: "Not specified",
       termsAgreed: "Agreed",
       termsNotAgreed: "Not agreed",
@@ -380,6 +382,7 @@ const ur: typeof en = {
     invalidEmailError: "براہ کرم درست ای میل ایڈریس درج کریں۔",
     invalidPhoneError: "براہ کرم درست فون نمبر درج کریں۔",
     invalidNumberError: "براہ کرم 0 سے زیادہ درست نمبر درج کریں۔",
+    submitError: "کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔",
   },
   nav: {
     links: {
@@ -708,6 +711,7 @@ const ur: typeof en = {
       title: "اپنی بکنگ کا جائزہ لیں",
       edit: "ترمیم کریں",
       confirm: "تصدیق اور جمع کروائیں",
+      submitting: "جمع کروایا جا رہا ہے...",
       notProvided: "فراہم نہیں کیا گیا",
       termsAgreed: "اتفاق کیا گیا",
       termsNotAgreed: "اتفاق نہیں کیا گیا",

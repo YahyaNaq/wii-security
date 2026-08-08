@@ -14,6 +14,7 @@ import { useLanguage } from "../../i18n/LanguageContext";
 import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 import type { Translations } from "../../i18n/translations";
 import { formatPkr } from "../../lib/format";
+import { submitBooking } from "../../book/actions";
 
 type BookingForm = Translations["booking"]["form"];
 
@@ -187,12 +188,16 @@ function Review({
   data,
   onEdit,
   onConfirm,
+  submitting,
+  submitError,
 }: {
   form: BookingForm;
   review: Translations["booking"]["review"];
   data: ReviewData;
   onEdit: () => void;
   onConfirm: () => void;
+  submitting: boolean;
+  submitError: string | null;
 }) {
   const notProvided = review.notProvided;
 
@@ -239,12 +244,14 @@ function Review({
         </div>
       ))}
 
+      {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+
       <div className="flex gap-3">
-        <Button type="button" variant="secondary" size="sm" onClick={onEdit}>
+        <Button type="button" variant="secondary" size="sm" onClick={onEdit} disabled={submitting}>
           {review.edit}
         </Button>
-        <Button type="button" size="compact" onClick={onConfirm}>
-          {review.confirm}
+        <Button type="button" size="compact" onClick={onConfirm} disabled={submitting}>
+          {submitting ? review.submitting : review.confirm}
         </Button>
       </div>
     </div>
@@ -268,6 +275,9 @@ export default function BookingForm() {
   const [totalAmount, setTotalAmount] = useState("");
   const [city, setCity] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const pendingFormData = useRef<FormData | null>(null);
 
   const dueNow = totalAmount && !Number.isNaN(Number(totalAmount))
     ? formatPkr(Math.round(Number(totalAmount) * 0.5))
@@ -328,6 +338,9 @@ export default function BookingForm() {
     setErrors(validationErrors);
     if (Object.keys(validationErrors).length > 0) return;
 
+    pendingFormData.current = fd;
+    setSubmitError(null);
+
     const receipt = fd.get("receipt");
     setReviewData({
       name: String(fd.get("name") ?? ""),
@@ -346,6 +359,24 @@ export default function BookingForm() {
       })),
     });
     setStep("review");
+  };
+
+  const handleConfirm = async () => {
+    if (!pendingFormData.current || submitting) return;
+    setSubmitting(true);
+    setSubmitError(null);
+
+    const result = await submitBooking(pendingFormData.current);
+
+    setSubmitting(false);
+    if (result.success) {
+      pendingFormData.current = null;
+      setStep("success");
+      return;
+    }
+
+    if (result.fieldErrors) setErrors(result.fieldErrors);
+    setSubmitError(result.error);
   };
 
   return (
@@ -380,7 +411,9 @@ export default function BookingForm() {
               review={t.booking.review}
               data={reviewData}
               onEdit={() => setStep("form")}
-              onConfirm={() => setStep("success")}
+              onConfirm={handleConfirm}
+              submitting={submitting}
+              submitError={submitError}
             />
           ) : (
             <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>

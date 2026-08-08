@@ -18,6 +18,12 @@ enum PricedServiceType {
   VIDEOGRAPHY
 }
 
+enum BookingStatus {
+  IN_REVIEW
+  APPROVED
+  REJECTED
+}
+
 // Shared guest-count-based pricing for Phone Pouches / Monitoring.
 model GuestTierPrice {
   id         String  @id @default(cuid())
@@ -75,4 +81,32 @@ model QuoteService {
   type         ServiceType
   tier         String
   price        Int
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  name            String
+  phone           String
+  totalAmount     Int
+  status          BookingStatus @default(IN_REVIEW)
+  receiptFileName String
+  receiptMimeType String
+  receiptData     Bytes
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  events BookingEvent[]
+}
+
+model BookingEvent {
+  id             String  @id @default(cuid())
+  bookingId      String
+  booking        Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  city           String
+  reportingTime  String
+  venue          String
+  eventType      String
+  eventTypeOther String?
+  femaleGuests   Int
+  package        String
 }
