@@ -14,7 +14,7 @@ import { useLanguage } from "../../i18n/LanguageContext";
 import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 import type { Translations } from "../../i18n/translations";
 import { formatPkr } from "../../lib/format";
-import { submitBooking } from "../../book/actions";
+import { submitBooking } from "../../(site)/book/actions";
 
 type BookingForm = Translations["booking"]["form"];
 

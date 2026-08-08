@@ -1,8 +1,8 @@
 "use server";
 
 import { z } from "zod";
-import { prisma } from "../lib/db";
-import { isValidPhoneNumber, isPositiveNumber } from "../lib/validators";
+import { prisma } from "../../lib/db";
+import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 
 const MAX_RECEIPT_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_RECEIPT_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];

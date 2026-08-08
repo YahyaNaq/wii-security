@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import PreBookingForm from "../components/sections/PreBookingForm";
-import { loadPricingTables } from "../lib/pricingData";
+import PreBookingForm from "../../components/sections/PreBookingForm";
+import { loadPricingTables } from "../../lib/pricingData";
 
 export const dynamic = "force-dynamic";
 

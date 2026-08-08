@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Faqs from "../components/sections/Faqs";
+import Faqs from "../../components/sections/Faqs";
 
 export const metadata: Metadata = {
   title: "FAQs | WII Security",

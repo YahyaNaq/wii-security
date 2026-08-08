@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import BookingForm from "../components/sections/BookingForm";
+import BookingForm from "../../components/sections/BookingForm";
 
 export const metadata: Metadata = {
   title: "Book Your Event | WII Security",

@@ -83,6 +83,14 @@ model QuoteService {
   price        Int
 }
 
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+}
+
 model Booking {
   id              String        @id @default(cuid())
   name            String

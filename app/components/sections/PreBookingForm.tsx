@@ -15,7 +15,7 @@ import { useLanguage } from "../../i18n/LanguageContext";
 import type { Translations } from "../../i18n/translations";
 import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 import type { ServiceOption } from "../../lib/pricing";
-import { submitQuoteRequest } from "../../get-a-quote/actions";
+import { submitQuoteRequest } from "../../(site)/get-a-quote/actions";
 import { formatDateShort } from "../../lib/format";
 
 type BookCtaForm = Translations["bookCta"]["form"];

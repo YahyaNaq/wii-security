@@ -3,12 +3,12 @@
 import { z } from "zod";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { ServiceType } from "@prisma/client";
-// import { prisma } from "../lib/db";
-import { priceQuote, PricingError, type EventInput, type ServiceSelection } from "../lib/pricing";
-import { loadPricingTables } from "../lib/pricingData";
-import { QuotePdf } from "../lib/pdf/QuotePdf";
-// import { sendQuoteEmail } from "../lib/email";
-import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../lib/validators";
+// import { prisma } from "../../lib/db";
+import { priceQuote, PricingError, type EventInput, type ServiceSelection } from "../../lib/pricing";
+import { loadPricingTables } from "../../lib/pricingData";
+import { QuotePdf } from "../../lib/pdf/QuotePdf";
+// import { sendQuoteEmail } from "../../lib/email";
+import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 
 const eventSchema = z
   .object({
