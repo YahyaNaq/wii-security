@@ -4,8 +4,8 @@ import type { PricingTables } from "./pricing";
 
 export async function loadPricingTables(): Promise<PricingTables> {
   const [guestTiers, serviceOptions] = await Promise.all([
-    prisma.guestTierPrice.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } }),
-    prisma.serviceOptionPrice.findMany({ where: { active: true }, orderBy: { sortOrder: "asc" } }),
+    prisma.guestTierPrice.findMany({ orderBy: { minGuests: "asc" } }),
+    prisma.serviceOptionPrice.findMany({ orderBy: { price: "asc" } }),
   ]);
 
   return {

@@ -46,9 +46,9 @@ export function TextField({
   );
 }
 
-type Option = string | { value: string; label?: string; description?: string };
+export type Option = string | { value: string; label?: string; description?: string };
 
-function normalizeOption(option: Option) {
+export function normalizeOption(option: Option) {
   return typeof option === "string"
     ? { value: option, label: option, description: undefined }
     : { label: option.value, ...option };

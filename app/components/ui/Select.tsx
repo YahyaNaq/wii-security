@@ -1,7 +1,7 @@
 "use client";
 
 import * as RadixSelect from "@radix-ui/react-select";
-import { FieldLabel, fieldClasses } from "./fields";
+import { FieldLabel, fieldClasses, normalizeOption, type Option } from "./fields";
 import { theme } from "./theme";
 import { cn } from "./cn";
 
@@ -16,10 +16,13 @@ export function SelectField({
   value,
   onValueChange,
   className,
+  triggerClassName,
+  contentClassName,
+  itemClassName,
 }: {
   label: React.ReactNode;
   name: string;
-  options: string[];
+  options: Option[];
   placeholder: string;
   required?: boolean;
   error?: string;
@@ -27,6 +30,10 @@ export function SelectField({
   value?: string;
   onValueChange?: (value: string) => void;
   className?: string;
+  // Full overrides (not merged) for callers whose surrounding UI doesn't use the brand theme tokens.
+  triggerClassName?: string;
+  contentClassName?: string;
+  itemClassName?: string;
 }) {
   return (
     <FieldLabel label={label} error={error}>
@@ -38,11 +45,14 @@ export function SelectField({
         onValueChange={onValueChange}
       >
         <RadixSelect.Trigger
-          className={cn(
-            fieldClasses(!!error),
-            "flex cursor-pointer items-center justify-between gap-2 text-left data-[placeholder]:text-foreground/40",
-            className
-          )}
+          className={
+            triggerClassName ??
+            cn(
+              fieldClasses(!!error),
+              "flex cursor-pointer items-center justify-between gap-2 text-left data-[placeholder]:text-foreground/40",
+              className
+            )
+          }
         >
           <RadixSelect.Value placeholder={placeholder} />
           <RadixSelect.Icon>
@@ -55,18 +65,27 @@ export function SelectField({
           <RadixSelect.Content
             position="popper"
             sideOffset={6}
-            className={`z-50 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-xl border ${theme.border.solid} ${theme.surface} shadow-lg ${theme.shadow.sm}`}
+            className={
+              contentClassName ??
+              `z-50 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-xl border ${theme.border.solid} ${theme.surface} shadow-lg ${theme.shadow.sm}`
+            }
           >
             <RadixSelect.Viewport className="p-1">
-              {options.map((option) => (
-                <RadixSelect.Item
-                  key={option}
-                  value={option}
-                  className={`relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2 text-sm text-foreground outline-none data-[highlighted]:bg-blush data-[state=checked]:font-semibold data-[state=checked]:${theme.text.accent}`}
-                >
-                  <RadixSelect.ItemText>{option}</RadixSelect.ItemText>
-                </RadixSelect.Item>
-              ))}
+              {options.map((option) => {
+                const { value, label: optionLabel } = normalizeOption(option);
+                return (
+                  <RadixSelect.Item
+                    key={value}
+                    value={value}
+                    className={
+                      itemClassName ??
+                      `relative flex cursor-pointer select-none items-center rounded-lg px-3 py-2 text-sm text-foreground outline-none data-[highlighted]:bg-blush data-[state=checked]:font-semibold data-[state=checked]:${theme.text.accent}`
+                    }
+                  >
+                    <RadixSelect.ItemText>{optionLabel}</RadixSelect.ItemText>
+                  </RadixSelect.Item>
+                );
+              })}
             </RadixSelect.Viewport>
           </RadixSelect.Content>
         </RadixSelect.Portal>

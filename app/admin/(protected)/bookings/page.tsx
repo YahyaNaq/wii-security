@@ -73,6 +73,7 @@ export default async function AdminBookingsPage({
         <table className="w-full min-w-[820px] text-left text-sm">
           <thead>
             <tr className="border-b border-neutral-800 text-neutral-400">
+              <th className="px-4 py-3 font-medium">#</th>
               <th className="px-4 py-3 font-medium">
                 <SortableHeader
                   pathname="/admin/bookings"
@@ -113,8 +114,9 @@ export default async function AdminBookingsPage({
             </tr>
           </thead>
           <tbody>
-            {bookings.map((booking) => (
+            {bookings.map((booking, index) => (
               <tr key={booking.id} className="border-b border-neutral-800 last:border-0">
+                <td className="px-4 py-3 text-neutral-500">{skip + index + 1}</td>
                 <td className="px-4 py-3">{booking.name}</td>
                 <td className="px-4 py-3 text-neutral-400">{booking.phone}</td>
                 <td className="px-4 py-3 text-neutral-400">
@@ -132,7 +134,7 @@ export default async function AdminBookingsPage({
                 </td>
               </tr>
             ))}
-            {bookings.length === 0 && <EmptyRow colSpan={7} message="No bookings found." />}
+            {bookings.length === 0 && <EmptyRow colSpan={8} message="No bookings found." />}
           </tbody>
         </table>
       </div>

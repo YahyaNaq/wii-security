@@ -1,0 +1,59 @@
+import { PricedServiceType } from "@prisma/client";
+import { prisma } from "../../../../lib/db";
+import { formatPkr } from "../../../../lib/format";
+import { EmptyRow } from "../../_components/table/EmptyRow";
+import { AddServiceOptionButton } from "../AddServiceOptionButton";
+import { ServiceOptionRowActions } from "../ServiceOptionRowActions";
+
+const SERVICE_TYPE_LABEL = {
+  [PricedServiceType.PHOTOGRAPHY]: "Photography",
+  [PricedServiceType.VIDEOGRAPHY]: "Videography",
+} as const;
+
+export default async function AdminPackagesPricingPage() {
+  const serviceOptions = await prisma.serviceOptionPrice.findMany({
+    orderBy: [{ serviceType: "asc" }, { price: "asc" }],
+  });
+
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Photography &amp; Videography Pricing</h1>
+        <AddServiceOptionButton />
+      </div>
+      <p className="mb-6 text-sm text-neutral-500">
+        Flat-price named packages selectable for the Photography and Videography services.
+      </p>
+
+      <div className="overflow-x-auto rounded-lg border border-neutral-800">
+        <table className="w-full min-w-[720px] text-left text-sm">
+          <thead>
+            <tr className="border-b border-neutral-800 text-neutral-400">
+              <th className="px-4 py-3 font-medium">#</th>
+              <th className="px-4 py-3 font-medium">Service</th>
+              <th className="px-4 py-3 font-medium">Slug</th>
+              <th className="px-4 py-3 font-medium">Label</th>
+              <th className="px-4 py-3 font-medium">Price</th>
+              <th className="px-4 py-3 font-medium text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {serviceOptions.map((option, index) => (
+              <tr key={option.id} className="border-b border-neutral-800 last:border-0">
+                <td className="px-4 py-3 text-neutral-500">{index + 1}</td>
+                <td className="px-4 py-3 text-neutral-400">{SERVICE_TYPE_LABEL[option.serviceType]}</td>
+                <td className="px-4 py-3">{option.slug}</td>
+                <td className="px-4 py-3">{option.label}</td>
+                <td className="px-4 py-3">{formatPkr(option.price)}</td>
+                <td className="px-4 py-3 text-right">
+                  <ServiceOptionRowActions option={option} />
+                </td>
+              </tr>
+            ))}
+            {serviceOptions.length === 0 && <EmptyRow colSpan={6} message="No packages configured." />}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}

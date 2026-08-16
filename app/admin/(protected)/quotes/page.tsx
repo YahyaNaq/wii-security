@@ -53,6 +53,7 @@ export default async function AdminQuotesPage({
         <table className="w-full min-w-[720px] text-left text-sm">
           <thead>
             <tr className="border-b border-neutral-800 text-neutral-400">
+              <th className="px-4 py-3 font-medium">#</th>
               <th className="px-4 py-3 font-medium">
                 <SortableHeader
                   pathname="/admin/quotes"
@@ -92,8 +93,9 @@ export default async function AdminQuotesPage({
             </tr>
           </thead>
           <tbody>
-            {quotes.map((quote) => (
+            {quotes.map((quote, index) => (
               <tr key={quote.id} className="border-b border-neutral-800 last:border-0">
+                <td className="px-4 py-3 text-neutral-500">{skip + index + 1}</td>
                 <td className="px-4 py-3">{quote.name}</td>
                 <td className="px-4 py-3 text-neutral-400">
                   <div>{quote.phone}</div>
@@ -109,7 +111,7 @@ export default async function AdminQuotesPage({
                 </td>
               </tr>
             ))}
-            {quotes.length === 0 && <EmptyRow colSpan={6} message="No quote requests found." />}
+            {quotes.length === 0 && <EmptyRow colSpan={7} message="No quote requests found." />}
           </tbody>
         </table>
       </div>

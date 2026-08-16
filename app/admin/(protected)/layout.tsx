@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getCurrentAdmin } from "../../lib/admin/dal";
 import LogoutButton from "./LogoutButton";
+import { PricingNav } from "./_components/PricingNav";
 
 export default async function AdminProtectedLayout({
   children,
@@ -12,7 +13,7 @@ export default async function AdminProtectedLayout({
 
   return (
     <div className="flex min-h-screen bg-neutral-950 text-white">
-      <aside className="flex w-56 shrink-0 flex-col border-r border-neutral-800 p-4">
+      <aside className="flex w-64 shrink-0 flex-col border-r border-neutral-800 p-4">
         <div className="mb-8 flex items-center gap-2">
           <Image
             src="/wii-security-logo.png"
@@ -37,6 +38,7 @@ export default async function AdminProtectedLayout({
           <Link href="/admin/bookings" className="rounded-md px-3 py-2 hover:bg-neutral-900">
             Bookings
           </Link>
+          <PricingNav />
         </nav>
         <div className="border-t border-neutral-800 pt-4">
           <p className="mb-2 truncate text-xs text-neutral-400">{admin.email}</p>

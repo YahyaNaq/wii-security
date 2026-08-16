@@ -26,13 +26,11 @@ enum BookingStatus {
 
 // Shared guest-count-based pricing for Phone Pouches / Monitoring.
 model GuestTierPrice {
-  id         String  @id @default(cuid())
-  slug       String  @unique
-  minGuests  Int
-  maxGuests  Int
-  price      Int
-  sortOrder  Int
-  active     Boolean @default(true)
+  id        String @id @default(cuid())
+  slug      String @unique
+  minGuests Int
+  maxGuests Int
+  price     Int
 }
 
 // Flat-price named options for Photography / Videography.
@@ -42,8 +40,6 @@ model ServiceOptionPrice {
   slug        String
   label       String
   price       Int
-  sortOrder   Int
-  active      Boolean           @default(true)
 
   @@unique([serviceType, slug])
 }
