@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { formatPkr, formatDateLong } from "../../../lib/format";
+import { pdfBase64ToUrl, openLoadingTab } from "../../../lib/pdf-client";
 import { RowActionsMenu, type RowAction } from "../_components/table/RowActionsMenu";
 import { DetailDialog } from "../_components/table/DetailDialog";
+import { generateQuotePdf } from "./actions";
 
 type QuoteDetail = {
   id: string;
@@ -23,8 +25,28 @@ type QuoteDetail = {
 
 export function QuoteRowActions({ quote }: { quote: QuoteDetail }) {
   const [viewOpen, setViewOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
 
-  const actions: RowAction[] = [{ label: "View", onClick: () => setViewOpen(true) }];
+  const handleGeneratePdf = () => {
+    const pdfTab = openLoadingTab("Preparing quote PDF…");
+    startTransition(async () => {
+      const result = await generateQuotePdf(quote.id);
+      if (result.success) {
+        const url = pdfBase64ToUrl(result.pdfBase64);
+        if (pdfTab && !pdfTab.closed) {
+          pdfTab.location.href = url;
+        }
+      } else if (pdfTab && !pdfTab.closed) {
+        pdfTab.close();
+        window.alert(result.error);
+      }
+    });
+  };
+
+  const actions: RowAction[] = [
+    { label: "View", onClick: () => setViewOpen(true) },
+    { label: "Generate PDF", disabled: pending, onClick: handleGeneratePdf },
+  ];
 
   return (
     <>
