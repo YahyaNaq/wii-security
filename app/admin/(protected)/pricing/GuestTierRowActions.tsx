@@ -2,37 +2,28 @@
 
 import { useState, useTransition } from "react";
 import { RowActionsMenu, type RowAction } from "../_components/table/RowActionsMenu";
-import { GuestTierForm } from "./GuestTierForm";
-import { deleteGuestTier } from "./actions";
+import { GuestTierForm, type GuestTier, type GuestTierActions } from "./GuestTierForm";
 
-type GuestTier = {
-  id: string;
-  slug: string;
-  minGuests: number;
-  maxGuests: number;
-  price: number;
-};
-
-export function GuestTierRowActions({ tier }: { tier: GuestTier }) {
+export function GuestTierRowActions({ tier, actions }: { tier: GuestTier; actions: GuestTierActions }) {
   const [editOpen, setEditOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
   const handleDelete = () => {
     if (!window.confirm(`Delete guest tier "${tier.slug}"? This can't be undone.`)) return;
     startTransition(async () => {
-      await deleteGuestTier(tier.id);
+      await actions.delete(tier.id);
     });
   };
 
-  const actions: RowAction[] = [
+  const rowActions: RowAction[] = [
     { label: "Edit", onClick: () => setEditOpen(true) },
     { label: "Delete", variant: "danger", disabled: pending, onClick: handleDelete },
   ];
 
   return (
     <>
-      <RowActionsMenu actions={actions} />
-      <GuestTierForm open={editOpen} onOpenChange={setEditOpen} tier={tier} />
+      <RowActionsMenu actions={rowActions} />
+      <GuestTierForm open={editOpen} onOpenChange={setEditOpen} tier={tier} actions={actions} />
     </>
   );
 }

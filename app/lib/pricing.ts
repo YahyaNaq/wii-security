@@ -14,7 +14,8 @@ export type ServiceOption = {
 };
 
 export type PricingTables = {
-  guestTiers: GuestTier[];
+  pouchGuestTiers: GuestTier[];
+  monitoringGuestTiers: GuestTier[];
   photographyOptions: ServiceOption[];
   videographyOptions: ServiceOption[];
 };
@@ -54,7 +55,8 @@ function serviceOptionFor(options: ServiceOption[], slug: string): ServiceOption
 export function priceEvent(tables: PricingTables, event: EventInput): PricedEvent {
   const services: PricedService[] = event.services.map((service) => {
     if (service.type === ServiceType.PHONE_POUCHES || service.type === ServiceType.MONITORING) {
-      const guestTier = guestTierFor(tables.guestTiers, event.femaleGuests);
+      const guestTiers = service.type === ServiceType.PHONE_POUCHES ? tables.pouchGuestTiers : tables.monitoringGuestTiers;
+      const guestTier = guestTierFor(guestTiers, event.femaleGuests);
       if (!guestTier) {
         throw new PricingError(
           `Guest count ${event.femaleGuests} is outside supported range. Contact us directly for custom pricing.`
@@ -99,7 +101,8 @@ export function guestTierLabel(tier: GuestTier): string {
 
 export function tierLabel(tables: PricingTables, type: ServiceSelection["type"], slug: string): string {
   if (type === ServiceType.PHONE_POUCHES || type === ServiceType.MONITORING) {
-    const tier = serviceOptionForGuestSlug(tables.guestTiers, slug);
+    const guestTiers = type === ServiceType.PHONE_POUCHES ? tables.pouchGuestTiers : tables.monitoringGuestTiers;
+    const tier = serviceOptionForGuestSlug(guestTiers, slug);
     return tier ? guestTierLabel(tier) : slug;
   }
   const options = type === ServiceType.PHOTOGRAPHY ? tables.photographyOptions : tables.videographyOptions;

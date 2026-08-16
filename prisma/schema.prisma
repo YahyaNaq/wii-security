@@ -24,8 +24,19 @@ enum BookingStatus {
   REJECTED
 }
 
-// Shared guest-count-based pricing for Phone Pouches / Monitoring.
-model GuestTierPrice {
+// Guest-count-based pricing for Monitoring.
+model MonitoringGuestTierPrice {
+  id        String @id @default(cuid())
+  slug      String @unique
+  minGuests Int
+  maxGuests Int
+  price     Int
+
+  @@map("GuestTierPrice")
+}
+
+// Guest-count-based pricing for Phone Pouches.
+model PouchGuestTierPrice {
   id        String @id @default(cuid())
   slug      String @unique
   minGuests Int

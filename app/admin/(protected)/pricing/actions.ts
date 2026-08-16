@@ -31,13 +31,14 @@ function parseTierFormData(formData: FormData) {
 }
 
 function revalidatePricingPaths() {
-  revalidatePath("/admin/pricing/guest-tiers");
+  revalidatePath("/admin/pricing/pouch-tiers");
+  revalidatePath("/admin/pricing/monitoring-tiers");
   revalidatePath("/admin/pricing/packages");
   revalidatePath("/get-a-quote");
 }
 
-async function findOverlappingTier(minGuests: number, maxGuests: number, excludeId?: string) {
-  return prisma.guestTierPrice.findFirst({
+async function findOverlappingPouchTier(minGuests: number, maxGuests: number, excludeId?: string) {
+  return prisma.pouchGuestTierPrice.findFirst({
     where: {
       id: excludeId ? { not: excludeId } : undefined,
       minGuests: { lte: maxGuests },
@@ -46,7 +47,7 @@ async function findOverlappingTier(minGuests: number, maxGuests: number, exclude
   });
 }
 
-export async function createGuestTier(formData: FormData): Promise<TierActionResult> {
+export async function createPouchTier(formData: FormData): Promise<TierActionResult> {
   await verifyAdminSession();
 
   const parsed = tierSchema.safeParse(parseTierFormData(formData));
@@ -54,13 +55,13 @@ export async function createGuestTier(formData: FormData): Promise<TierActionRes
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const overlap = await findOverlappingTier(parsed.data.minGuests, parsed.data.maxGuests);
+  const overlap = await findOverlappingPouchTier(parsed.data.minGuests, parsed.data.maxGuests);
   if (overlap) {
     return { success: false, error: `Range overlaps with existing tier "${overlap.slug}" (${overlap.minGuests}–${overlap.maxGuests})` };
   }
 
   try {
-    await prisma.guestTierPrice.create({ data: parsed.data });
+    await prisma.pouchGuestTierPrice.create({ data: parsed.data });
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
       return { success: false, error: "A tier with this slug already exists" };
@@ -72,7 +73,7 @@ export async function createGuestTier(formData: FormData): Promise<TierActionRes
   return { success: true };
 }
 
-export async function updateGuestTier(tierId: string, formData: FormData): Promise<TierActionResult> {
+export async function updatePouchTier(tierId: string, formData: FormData): Promise<TierActionResult> {
   await verifyAdminSession();
 
   const parsed = tierSchema.safeParse(parseTierFormData(formData));
@@ -80,13 +81,13 @@ export async function updateGuestTier(tierId: string, formData: FormData): Promi
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const overlap = await findOverlappingTier(parsed.data.minGuests, parsed.data.maxGuests, tierId);
+  const overlap = await findOverlappingPouchTier(parsed.data.minGuests, parsed.data.maxGuests, tierId);
   if (overlap) {
     return { success: false, error: `Range overlaps with existing tier "${overlap.slug}" (${overlap.minGuests}–${overlap.maxGuests})` };
   }
 
   try {
-    await prisma.guestTierPrice.update({ where: { id: tierId }, data: parsed.data });
+    await prisma.pouchGuestTierPrice.update({ where: { id: tierId }, data: parsed.data });
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
       return { success: false, error: "A tier with this slug already exists" };
@@ -98,10 +99,81 @@ export async function updateGuestTier(tierId: string, formData: FormData): Promi
   return { success: true };
 }
 
-export async function deleteGuestTier(tierId: string): Promise<TierActionResult> {
+export async function deletePouchTier(tierId: string): Promise<TierActionResult> {
   await verifyAdminSession();
 
-  await prisma.guestTierPrice.delete({ where: { id: tierId } });
+  await prisma.pouchGuestTierPrice.delete({ where: { id: tierId } });
+
+  revalidatePricingPaths();
+  return { success: true };
+}
+
+async function findOverlappingMonitoringTier(minGuests: number, maxGuests: number, excludeId?: string) {
+  return prisma.monitoringGuestTierPrice.findFirst({
+    where: {
+      id: excludeId ? { not: excludeId } : undefined,
+      minGuests: { lte: maxGuests },
+      maxGuests: { gte: minGuests },
+    },
+  });
+}
+
+export async function createMonitoringTier(formData: FormData): Promise<TierActionResult> {
+  await verifyAdminSession();
+
+  const parsed = tierSchema.safeParse(parseTierFormData(formData));
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const overlap = await findOverlappingMonitoringTier(parsed.data.minGuests, parsed.data.maxGuests);
+  if (overlap) {
+    return { success: false, error: `Range overlaps with existing tier "${overlap.slug}" (${overlap.minGuests}–${overlap.maxGuests})` };
+  }
+
+  try {
+    await prisma.monitoringGuestTierPrice.create({ data: parsed.data });
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      return { success: false, error: "A tier with this slug already exists" };
+    }
+    throw err;
+  }
+
+  revalidatePricingPaths();
+  return { success: true };
+}
+
+export async function updateMonitoringTier(tierId: string, formData: FormData): Promise<TierActionResult> {
+  await verifyAdminSession();
+
+  const parsed = tierSchema.safeParse(parseTierFormData(formData));
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const overlap = await findOverlappingMonitoringTier(parsed.data.minGuests, parsed.data.maxGuests, tierId);
+  if (overlap) {
+    return { success: false, error: `Range overlaps with existing tier "${overlap.slug}" (${overlap.minGuests}–${overlap.maxGuests})` };
+  }
+
+  try {
+    await prisma.monitoringGuestTierPrice.update({ where: { id: tierId }, data: parsed.data });
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      return { success: false, error: "A tier with this slug already exists" };
+    }
+    throw err;
+  }
+
+  revalidatePricingPaths();
+  return { success: true };
+}
+
+export async function deleteMonitoringTier(tierId: string): Promise<TierActionResult> {
+  await verifyAdminSession();
+
+  await prisma.monitoringGuestTierPrice.delete({ where: { id: tierId } });
 
   revalidatePricingPaths();
   return { success: true };

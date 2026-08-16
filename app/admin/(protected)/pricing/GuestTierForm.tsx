@@ -3,14 +3,20 @@
 import { useRef, useState, useTransition } from "react";
 import { DetailDialog } from "../_components/table/DetailDialog";
 import { AmountInput } from "../_components/form/AmountInput";
-import { createGuestTier, updateGuestTier } from "./actions";
+import type { TierActionResult } from "./actions";
 
-type GuestTier = {
+export type GuestTier = {
   id: string;
   slug: string;
   minGuests: number;
   maxGuests: number;
   price: number;
+};
+
+export type GuestTierActions = {
+  create: (formData: FormData) => Promise<TierActionResult>;
+  update: (tierId: string, formData: FormData) => Promise<TierActionResult>;
+  delete: (tierId: string) => Promise<TierActionResult>;
 };
 
 const inputClass =
@@ -21,10 +27,12 @@ export function GuestTierForm({
   open,
   onOpenChange,
   tier,
+  actions,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   tier?: GuestTier;
+  actions: GuestTierActions;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +44,7 @@ export function GuestTierForm({
     const formData = new FormData(event.currentTarget);
 
     startTransition(async () => {
-      const result = tier ? await updateGuestTier(tier.id, formData) : await createGuestTier(formData);
+      const result = tier ? await actions.update(tier.id, formData) : await actions.create(formData);
       if (result.success) {
         onOpenChange(false);
         formRef.current?.reset();

@@ -5,7 +5,8 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const CHILDREN = [
-  { href: "/admin/pricing/guest-tiers", label: "Guest Tier" },
+  { href: "/admin/pricing/pouch-tiers", label: "Phone Pouches" },
+  { href: "/admin/pricing/monitoring-tiers", label: "Monitoring" },
   { href: "/admin/pricing/packages", label: "Photography/Videography" },
 ];
 

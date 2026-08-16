@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { GuestTierForm } from "./GuestTierForm";
+import { GuestTierForm, type GuestTierActions } from "./GuestTierForm";
 
-export function AddGuestTierButton() {
+export function AddGuestTierButton({ actions }: { actions: GuestTierActions }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -15,7 +15,7 @@ export function AddGuestTierButton() {
       >
         Add Tier
       </button>
-      <GuestTierForm open={open} onOpenChange={setOpen} />
+      <GuestTierForm open={open} onOpenChange={setOpen} actions={actions} />
     </>
   );
 }
