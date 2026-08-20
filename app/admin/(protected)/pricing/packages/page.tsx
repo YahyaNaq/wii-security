@@ -1,6 +1,8 @@
 import { PricedServiceType } from "@prisma/client";
 import { prisma } from "../../../../lib/db";
 import { formatPkr } from "../../../../lib/format";
+import { parseListParams } from "../../_lib/list-params";
+import { Pagination } from "../../_components/table/Pagination";
 import { EmptyRow } from "../../_components/table/EmptyRow";
 import { AddServiceOptionButton } from "../AddServiceOptionButton";
 import { ServiceOptionRowActions } from "../ServiceOptionRowActions";
@@ -10,10 +12,25 @@ const SERVICE_TYPE_LABEL = {
   [PricedServiceType.VIDEOGRAPHY]: "Videography",
 } as const;
 
-export default async function AdminPackagesPricingPage() {
-  const serviceOptions = await prisma.serviceOptionPrice.findMany({
-    orderBy: [{ serviceType: "asc" }, { price: "asc" }],
+export default async function AdminPackagesPricingPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const { page, pageSize, skip, take } = parseListParams(resolvedSearchParams, {
+    allowedSort: [],
+    defaultSort: "price",
   });
+
+  const [serviceOptions, total] = await Promise.all([
+    prisma.serviceOptionPrice.findMany({
+      orderBy: [{ serviceType: "asc" }, { price: "asc" }],
+      skip,
+      take,
+    }),
+    prisma.serviceOptionPrice.count(),
+  ]);
 
   return (
     <div>
@@ -40,7 +57,7 @@ export default async function AdminPackagesPricingPage() {
           <tbody>
             {serviceOptions.map((option, index) => (
               <tr key={option.id} className="border-b border-neutral-800 last:border-0">
-                <td className="px-4 py-3 text-neutral-500">{index + 1}</td>
+                <td className="px-4 py-3 text-neutral-500">{skip + index + 1}</td>
                 <td className="px-4 py-3 text-neutral-400">{SERVICE_TYPE_LABEL[option.serviceType]}</td>
                 <td className="px-4 py-3">{option.slug}</td>
                 <td className="px-4 py-3">{option.label}</td>
@@ -54,6 +71,14 @@ export default async function AdminPackagesPricingPage() {
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        pathname="/admin/pricing/packages"
+        searchParams={resolvedSearchParams}
+        page={page}
+        pageSize={pageSize}
+        total={total}
+      />
     </div>
   );
 }

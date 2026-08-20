@@ -1,5 +1,7 @@
 import { prisma } from "../../../../lib/db";
 import { formatPkr } from "../../../../lib/format";
+import { parseListParams } from "../../_lib/list-params";
+import { Pagination } from "../../_components/table/Pagination";
 import { EmptyRow } from "../../_components/table/EmptyRow";
 import { AddGuestTierButton } from "../AddGuestTierButton";
 import { GuestTierRowActions } from "../GuestTierRowActions";
@@ -7,8 +9,21 @@ import { createMonitoringTier, updateMonitoringTier, deleteMonitoringTier } from
 
 const actions = { create: createMonitoringTier, update: updateMonitoringTier, delete: deleteMonitoringTier };
 
-export default async function AdminMonitoringTiersPricingPage() {
-  const guestTiers = await prisma.monitoringGuestTierPrice.findMany({ orderBy: { minGuests: "asc" } });
+export default async function AdminMonitoringTiersPricingPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const resolvedSearchParams = await searchParams;
+  const { page, pageSize, skip, take } = parseListParams(resolvedSearchParams, {
+    allowedSort: [],
+    defaultSort: "minGuests",
+  });
+
+  const [guestTiers, total] = await Promise.all([
+    prisma.monitoringGuestTierPrice.findMany({ orderBy: { minGuests: "asc" }, skip, take }),
+    prisma.monitoringGuestTierPrice.count(),
+  ]);
 
   return (
     <div>
@@ -35,7 +50,7 @@ export default async function AdminMonitoringTiersPricingPage() {
           <tbody>
             {guestTiers.map((tier, index) => (
               <tr key={tier.id} className="border-b border-neutral-800 last:border-0">
-                <td className="px-4 py-3 text-neutral-500">{index + 1}</td>
+                <td className="px-4 py-3 text-neutral-500">{skip + index + 1}</td>
                 <td className="px-4 py-3">{tier.slug}</td>
                 <td className="px-4 py-3 text-neutral-400">
                   {tier.minGuests}–{tier.maxGuests}
@@ -50,6 +65,14 @@ export default async function AdminMonitoringTiersPricingPage() {
           </tbody>
         </table>
       </div>
+
+      <Pagination
+        pathname="/admin/pricing/monitoring-tiers"
+        searchParams={resolvedSearchParams}
+        page={page}
+        pageSize={pageSize}
+        total={total}
+      />
     </div>
   );
 }
