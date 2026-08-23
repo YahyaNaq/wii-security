@@ -9,6 +9,7 @@ const ACCEPTED_RECEIPT_TYPES = ["image/jpeg", "image/png", "image/webp", "image/
 
 const eventSchema = z.object({
   city: z.string().trim().min(1, "City is required"),
+  date: z.string().trim().min(1, "Date is required").transform((v) => new Date(v)),
   reportingTime: z.string().trim().min(1, "Reporting time is required"),
   venue: z.string().trim().min(1, "Venue is required"),
   eventType: z.string().trim().min(1, "Event type is required"),
@@ -41,6 +42,7 @@ function parseFormData(formData: FormData): unknown {
   for (let i = 0; formData.has(`events[${i}][city]`); i++) {
     events.push({
       city: formData.get(`events[${i}][city]`),
+      date: formData.get(`events[${i}][date]`),
       reportingTime: formData.get(`events[${i}][reportingTime]`),
       venue: formData.get(`events[${i}][venue]`),
       eventType: formData.get(`events[${i}][eventType]`),
@@ -98,6 +100,7 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
         events: {
           create: data.events.map((event) => ({
             city: event.city,
+            date: event.date,
             reportingTime: event.reportingTime,
             venue: event.venue,
             eventType: event.eventType,

@@ -42,9 +42,9 @@ export default async function AdminPackagesPricingPage({
         Flat-price named packages selectable for the Photography and Videography services.
       </p>
 
-      <div className="overflow-x-auto rounded-lg border border-neutral-800">
+      <div className="max-h-[65vh] overflow-auto rounded-lg border border-neutral-800">
         <table className="w-full min-w-[720px] text-left text-sm">
-          <thead>
+          <thead className="sticky top-0 z-10 bg-neutral-950">
             <tr className="border-b border-neutral-800 text-neutral-400">
               <th className="px-4 py-3 font-medium">#</th>
               <th className="px-4 py-3 font-medium">Service</th>

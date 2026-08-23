@@ -50,6 +50,7 @@ export default async function AdminBookingsPage({
           select: {
             id: true,
             city: true,
+            date: true,
             venue: true,
             reportingTime: true,
             eventType: true,
@@ -69,9 +70,9 @@ export default async function AdminBookingsPage({
         <SearchInput placeholder="Search by name or phone" />
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-neutral-800">
+      <div className="max-h-[65vh] overflow-auto rounded-lg border border-neutral-800">
         <table className="w-full min-w-[820px] text-left text-sm">
-          <thead>
+          <thead className="sticky top-0 z-10 bg-neutral-950">
             <tr className="border-b border-neutral-800 text-neutral-400">
               <th className="px-4 py-3 font-medium">#</th>
               <th className="px-4 py-3 font-medium">

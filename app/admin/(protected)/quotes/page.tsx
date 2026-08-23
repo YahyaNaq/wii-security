@@ -49,9 +49,9 @@ export default async function AdminQuotesPage({
         <SearchInput placeholder="Search by name, phone or email" />
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-neutral-800">
+      <div className="max-h-[65vh] overflow-auto rounded-lg border border-neutral-800">
         <table className="w-full min-w-[720px] text-left text-sm">
-          <thead>
+          <thead className="sticky top-0 z-10 bg-neutral-950">
             <tr className="border-b border-neutral-800 text-neutral-400">
               <th className="px-4 py-3 font-medium">#</th>
               <th className="px-4 py-3 font-medium">

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import { TextField, RadioGroupField, FileField } from "../ui/fields";
 import { SelectField } from "../ui/Select";
+import { DateField } from "../ui/DateField";
 import { PhoneField } from "../ui/PhoneField";
 import Button from "../ui/Button";
 import CheckIcon from "../ui/CheckIcon";
@@ -13,12 +14,12 @@ import { theme } from "../ui/theme";
 import { useLanguage } from "../../i18n/LanguageContext";
 import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 import type { Translations } from "../../i18n/translations";
-import { formatPkr } from "../../lib/format";
+import { formatPkr, formatDateShort } from "../../lib/format";
 import { submitBooking } from "../../(site)/book/actions";
 
 type BookingForm = Translations["booking"]["form"];
 
-const EVENT_FIELDS = ["city", "reportingTime", "venue", "eventType", "femaleGuests", "package"];
+const EVENT_FIELDS = ["city", "date", "reportingTime", "venue", "eventType", "femaleGuests", "package"];
 const TOP_LEVEL_REQUIRED = ["name", "phone", "totalAmount"];
 const MAX_EVENTS = 10;
 
@@ -33,6 +34,7 @@ function formatTime12h(time: string) {
 
 type ReviewEvent = {
   city: string;
+  date: string;
   reportingTime: string;
   venue: string;
   eventType: string;
@@ -59,6 +61,8 @@ function EventFields({
   errors,
   city,
   onCityChange,
+  date,
+  onDateChange,
 }: {
   form: BookingForm;
   index: number;
@@ -68,11 +72,18 @@ function EventFields({
   errors: Record<string, string>;
   city: string;
   onCityChange: (city: string) => void;
+  date: Date | undefined;
+  onDateChange: (date: Date | undefined) => void;
 }) {
   const prefix = `events[${index}]`;
   const [venue, setVenue] = useState("");
   const [reportingTime, setReportingTime] = useState("");
-  const summary = [city || null, venue || null, reportingTime ? formatTime12h(reportingTime) : null]
+  const summary = [
+    city || null,
+    date ? formatDateShort(date) : null,
+    venue || null,
+    reportingTime ? formatTime12h(reportingTime) : null,
+  ]
     .filter(Boolean)
     .join(" · ");
 
@@ -128,16 +139,24 @@ function EventFields({
                 error={errors[`${prefix}[city]`]}
                 required
               />
-              <TextField
-                label={form.reportingTime}
-                type="time"
-                name={`${prefix}[reportingTime]`}
-                value={reportingTime}
-                onChange={(e) => setReportingTime(e.target.value)}
-                error={errors[`${prefix}[reportingTime]`]}
+              <DateField
+                label={form.eventDate}
+                name={`${prefix}[date]`}
+                value={date}
+                onValueChange={onDateChange}
+                error={errors[`${prefix}[date]`]}
                 required
               />
             </div>
+            <TextField
+              label={form.reportingTime}
+              type="time"
+              name={`${prefix}[reportingTime]`}
+              value={reportingTime}
+              onChange={(e) => setReportingTime(e.target.value)}
+              error={errors[`${prefix}[reportingTime]`]}
+              required
+            />
             <TextField
               label={form.venue}
               type="text"
@@ -228,6 +247,7 @@ function Review({
           </h4>
           <dl className="mt-3 grid gap-3 sm:grid-cols-2">
             <ReviewField label={form.city} value={event.city || notProvided} />
+            <ReviewField label={form.eventDate} value={event.date || notProvided} />
             <ReviewField label={form.reportingTime} value={event.reportingTime || notProvided} />
             <ReviewField label={form.venue} value={event.venue || notProvided} />
             <ReviewField
@@ -274,6 +294,7 @@ export default function BookingForm() {
   const [reviewData, setReviewData] = useState<ReviewData | null>(null);
   const [totalAmount, setTotalAmount] = useState("");
   const [city, setCity] = useState("");
+  const [dates, setDates] = useState<Record<number, Date | undefined>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -292,6 +313,11 @@ export default function BookingForm() {
   const removeEvent = (id: number) => {
     setEventIds((prev) => (prev.length > 1 ? prev.filter((eventId) => eventId !== id) : prev));
     setOpenIds((prev) => prev.filter((openId) => openId !== String(id)));
+    setDates((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
   };
 
   const validate = (fd: FormData) => {
@@ -348,8 +374,9 @@ export default function BookingForm() {
       totalAmount: String(fd.get("totalAmount") ?? ""),
       receiptFileName: receipt instanceof File ? receipt.name : "",
       agreeToTerms: !!fd.get("agreeToTerms"),
-      events: eventIds.map((_, i) => ({
+      events: eventIds.map((id, i) => ({
         city: String(fd.get(`events[${i}][city]`) ?? ""),
+        date: dates[id] ? formatDateShort(dates[id]!) : "",
         reportingTime: String(fd.get(`events[${i}][reportingTime]`) ?? ""),
         venue: String(fd.get(`events[${i}][venue]`) ?? ""),
         eventType: String(fd.get(`events[${i}][eventType]`) ?? ""),
@@ -453,6 +480,8 @@ export default function BookingForm() {
                     errors={errors}
                     city={city}
                     onCityChange={setCity}
+                    date={dates[id]}
+                    onDateChange={(d) => setDates((prev) => ({ ...prev, [id]: d }))}
                   />
                 ))}
               </Accordion.Root>

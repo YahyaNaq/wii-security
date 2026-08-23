@@ -24,6 +24,17 @@ enum BookingStatus {
   REJECTED
 }
 
+enum EmploymentStatus {
+  ACTIVE
+  ON_LEAVE
+  TERMINATED
+}
+
+enum SalaryStatus {
+  PENDING
+  RELEASED
+}
+
 // Guest-count-based pricing for Monitoring.
 model MonitoringGuestTierPrice {
   id        String @id @default(cuid())
@@ -114,14 +125,77 @@ model Booking {
 }
 
 model BookingEvent {
-  id             String  @id @default(cuid())
+  id             String   @id @default(cuid())
   bookingId      String
-  booking        Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  booking        Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   city           String
+  date           DateTime
   reportingTime  String
   venue          String
   eventType      String
   eventTypeOther String?
   femaleGuests   Int
   package        String
+
+  staff EventAssignment[]
+}
+
+model Employee {
+  id                     String           @id @default(cuid())
+  name                   String
+  phoneNumber            String
+  email                  String
+  jobTitleId             String
+  jobTitle               JobTitle         @relation(fields: [jobTitleId], references: [id])
+  cnic                   String           @unique
+  address                String
+  city                   String
+  employmentStatus       EmploymentStatus @default(ACTIVE)
+  emergencyContactName   String?
+  emergencyContactNumber String?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  eventAssignments EventAssignment[]
+  salaryPeriods    EmployeeSalaryPeriod[]
+}
+
+model JobTitle {
+  id     String @id @default(cuid())
+  title  String @unique
+  // Salary is per gig, not a monthly/annual figure.
+  salary Int
+
+  employees Employee[]
+}
+
+// Records which employees actually worked a booking's event, filled in by
+// admins after the event date has passed. Editable afterwards since staff
+// can be swapped (e.g. a replacement volunteer).
+model EventAssignment {
+  id             String       @id @default(cuid())
+  bookingEventId String
+  bookingEvent   BookingEvent @relation(fields: [bookingEventId], references: [id], onDelete: Cascade)
+  employeeId     String
+  employee       Employee     @relation(fields: [employeeId], references: [id], onDelete: Restrict)
+  createdAt      DateTime     @default(now())
+
+  @@unique([bookingEventId, employeeId])
+}
+
+// A month of salary for an employee, computed from their EventAssignments
+// that month. Only written when released — a released row locks in the
+// amount at that time so later staffing/rate edits don't drift it; a month
+// with no row is implicitly pending and its amount is computed live.
+model EmployeeSalaryPeriod {
+  id         String       @id @default(cuid())
+  employeeId String
+  employee   Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  year       Int
+  month      Int
+  status     SalaryStatus @default(RELEASED)
+  amount     Int
+  releasedAt DateTime     @default(now())
+
+  @@unique([employeeId, year, month])
 }

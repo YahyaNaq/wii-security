@@ -298,6 +298,7 @@ const en = {
     form: {
       fullName: "Full name",
       contactNumber: "Contact number",
+      eventDate: "Event date",
       reportingTime: "Event reporting time",
       eventType: "Event type",
       eventTypeOptions: ["Barat", "Valima", "Other"],
@@ -670,6 +671,7 @@ const ur: typeof en = {
     form: {
       fullName: "پورا نام",
       contactNumber: "رابطہ نمبر",
+      eventDate: "تقریب کی تاریخ",
       reportingTime: "تقریب کے رپورٹنگ کا وقت",
       eventType: "تقریب کی قسم",
       eventTypeOptions: ["بارات", "ولیمہ", "دیگر"],

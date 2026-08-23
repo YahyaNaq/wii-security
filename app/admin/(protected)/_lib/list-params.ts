@@ -10,17 +10,28 @@ export type ListParams = {
   q: string;
 };
 
-// Shared parsing for admin list pages: page/sort/dir/q searchParams -> Prisma-ready values.
+export const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
+
+// Shared parsing for admin list pages: page/pageSize/sort/dir/q searchParams -> Prisma-ready values.
 export function parseListParams(
   searchParams: Record<string, string | string[] | undefined>,
-  options: { allowedSort: readonly string[]; defaultSort: string; pageSize?: number }
+  options: {
+    allowedSort: readonly string[];
+    defaultSort: string;
+    pageSize?: number;
+    allowedPageSizes?: readonly number[];
+  }
 ): ListParams {
   const single = (key: string) => {
     const value = searchParams[key];
     return Array.isArray(value) ? value[0] : value;
   };
 
-  const pageSize = options.pageSize ?? 20;
+  const allowedPageSizes = options.allowedPageSizes ?? PAGE_SIZE_OPTIONS;
+  const defaultPageSize = options.pageSize ?? 20;
+  const rawPageSize = Number(single("pageSize"));
+  const pageSize = allowedPageSizes.includes(rawPageSize) ? rawPageSize : defaultPageSize;
+
   const rawPage = Number(single("page"));
   const page = Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 1;
 
