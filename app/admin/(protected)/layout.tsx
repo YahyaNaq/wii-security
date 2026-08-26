@@ -13,7 +13,7 @@ export default async function AdminProtectedLayout({
   const admin = await getCurrentAdmin();
 
   return (
-    <div className="flex min-h-screen bg-neutral-950 text-white">
+    <div className="admin-portal flex min-h-screen bg-neutral-950 text-white">
       <aside className="flex w-64 shrink-0 flex-col border-r border-neutral-800 p-4">
         <div className="mb-8 flex items-center gap-2">
           <Image

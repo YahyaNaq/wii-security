@@ -53,3 +53,28 @@ body {
 .dark input[type="datetime-local"] {
   color-scheme: dark;
 }
+
+.admin-portal {
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: #404040 #171717;
+}
+
+.admin-portal ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.admin-portal ::-webkit-scrollbar-track {
+  background: #171717;
+}
+
+.admin-portal ::-webkit-scrollbar-thumb {
+  background-color: #404040;
+  border-radius: 9999px;
+  border: 2px solid #171717;
+}
+
+.admin-portal ::-webkit-scrollbar-thumb:hover {
+  background-color: #525252;
+}
