@@ -85,6 +85,8 @@ function OptionGroupField({
   otherOption,
   otherFieldName,
   otherFieldPlaceholder = "Please specify",
+  defaultValue,
+  otherDefaultValue,
 }: {
   type: "radio" | "checkbox";
   label: React.ReactNode;
@@ -96,6 +98,8 @@ function OptionGroupField({
   otherOption?: string;
   otherFieldName?: string;
   otherFieldPlaceholder?: string;
+  defaultValue?: string;
+  otherDefaultValue?: string;
 }) {
   return (
     <fieldset
@@ -123,6 +127,7 @@ function OptionGroupField({
                   name={name}
                   value={value}
                   required={required}
+                  defaultChecked={value === defaultValue}
                   data-other={value === otherOption ? "" : undefined}
                   className="accent-brand"
                 />
@@ -138,6 +143,7 @@ function OptionGroupField({
           type="text"
           name={otherFieldName ?? `${name}Other`}
           placeholder={otherFieldPlaceholder}
+          defaultValue={otherDefaultValue}
           className={cn(
             fieldClasses(false),
             "hidden group-has-[[data-other]:checked]/options:block"

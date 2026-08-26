@@ -1,11 +1,8 @@
 import { ServiceType } from "@prisma/client";
+import { guestTierFor, guestTierLabel, type GuestTier } from "./guestTiers";
 
-export type GuestTier = {
-  slug: string;
-  minGuests: number;
-  maxGuests: number;
-  price: number;
-};
+export type { GuestTier };
+export { guestTierFor, guestTierLabel };
 
 export type ServiceOption = {
   slug: string;
@@ -43,10 +40,6 @@ export type PricedEvent = {
 };
 
 export class PricingError extends Error {}
-
-export function guestTierFor(guestTiers: GuestTier[], femaleGuests: number): GuestTier | null {
-  return guestTiers.find((t) => femaleGuests >= t.minGuests && femaleGuests <= t.maxGuests) ?? null;
-}
 
 function serviceOptionFor(options: ServiceOption[], slug: string): ServiceOption | null {
   return options.find((o) => o.slug === slug) ?? null;
@@ -95,10 +88,6 @@ export function serviceLabel(type: ServiceSelection["type"]): string {
   return SERVICE_LABELS[type];
 }
 
-export function guestTierLabel(tier: GuestTier): string {
-  return tier.minGuests === 0 ? `Under ${tier.maxGuests + 1} guests` : `${tier.minGuests}–${tier.maxGuests} guests`;
-}
-
 export function tierLabel(tables: PricingTables, type: ServiceSelection["type"], slug: string): string {
   if (type === ServiceType.PHONE_POUCHES || type === ServiceType.MONITORING) {
     const guestTiers = type === ServiceType.PHONE_POUCHES ? tables.pouchGuestTiers : tables.monitoringGuestTiers;
@@ -111,4 +100,31 @@ export function tierLabel(tables: PricingTables, type: ServiceSelection["type"],
 
 function serviceOptionForGuestSlug(guestTiers: GuestTier[], slug: string): GuestTier | null {
   return guestTiers.find((t) => t.slug === slug) ?? null;
+}
+
+const GUEST_SERVICE_LABELS: Record<string, string> = {
+  "phone-pouches": "Phone Pouches",
+  monitoring: "Monitoring (Non-Pouches)",
+};
+
+// Formats a Booking event's raw service selections (guestService/photographyTier/videographyTier)
+// into a display string for admin views. Bookings don't compute per-service pricing like
+// quotes do (totalAmount is entered manually), so this just resolves slugs to labels.
+export function bookingServiceSummary(
+  tables: PricingTables,
+  event: { guestService: string | null; photographyTier: string | null; videographyTier: string | null }
+): string {
+  const parts: string[] = [];
+  if (event.guestService && GUEST_SERVICE_LABELS[event.guestService]) {
+    parts.push(GUEST_SERVICE_LABELS[event.guestService]);
+  }
+  if (event.photographyTier) {
+    const option = serviceOptionFor(tables.photographyOptions, event.photographyTier);
+    parts.push(option ? `Photography — ${option.label}` : "Photography");
+  }
+  if (event.videographyTier) {
+    const option = serviceOptionFor(tables.videographyOptions, event.videographyTier);
+    parts.push(option ? `Videography — ${option.label}` : "Videography");
+  }
+  return parts.length > 0 ? parts.join(", ") : "—";
 }

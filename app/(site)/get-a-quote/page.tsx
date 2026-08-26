@@ -17,6 +17,8 @@ export default async function GetAQuotePage() {
       <PreBookingForm
         photographyOptions={tables.photographyOptions}
         videographyOptions={tables.videographyOptions}
+        pouchGuestTiers={tables.pouchGuestTiers}
+        monitoringGuestTiers={tables.monitoringGuestTiers}
       />
     </>
   );

@@ -15,6 +15,7 @@ import { useLanguage } from "../../i18n/LanguageContext";
 import type { Translations } from "../../i18n/translations";
 import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 import type { ServiceOption } from "../../lib/pricing";
+import { guestTierFor, type GuestTier } from "../../lib/guestTiers";
 import { submitQuoteRequest } from "../../(site)/get-a-quote/actions";
 import { formatDateShort } from "../../lib/format";
 import { scrollToField } from "../../lib/scrollToField";
@@ -59,6 +60,7 @@ function EventFields({
   clearError,
   photographyOptions,
   videographyOptions,
+  reviewEvent,
 }: {
   form: BookCtaForm;
   index: number;
@@ -73,10 +75,9 @@ function EventFields({
   clearError: (key: string) => void;
   photographyOptions: ServiceOption[];
   videographyOptions: ServiceOption[];
+  reviewEvent: ReviewEvent | undefined;
 }) {
   const prefix = `events[${index}]`;
-  const [photography, setPhotography] = useState(false);
-  const [videography, setVideography] = useState(false);
   const summary = [
     city || null,
     date ? formatDateShort(date) : null,
@@ -156,6 +157,7 @@ function EventFields({
               type="number"
               name={`${prefix}[femaleGuests]`}
               min={0}
+              defaultValue={reviewEvent?.femaleGuests}
               error={errors[`${prefix}[femaleGuests]`]}
               required
             />
@@ -164,54 +166,32 @@ function EventFields({
               label={form.guestServiceLabel}
               name={`${prefix}[guestService]`}
               options={form.guestServiceOptions}
+              defaultValue={reviewEvent?.guestService}
               error={errors[`${prefix}[guestService]`]}
             />
 
-            <label className="flex items-center gap-2 text-sm text-foreground/70">
-              <input
-                type="checkbox"
-                name={`${prefix}[photography]`}
-                checked={photography}
-                onChange={(e) => setPhotography(e.target.checked)}
-                className="accent-brand"
-              />
-              {form.photographyLabel}
-            </label>
-            {photography && (
-              <RadioGroupField
-                label={form.photographyTierLabel}
-                name={`${prefix}[photographyTier]`}
-                options={photographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
-                error={errors[`${prefix}[photographyTier]`]}
-                required
-              />
-            )}
+            <RadioGroupField
+              label={form.photographyTierLabel}
+              name={`${prefix}[photographyTier]`}
+              options={photographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
+              defaultValue={reviewEvent?.photographyTier}
+              error={errors[`${prefix}[photographyTier]`]}
+            />
 
-            <label className="flex items-center gap-2 text-sm text-foreground/70">
-              <input
-                type="checkbox"
-                name={`${prefix}[videography]`}
-                checked={videography}
-                onChange={(e) => setVideography(e.target.checked)}
-                className="accent-brand"
-              />
-              {form.videographyLabel}
-            </label>
-            {videography && (
-              <RadioGroupField
-                label={form.videographyTierLabel}
-                name={`${prefix}[videographyTier]`}
-                options={videographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
-                error={errors[`${prefix}[videographyTier]`]}
-                required
-              />
-            )}
+            <RadioGroupField
+              label={form.videographyTierLabel}
+              name={`${prefix}[videographyTier]`}
+              options={videographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
+              defaultValue={reviewEvent?.videographyTier}
+              error={errors[`${prefix}[videographyTier]`]}
+            />
 
             <TextareaField
               label={form.details}
               name={`${prefix}[details]`}
               rows={3}
               placeholder={form.detailsPlaceholder}
+              defaultValue={reviewEvent?.details}
             />
           </div>
         </div>
@@ -320,9 +300,13 @@ function Review({
 export default function PreBookingForm({
   photographyOptions,
   videographyOptions,
+  pouchGuestTiers,
+  monitoringGuestTiers,
 }: {
   photographyOptions: ServiceOption[];
   videographyOptions: ServiceOption[];
+  pouchGuestTiers: GuestTier[];
+  monitoringGuestTiers: GuestTier[];
 }) {
   const { t } = useLanguage();
   const form = t.bookCta.form;
@@ -375,11 +359,24 @@ export default function PreBookingForm({
         }
       }
 
-      if (fd.get(`events[${i}][photography]`) === "on" && !fd.get(`events[${i}][photographyTier]`)) {
-        nextErrors[`events[${i}][photographyTier]`] = t.common.requiredError;
+      const guestService = String(fd.get(`events[${i}][guestService]`) ?? "");
+      const femaleGuestsRaw = String(fd.get(`events[${i}][femaleGuests]`) ?? "").trim();
+      if (
+        (guestService === "phone-pouches" || guestService === "monitoring") &&
+        femaleGuestsRaw &&
+        isPositiveNumber(femaleGuestsRaw)
+      ) {
+        const guestTiers = guestService === "phone-pouches" ? pouchGuestTiers : monitoringGuestTiers;
+        if (!guestTierFor(guestTiers, Number(femaleGuestsRaw))) {
+          nextErrors[`events[${i}][femaleGuests]`] = t.common.guestCountUnsupportedError;
+        }
       }
-      if (fd.get(`events[${i}][videography]`) === "on" && !fd.get(`events[${i}][videographyTier]`)) {
-        nextErrors[`events[${i}][videographyTier]`] = t.common.requiredError;
+
+      const photographyTier = String(fd.get(`events[${i}][photographyTier]`) ?? "");
+      const videographyTier = String(fd.get(`events[${i}][videographyTier]`) ?? "");
+      const hasGuestService = guestService === "phone-pouches" || guestService === "monitoring";
+      if (!hasGuestService && !photographyTier && !videographyTier) {
+        nextErrors[`events[${i}][guestService]`] = form.atLeastOneServiceError;
       }
     });
     return nextErrors;
@@ -450,17 +447,21 @@ export default function PreBookingForm({
       email: String(fd.get("email") ?? ""),
       hearAboutUs: String(fd.get("hearAboutUs") ?? ""),
       hearAboutUsOther: String(fd.get("hearAboutUsOther") ?? ""),
-      events: eventIds.map((id, i) => ({
-        city: String(fd.get(`events[${i}][city]`) ?? ""),
-        date: dates[id] ? formatDateShort(dates[id]!) : "",
-        femaleGuests: String(fd.get(`events[${i}][femaleGuests]`) ?? ""),
-        guestService: String(fd.get(`events[${i}][guestService]`) ?? ""),
-        photography: fd.get(`events[${i}][photography]`) === "on",
-        photographyTier: String(fd.get(`events[${i}][photographyTier]`) ?? ""),
-        videography: fd.get(`events[${i}][videography]`) === "on",
-        videographyTier: String(fd.get(`events[${i}][videographyTier]`) ?? ""),
-        details: String(fd.get(`events[${i}][details]`) ?? ""),
-      })),
+      events: eventIds.map((id, i) => {
+        const photographyTier = String(fd.get(`events[${i}][photographyTier]`) ?? "");
+        const videographyTier = String(fd.get(`events[${i}][videographyTier]`) ?? "");
+        return {
+          city: String(fd.get(`events[${i}][city]`) ?? ""),
+          date: dates[id] ? formatDateShort(dates[id]!) : "",
+          femaleGuests: String(fd.get(`events[${i}][femaleGuests]`) ?? ""),
+          guestService: String(fd.get(`events[${i}][guestService]`) ?? ""),
+          photography: !!photographyTier,
+          photographyTier,
+          videography: !!videographyTier,
+          videographyTier,
+          details: String(fd.get(`events[${i}][details]`) ?? ""),
+        };
+      }),
     });
     setSubmitError(null);
     setStep("review");
@@ -486,6 +487,12 @@ export default function PreBookingForm({
         setStep("success");
       } else {
         if (pdfTab && !pdfTab.closed) pdfTab.close();
+        if (result.fieldErrors) {
+          setErrors(result.fieldErrors);
+          setStep("form");
+          focusFirstError(Object.keys(result.fieldErrors));
+          return;
+        }
         setSubmitError(result.error);
       }
     } catch {
@@ -579,6 +586,8 @@ export default function PreBookingForm({
                 options={form.hearAboutUsOptions}
                 otherOption={form.otherOptionValue}
                 otherFieldPlaceholder={form.otherPlaceholder}
+                defaultValue={reviewData?.hearAboutUs}
+                otherDefaultValue={reviewData?.hearAboutUsOther}
                 error={errors.hearAboutUs}
                 required
               />
@@ -605,6 +614,7 @@ export default function PreBookingForm({
                     clearError={clearError}
                     photographyOptions={photographyOptions}
                     videographyOptions={videographyOptions}
+                    reviewEvent={reviewData?.events[i]}
                   />
                 ))}
               </Accordion.Root>

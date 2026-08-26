@@ -4,13 +4,15 @@ import { revalidatePath } from "next/cache";
 import { SalaryStatus } from "@prisma/client";
 import { prisma } from "../../../../lib/db";
 import { verifyAdminSession } from "../../../../lib/admin/dal";
+import { bookingServiceSummary } from "../../../../lib/pricing";
+import { loadPricingTables } from "../../../../lib/pricingData";
 
 export type SalaryGig = {
   id: string;
   date: Date;
   venue: string;
   city: string;
-  package: string;
+  serviceSummary: string;
 };
 
 export type SalaryPeriod = {
@@ -32,14 +34,25 @@ async function computeSalaryPeriods(employeeId: string): Promise<SalaryPeriod[]>
     select: { jobTitle: { select: { salary: true } } },
   });
 
-  const [assignments, releasedPeriods] = await Promise.all([
+  const [assignments, releasedPeriods, tables] = await Promise.all([
     prisma.eventAssignment.findMany({
       where: { employeeId },
       select: {
-        bookingEvent: { select: { id: true, date: true, venue: true, city: true, package: true } },
+        bookingEvent: {
+          select: {
+            id: true,
+            date: true,
+            venue: true,
+            city: true,
+            guestService: true,
+            photographyTier: true,
+            videographyTier: true,
+          },
+        },
       },
     }),
     prisma.employeeSalaryPeriod.findMany({ where: { employeeId, status: SalaryStatus.RELEASED } }),
+    loadPricingTables(),
   ]);
 
   const grouped = new Map<string, { year: number; month: number; gigs: SalaryGig[] }>();
@@ -48,7 +61,13 @@ async function computeSalaryPeriods(employeeId: string): Promise<SalaryPeriod[]>
     const month = bookingEvent.date.getMonth() + 1;
     const key = periodKey(year, month);
     if (!grouped.has(key)) grouped.set(key, { year, month, gigs: [] });
-    grouped.get(key)!.gigs.push(bookingEvent);
+    grouped.get(key)!.gigs.push({
+      id: bookingEvent.id,
+      date: bookingEvent.date,
+      venue: bookingEvent.venue,
+      city: bookingEvent.city,
+      serviceSummary: bookingServiceSummary(tables, bookingEvent),
+    });
   }
 
   const releasedByKey = new Map(releasedPeriods.map((p) => [periodKey(p.year, p.month), p]));

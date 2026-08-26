@@ -23,7 +23,7 @@ type BookingDetail = {
     reportingTime: string;
     eventType: string;
     femaleGuests: number;
-    package: string;
+    serviceSummary: string;
   }[];
 };
 
@@ -89,7 +89,7 @@ export function BookingRowActions({ booking }: { booking: BookingDetail }) {
                     {formatDateLong(event.date)} · {event.city} · {event.eventType} · {event.femaleGuests} guests
                   </p>
                   <p className="text-neutral-500">
-                    {event.package} · Reporting {event.reportingTime}
+                    {event.serviceSummary} · Reporting {event.reportingTime}
                   </p>
                 </div>
               ))}

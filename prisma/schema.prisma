@@ -125,17 +125,19 @@ model Booking {
 }
 
 model BookingEvent {
-  id             String   @id @default(cuid())
-  bookingId      String
-  booking        Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  city           String
-  date           DateTime
-  reportingTime  String
-  venue          String
-  eventType      String
-  eventTypeOther String?
-  femaleGuests   Int
-  package        String
+  id               String   @id @default(cuid())
+  bookingId        String
+  booking          Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  city             String
+  date             DateTime
+  reportingTime    String
+  venue            String
+  eventType        String
+  eventTypeOther   String?
+  femaleGuests     Int
+  guestService     String?
+  photographyTier  String?
+  videographyTier  String?
 
   staff EventAssignment[]
 }

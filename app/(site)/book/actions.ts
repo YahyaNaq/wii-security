@@ -2,24 +2,33 @@
 
 import { z } from "zod";
 import { prisma } from "../../lib/db";
+import { guestTierFor } from "../../lib/pricing";
+import { loadPricingTables } from "../../lib/pricingData";
 import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 
 const MAX_RECEIPT_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_RECEIPT_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
 
-const eventSchema = z.object({
-  city: z.string().trim().min(1, "City is required"),
-  date: z.string().trim().min(1, "Date is required").transform((v) => new Date(v)),
-  reportingTime: z.string().trim().min(1, "Reporting time is required"),
-  venue: z.string().trim().min(1, "Venue is required"),
-  eventType: z.string().trim().min(1, "Event type is required"),
-  eventTypeOther: z.string().trim().optional(),
-  femaleGuests: z
-    .string()
-    .refine((v) => isPositiveNumber(v), "Enter a valid number of guests")
-    .transform(Number),
-  package: z.string().trim().min(1, "Package is required"),
-});
+const eventSchema = z
+  .object({
+    city: z.string().trim().min(1, "City is required"),
+    date: z.string().trim().min(1, "Date is required").transform((v) => new Date(v)),
+    reportingTime: z.string().trim().min(1, "Reporting time is required"),
+    venue: z.string().trim().min(1, "Venue is required"),
+    eventType: z.string().trim().min(1, "Event type is required"),
+    eventTypeOther: z.string().trim().optional(),
+    femaleGuests: z
+      .string()
+      .refine((v) => isPositiveNumber(v), "Enter a valid number of guests")
+      .transform(Number),
+    guestService: z.enum(["none", "phone-pouches", "monitoring"]),
+    photographyTier: z.string().trim().optional(),
+    videographyTier: z.string().trim().optional(),
+  })
+  .refine((e) => e.guestService !== "none" || !!e.photographyTier || !!e.videographyTier, {
+    message: "Select at least one service for this event.",
+    path: ["guestService"],
+  });
 
 const bookingSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
@@ -48,7 +57,9 @@ function parseFormData(formData: FormData): unknown {
       eventType: formData.get(`events[${i}][eventType]`),
       eventTypeOther: formData.get(`events[${i}][eventTypeOther]`) || undefined,
       femaleGuests: formData.get(`events[${i}][femaleGuests]`),
-      package: formData.get(`events[${i}][package]`),
+      guestService: formData.get(`events[${i}][guestService]`) || "none",
+      photographyTier: formData.get(`events[${i}][photographyTier]`) || undefined,
+      videographyTier: formData.get(`events[${i}][videographyTier]`) || undefined,
     });
   }
 
@@ -85,6 +96,20 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
   }
 
   const data = parsed.data;
+  const tables = await loadPricingTables();
+
+  const guestCountFieldErrors: Record<string, string> = {};
+  data.events.forEach((event, i) => {
+    if (event.guestService === "none") return;
+    const guestTiers = event.guestService === "phone-pouches" ? tables.pouchGuestTiers : tables.monitoringGuestTiers;
+    if (!guestTierFor(guestTiers, event.femaleGuests)) {
+      guestCountFieldErrors[`events[${i}][femaleGuests]`] =
+        "This guest count isn't supported for the selected service. Please contact us directly for a custom quote.";
+    }
+  });
+  if (Object.keys(guestCountFieldErrors).length > 0) {
+    return { success: false, error: "Please check the form for errors.", fieldErrors: guestCountFieldErrors };
+  }
 
   try {
     const receiptData = Buffer.from(await data.receipt.arrayBuffer());
@@ -106,7 +131,9 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
             eventType: event.eventType,
             eventTypeOther: event.eventTypeOther || null,
             femaleGuests: event.femaleGuests,
-            package: event.package,
+            guestService: event.guestService === "none" ? null : event.guestService,
+            photographyTier: event.photographyTier || null,
+            videographyTier: event.videographyTier || null,
           })),
         },
       },

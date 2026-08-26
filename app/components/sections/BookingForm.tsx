@@ -14,13 +14,15 @@ import { theme } from "../ui/theme";
 import { useLanguage } from "../../i18n/LanguageContext";
 import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 import type { Translations } from "../../i18n/translations";
+import type { ServiceOption } from "../../lib/pricing";
+import { guestTierFor, type GuestTier } from "../../lib/guestTiers";
 import { formatPkr, formatDateShort } from "../../lib/format";
 import { scrollToField } from "../../lib/scrollToField";
 import { submitBooking } from "../../(site)/book/actions";
 
 type BookingForm = Translations["booking"]["form"];
 
-const EVENT_FIELDS = ["city", "date", "reportingTime", "venue", "eventType", "femaleGuests", "package"];
+const EVENT_FIELDS = ["city", "date", "reportingTime", "venue", "eventType", "femaleGuests"];
 const TOP_LEVEL_REQUIRED = ["name", "phone", "totalAmount"];
 const MAX_EVENTS = 10;
 
@@ -41,7 +43,11 @@ type ReviewEvent = {
   eventType: string;
   eventTypeOther: string;
   femaleGuests: string;
-  packageValue: string;
+  guestService: string;
+  photography: boolean;
+  photographyTier: string;
+  videography: boolean;
+  videographyTier: string;
 };
 
 type ReviewData = {
@@ -65,6 +71,10 @@ function EventFields({
   date,
   onDateChange,
   clearError,
+  reviewEvent,
+  serviceForm,
+  photographyOptions,
+  videographyOptions,
 }: {
   form: BookingForm;
   index: number;
@@ -77,10 +87,14 @@ function EventFields({
   date: Date | undefined;
   onDateChange: (date: Date | undefined) => void;
   clearError: (key: string) => void;
+  reviewEvent: ReviewEvent | undefined;
+  serviceForm: Translations["bookCta"]["form"];
+  photographyOptions: ServiceOption[];
+  videographyOptions: ServiceOption[];
 }) {
   const prefix = `events[${index}]`;
-  const [venue, setVenue] = useState("");
-  const [reportingTime, setReportingTime] = useState("");
+  const [venue, setVenue] = useState(reviewEvent?.venue ?? "");
+  const [reportingTime, setReportingTime] = useState(reviewEvent?.reportingTime ?? "");
   const summary = [
     city || null,
     date ? formatDateShort(date) : null,
@@ -183,6 +197,8 @@ function EventFields({
               otherOption={form.otherOptionValue}
               otherFieldName={`${prefix}[eventTypeOther]`}
               otherFieldPlaceholder={form.otherPlaceholder}
+              defaultValue={reviewEvent?.eventType}
+              otherDefaultValue={reviewEvent?.eventTypeOther}
               error={errors[`${prefix}[eventType]`]}
               required
             />
@@ -192,16 +208,33 @@ function EventFields({
               type="number"
               name={`${prefix}[femaleGuests]`}
               min={0}
+              defaultValue={reviewEvent?.femaleGuests}
               error={errors[`${prefix}[femaleGuests]`]}
               required
             />
 
             <RadioGroupField
-              label={form.packageLabel}
-              name={`${prefix}[package]`}
-              options={form.packageOptions}
-              error={errors[`${prefix}[package]`]}
-              required
+              label={serviceForm.guestServiceLabel}
+              name={`${prefix}[guestService]`}
+              options={serviceForm.guestServiceOptions}
+              defaultValue={reviewEvent?.guestService}
+              error={errors[`${prefix}[guestService]`]}
+            />
+
+            <RadioGroupField
+              label={serviceForm.photographyTierLabel}
+              name={`${prefix}[photographyTier]`}
+              options={photographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
+              defaultValue={reviewEvent?.photographyTier}
+              error={errors[`${prefix}[photographyTier]`]}
+            />
+
+            <RadioGroupField
+              label={serviceForm.videographyTierLabel}
+              name={`${prefix}[videographyTier]`}
+              options={videographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
+              defaultValue={reviewEvent?.videographyTier}
+              error={errors[`${prefix}[videographyTier]`]}
             />
           </div>
         </div>
@@ -218,6 +251,9 @@ function Review({
   onConfirm,
   submitting,
   submitError,
+  serviceForm,
+  photographyOptions,
+  videographyOptions,
 }: {
   form: BookingForm;
   review: Translations["booking"]["review"];
@@ -226,8 +262,17 @@ function Review({
   onConfirm: () => void;
   submitting: boolean;
   submitError: string | null;
+  serviceForm: Translations["bookCta"]["form"];
+  photographyOptions: ServiceOption[];
+  videographyOptions: ServiceOption[];
 }) {
   const notProvided = review.notProvided;
+  const guestServiceLabel = (value: string) =>
+    serviceForm.guestServiceOptions.find((o) => o.value === value)?.label ?? notProvided;
+  const photographyTierLabel = (value: string) =>
+    photographyOptions.find((o) => o.slug === value)?.label ?? notProvided;
+  const videographyTierLabel = (value: string) =>
+    videographyOptions.find((o) => o.slug === value)?.label ?? notProvided;
 
   return (
     <div className="flex flex-col gap-6">
@@ -268,7 +313,16 @@ function Review({
               }
             />
             <ReviewField label={form.femaleGuests} value={event.femaleGuests || notProvided} />
-            <ReviewField label={form.packageLabel} value={event.packageValue || notProvided} />
+            <ReviewField
+              label={serviceForm.guestServiceLabel}
+              value={event.guestService ? guestServiceLabel(event.guestService) : notProvided}
+            />
+            {event.photography && (
+              <ReviewField label={serviceForm.photographyLabel} value={photographyTierLabel(event.photographyTier)} />
+            )}
+            {event.videography && (
+              <ReviewField label={serviceForm.videographyLabel} value={videographyTierLabel(event.videographyTier)} />
+            )}
           </dl>
         </div>
       ))}
@@ -287,7 +341,17 @@ function Review({
   );
 }
 
-export default function BookingForm() {
+export default function BookingForm({
+  photographyOptions,
+  videographyOptions,
+  pouchGuestTiers,
+  monitoringGuestTiers,
+}: {
+  photographyOptions: ServiceOption[];
+  videographyOptions: ServiceOption[];
+  pouchGuestTiers: GuestTier[];
+  monitoringGuestTiers: GuestTier[];
+}) {
   const { t } = useLanguage();
   const form = t.booking.form;
 
@@ -383,6 +447,26 @@ export default function BookingForm() {
           nextErrors[key] = t.common.invalidNumberError;
         }
       }
+
+      const guestService = String(fd.get(`events[${i}][guestService]`) ?? "");
+      const femaleGuestsRaw = String(fd.get(`events[${i}][femaleGuests]`) ?? "").trim();
+      if (
+        (guestService === "phone-pouches" || guestService === "monitoring") &&
+        femaleGuestsRaw &&
+        isPositiveNumber(femaleGuestsRaw)
+      ) {
+        const guestTiers = guestService === "phone-pouches" ? pouchGuestTiers : monitoringGuestTiers;
+        if (!guestTierFor(guestTiers, Number(femaleGuestsRaw))) {
+          nextErrors[`events[${i}][femaleGuests]`] = t.common.guestCountUnsupportedError;
+        }
+      }
+
+      const photographyTier = String(fd.get(`events[${i}][photographyTier]`) ?? "");
+      const videographyTier = String(fd.get(`events[${i}][videographyTier]`) ?? "");
+      const hasGuestService = guestService === "phone-pouches" || guestService === "monitoring";
+      if (!hasGuestService && !photographyTier && !videographyTier) {
+        nextErrors[`events[${i}][guestService]`] = t.bookCta.form.atLeastOneServiceError;
+      }
     });
 
     const receipt = fd.get("receipt");
@@ -417,16 +501,24 @@ export default function BookingForm() {
       totalAmount: String(fd.get("totalAmount") ?? ""),
       receiptFileName: receipt instanceof File ? receipt.name : "",
       agreeToTerms: !!fd.get("agreeToTerms"),
-      events: eventIds.map((id, i) => ({
-        city: String(fd.get(`events[${i}][city]`) ?? ""),
-        date: dates[id] ? formatDateShort(dates[id]!) : "",
-        reportingTime: String(fd.get(`events[${i}][reportingTime]`) ?? ""),
-        venue: String(fd.get(`events[${i}][venue]`) ?? ""),
-        eventType: String(fd.get(`events[${i}][eventType]`) ?? ""),
-        eventTypeOther: String(fd.get(`events[${i}][eventTypeOther]`) ?? ""),
-        femaleGuests: String(fd.get(`events[${i}][femaleGuests]`) ?? ""),
-        packageValue: String(fd.get(`events[${i}][package]`) ?? ""),
-      })),
+      events: eventIds.map((id, i) => {
+        const photographyTier = String(fd.get(`events[${i}][photographyTier]`) ?? "");
+        const videographyTier = String(fd.get(`events[${i}][videographyTier]`) ?? "");
+        return {
+          city: String(fd.get(`events[${i}][city]`) ?? ""),
+          date: dates[id] ? formatDateShort(dates[id]!) : "",
+          reportingTime: String(fd.get(`events[${i}][reportingTime]`) ?? ""),
+          venue: String(fd.get(`events[${i}][venue]`) ?? ""),
+          eventType: String(fd.get(`events[${i}][eventType]`) ?? ""),
+          eventTypeOther: String(fd.get(`events[${i}][eventTypeOther]`) ?? ""),
+          femaleGuests: String(fd.get(`events[${i}][femaleGuests]`) ?? ""),
+          guestService: String(fd.get(`events[${i}][guestService]`) ?? ""),
+          photography: !!photographyTier,
+          photographyTier,
+          videography: !!videographyTier,
+          videographyTier,
+        };
+      }),
     });
     setStep("review");
   };
@@ -489,6 +581,9 @@ export default function BookingForm() {
               onConfirm={handleConfirm}
               submitting={submitting}
               submitError={submitError}
+              serviceForm={t.bookCta.form}
+              photographyOptions={photographyOptions}
+              videographyOptions={videographyOptions}
             />
           ) : (
             <form className="flex flex-col gap-4" onSubmit={handleSubmit} onChange={handleFieldChange} noValidate>
@@ -541,6 +636,10 @@ export default function BookingForm() {
                     date={dates[id]}
                     onDateChange={(d) => setDates((prev) => ({ ...prev, [id]: d }))}
                     clearError={clearError}
+                    reviewEvent={reviewData?.events[i]}
+                    serviceForm={t.bookCta.form}
+                    photographyOptions={photographyOptions}
+                    videographyOptions={videographyOptions}
                   />
                 ))}
               </Accordion.Root>

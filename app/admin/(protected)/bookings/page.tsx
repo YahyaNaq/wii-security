@@ -1,6 +1,8 @@
 import { BookingStatus, Prisma } from "@prisma/client";
 import { prisma } from "../../../lib/db";
 import { formatPkr } from "../../../lib/format";
+import { bookingServiceSummary } from "../../../lib/pricing";
+import { loadPricingTables } from "../../../lib/pricingData";
 import { parseListParams } from "../_lib/list-params";
 import { SortableHeader } from "../_components/table/SortableHeader";
 import { Pagination } from "../_components/table/Pagination";
@@ -32,7 +34,7 @@ export default async function AdminBookingsPage({
     ? { OR: [{ name: { contains: q, mode: "insensitive" } }, { phone: { contains: q } }] }
     : {};
 
-  const [bookings, total] = await Promise.all([
+  const [bookings, total, tables] = await Promise.all([
     prisma.booking.findMany({
       where,
       orderBy: { [sort]: dir },
@@ -55,13 +57,24 @@ export default async function AdminBookingsPage({
             reportingTime: true,
             eventType: true,
             femaleGuests: true,
-            package: true,
+            guestService: true,
+            photographyTier: true,
+            videographyTier: true,
           },
         },
       },
     }),
     prisma.booking.count({ where }),
+    loadPricingTables(),
   ]);
+
+  const bookingsWithServiceSummary = bookings.map((booking) => ({
+    ...booking,
+    events: booking.events.map((event) => ({
+      ...event,
+      serviceSummary: bookingServiceSummary(tables, event),
+    })),
+  }));
 
   return (
     <div>
@@ -115,7 +128,7 @@ export default async function AdminBookingsPage({
             </tr>
           </thead>
           <tbody>
-            {bookings.map((booking, index) => (
+            {bookingsWithServiceSummary.map((booking, index) => (
               <tr key={booking.id} className="border-b border-neutral-800 last:border-0">
                 <td className="px-4 py-3 text-neutral-500">{skip + index + 1}</td>
                 <td className="px-4 py-3">{booking.name}</td>
@@ -135,7 +148,7 @@ export default async function AdminBookingsPage({
                 </td>
               </tr>
             ))}
-            {bookings.length === 0 && <EmptyRow colSpan={8} message="No bookings found." />}
+            {bookingsWithServiceSummary.length === 0 && <EmptyRow colSpan={8} message="No bookings found." />}
           </tbody>
         </table>
       </div>

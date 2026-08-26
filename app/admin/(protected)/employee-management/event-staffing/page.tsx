@@ -1,6 +1,8 @@
 import { SalaryStatus } from "@prisma/client";
 import { prisma } from "../../../../lib/db";
 import { formatDateLong } from "../../../../lib/format";
+import { bookingServiceSummary } from "../../../../lib/pricing";
+import { loadPricingTables } from "../../../../lib/pricingData";
 import { parseListParams } from "../../_lib/list-params";
 import { Pagination } from "../../_components/table/Pagination";
 import { SearchInput } from "../../_components/table/SearchInput";
@@ -28,7 +30,7 @@ export default async function AdminEventStaffingPage({
       }
     : {};
 
-  const [events, total, employees] = await Promise.all([
+  const [events, total, employees, tables] = await Promise.all([
     prisma.bookingEvent.findMany({
       where,
       orderBy: { date: "desc" },
@@ -44,6 +46,7 @@ export default async function AdminEventStaffingPage({
       orderBy: { name: "asc" },
       select: { id: true, name: true, jobTitle: { select: { title: true } } },
     }),
+    loadPricingTables(),
   ]);
 
   const months = Array.from(
@@ -83,7 +86,7 @@ export default async function AdminEventStaffingPage({
               <th className="px-4 py-3 font-medium">Date</th>
               <th className="px-4 py-3 font-medium">Event</th>
               <th className="px-4 py-3 font-medium">Customer</th>
-              <th className="px-4 py-3 font-medium">Package</th>
+              <th className="px-4 py-3 font-medium">Service</th>
               <th className="px-4 py-3 font-medium">Staff</th>
               <th className="px-4 py-3 font-medium text-right">Actions</th>
             </tr>
@@ -98,7 +101,7 @@ export default async function AdminEventStaffingPage({
                   <div className="text-neutral-500">{event.city}</div>
                 </td>
                 <td className="px-4 py-3 text-neutral-400">{event.booking.name}</td>
-                <td className="px-4 py-3 text-neutral-400">{event.package}</td>
+                <td className="px-4 py-3 text-neutral-400">{bookingServiceSummary(tables, event)}</td>
                 <td className="px-4 py-3 text-neutral-400">
                   {event.staff.length > 0 ? (
                     <div className="flex flex-wrap gap-1">

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { ServiceType } from "@prisma/client";
 import { prisma } from "../../lib/db";
-import { priceQuote, PricingError, type EventInput, type ServiceSelection } from "../../lib/pricing";
+import { priceQuote, guestTierFor, PricingError, type EventInput, type ServiceSelection } from "../../lib/pricing";
 import { loadPricingTables } from "../../lib/pricingData";
 import { QuotePdf } from "../../lib/pdf/QuotePdf";
 // import { sendQuoteEmail } from "../../lib/email";
@@ -20,18 +20,12 @@ const eventSchema = z
       .transform(Number),
     details: z.string().trim().optional(),
     guestService: z.enum(["none", "phone-pouches", "monitoring"]),
-    photography: z.boolean(),
-    photographyTier: z.string().trim().min(1).optional(),
-    videography: z.boolean(),
-    videographyTier: z.string().trim().min(1).optional(),
+    photographyTier: z.string().trim().optional(),
+    videographyTier: z.string().trim().optional(),
   })
-  .refine((e) => !e.photography || !!e.photographyTier, {
-    message: "Select a photography package",
-    path: ["photographyTier"],
-  })
-  .refine((e) => !e.videography || !!e.videographyTier, {
-    message: "Select a videography package",
-    path: ["videographyTier"],
+  .refine((e) => e.guestService !== "none" || !!e.photographyTier || !!e.videographyTier, {
+    message: "Select at least one service for this event.",
+    path: ["guestService"],
   });
 
 const quoteSchema = z.object({
@@ -50,10 +44,10 @@ function eventsToPricingInput(events: QuoteFormValues["events"]): EventInput[] {
     const services: ServiceSelection[] = [];
     if (event.guestService === "phone-pouches") services.push({ type: ServiceType.PHONE_POUCHES });
     if (event.guestService === "monitoring") services.push({ type: ServiceType.MONITORING });
-    if (event.photography && event.photographyTier) {
+    if (event.photographyTier) {
       services.push({ type: ServiceType.PHOTOGRAPHY, tier: event.photographyTier });
     }
-    if (event.videography && event.videographyTier) {
+    if (event.videographyTier) {
       services.push({ type: ServiceType.VIDEOGRAPHY, tier: event.videographyTier });
     }
     return { femaleGuests: event.femaleGuests, services };
@@ -75,12 +69,17 @@ function parseFormData(formData: FormData): unknown {
       femaleGuests: formData.get(`events[${i}][femaleGuests]`),
       details: formData.get(`events[${i}][details]`),
       guestService: formData.get(`events[${i}][guestService]`) || "none",
-      photography: formData.get(`events[${i}][photography]`) === "on",
       photographyTier: formData.get(`events[${i}][photographyTier]`) || undefined,
-      videography: formData.get(`events[${i}][videography]`) === "on",
       videographyTier: formData.get(`events[${i}][videographyTier]`) || undefined,
     })),
   };
+}
+
+function toFieldKey(path: (string | number)[]) {
+  return path.reduce<string>((acc, segment, i) => {
+    if (i === 0) return String(segment);
+    return `${acc}[${segment}]`;
+  }, "");
 }
 
 export type SubmitQuoteResult =
@@ -93,13 +92,26 @@ export async function submitQuoteRequest(formData: FormData): Promise<SubmitQuot
   if (!parsed.success) {
     const fieldErrors: Record<string, string> = {};
     for (const issue of parsed.error.issues) {
-      fieldErrors[issue.path.join(".")] = issue.message;
+      fieldErrors[toFieldKey(issue.path as (string | number)[])] = issue.message;
     }
     return { success: false, error: "Please check the form for errors.", fieldErrors };
   }
 
   const data = parsed.data;
   const tables = await loadPricingTables();
+
+  const guestCountFieldErrors: Record<string, string> = {};
+  data.events.forEach((event, i) => {
+    if (event.guestService === "none") return;
+    const guestTiers = event.guestService === "phone-pouches" ? tables.pouchGuestTiers : tables.monitoringGuestTiers;
+    if (!guestTierFor(guestTiers, event.femaleGuests)) {
+      guestCountFieldErrors[`events[${i}][femaleGuests]`] =
+        "This guest count isn't supported for the selected service. Please contact us directly for a custom quote.";
+    }
+  });
+  if (Object.keys(guestCountFieldErrors).length > 0) {
+    return { success: false, error: "Please check the form for errors.", fieldErrors: guestCountFieldErrors };
+  }
 
   let priced: ReturnType<typeof priceQuote>;
   try {

@@ -13,6 +13,7 @@ const en = {
     invalidNumberError: "Please enter a valid number greater than 0.",
     submitError: "Something went wrong. Please try again.",
     formHasErrors: "Please review the highlighted fields below.",
+    guestCountUnsupportedError: "This guest count isn't supported for the selected service. Please contact us directly for a custom quote.",
   },
   nav: {
     links: {
@@ -218,7 +219,7 @@ const en = {
       "Tell us about your event and we'll send you a tailored security and privacy quote.",
     perks: [
       "All-female, background-checked staff",
-      "Custom quote within 24 hours",
+      "Instant quote",
       "Phone pouch & photography compliance included",
       "Available in Karachi, Lahore & Islamabad",
     ],
@@ -261,6 +262,7 @@ const en = {
       photographyTierLabel: "Photography package",
       videographyLabel: "Videography",
       videographyTierLabel: "Videography package",
+      atLeastOneServiceError: "Please select at least one service for this event.",
       details: "Special requests or details",
       detailsPlaceholder:
         "Special instructions, event type, or anything else we should know",
@@ -313,16 +315,6 @@ const en = {
       totalAmount: "Total amount to be paid (PKR)",
       dueNowPrefix: "Pay now (50%):",
       dueNowExample: "e.g. Total 25,000 → Pay now 12,500",
-      packageLabel: "Choose your package",
-      packageOptions: [
-        { value: "Pouches", description: "Volunteers + Roll up banners + Pouches" },
-        { value: "Basic Package", description: "Volunteer + Roll up banner" },
-        {
-          value: "Premium Package",
-          description: "Volunteers + Roll up banners + Female photographer",
-        },
-        "Only Photography",
-      ],
       eventLabel: "Event",
       addEvent: "Add another event",
       removeEvent: "Remove",
@@ -387,6 +379,7 @@ const ur: typeof en = {
     invalidNumberError: "براہ کرم 0 سے زیادہ درست نمبر درج کریں۔",
     submitError: "کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔",
     formHasErrors: "براہ کرم نیچے نشان زد خانوں کا جائزہ لیں۔",
+    guestCountUnsupportedError: "منتخب کردہ سروس کے لیے اتنے مہمانوں کی تعداد قابل قبول نہیں ہے۔ براہ کرم اپنی مرضی کے مطابق قیمت کے لیے براہ راست رابطہ کریں۔",
   },
   nav: {
     links: {
@@ -635,6 +628,7 @@ const ur: typeof en = {
       photographyTierLabel: "فوٹوگرافی پیکج",
       videographyLabel: "ویڈیوگرافی",
       videographyTierLabel: "ویڈیوگرافی پیکج",
+      atLeastOneServiceError: "براہ کرم اس ایونٹ کے لیے کم از کم ایک سروس منتخب کریں۔",
       details: "خصوصی درخواست یا تفصیلات",
       detailsPlaceholder:
         "خصوصی ہدایات، تقریب کی قسم، یا کوئی اور بات جو ہمیں معلوم ہونی چاہیے",
@@ -687,13 +681,6 @@ const ur: typeof en = {
       totalAmount: "کل ادا کی جانے والی رقم (PKR)",
       dueNowPrefix: "ابھی ادا کریں (50%):",
       dueNowExample: "مثال: کل 25,000 → ابھی ادائیگی 12,500",
-      packageLabel: "اپنا پیکج منتخب کریں",
-      packageOptions: [
-        { value: "پاؤچز", description: "رضاکار + رول اپ بینرز + پاؤچز" },
-        { value: "بیسک پیکج", description: "رضاکار + رول اپ بینر" },
-        { value: "پریمیم پیکج", description: "رضاکار + رول اپ بینرز + خواتین فوٹوگرافر" },
-        "صرف فوٹوگرافی",
-      ],
       eventLabel: "تقریب",
       addEvent: "ایک اور تقریب شامل کریں",
       removeEvent: "حذف کریں",

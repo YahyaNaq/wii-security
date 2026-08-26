@@ -87,7 +87,7 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
                 <span>
                   {formatDateLong(gig.date)} — {gig.venue}, {gig.city}
                 </span>
-                <span className="text-neutral-500">{gig.package}</span>
+                <span className="text-neutral-500">{gig.serviceSummary}</span>
               </div>
             ))
           )}
