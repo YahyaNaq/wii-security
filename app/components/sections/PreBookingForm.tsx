@@ -55,6 +55,7 @@ function EventFields({
   date,
   onDateChange,
   errors,
+  clearError,
   photographyOptions,
   videographyOptions,
 }: {
@@ -68,6 +69,7 @@ function EventFields({
   date: Date | undefined;
   onDateChange: (date: Date | undefined) => void;
   errors: Record<string, string>;
+  clearError: (key: string) => void;
   photographyOptions: ServiceOption[];
   videographyOptions: ServiceOption[];
 }) {
@@ -129,7 +131,10 @@ function EventFields({
                 options={form.cityOptions}
                 placeholder={form.citySelectPlaceholder}
                 value={city}
-                onValueChange={onCityChange}
+                onValueChange={(value) => {
+                  onCityChange(value);
+                  clearError(`${prefix}[city]`);
+                }}
                 error={errors[`${prefix}[city]`]}
                 required
               />
@@ -137,7 +142,10 @@ function EventFields({
                 label={form.eventDate}
                 name={`${prefix}[date]`}
                 value={date}
-                onValueChange={onDateChange}
+                onValueChange={(d) => {
+                  onDateChange(d);
+                  clearError(`${prefix}[date]`);
+                }}
                 error={errors[`${prefix}[date]`]}
                 required
               />
@@ -392,6 +400,20 @@ export default function PreBookingForm({
     });
   };
 
+  const clearError = (key: string) => {
+    setErrors((prev) => {
+      if (!(key in prev)) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
+
+  const handleFieldChange = (e: React.ChangeEvent<HTMLFormElement>) => {
+    const name = (e.target as unknown as HTMLInputElement).name;
+    if (name) clearError(name);
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
@@ -507,10 +529,18 @@ export default function PreBookingForm({
               videographyOptions={videographyOptions}
             />
           ) : (
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit} onChange={handleFieldChange} noValidate>
               <div className="grid gap-4 sm:grid-cols-2">
                 <TextField label={form.fullName} type="text" name="name" defaultValue={reviewData?.name} error={errors.name} required />
-                <PhoneField label={form.phoneNumber} name="phone" codes={form.phoneCodes} defaultValue={reviewData?.phone} error={errors.phone} required />
+                <PhoneField
+                  label={form.phoneNumber}
+                  name="phone"
+                  codes={form.phoneCodes}
+                  defaultValue={reviewData?.phone}
+                  error={errors.phone}
+                  onChange={() => clearError("phone")}
+                  required
+                />
               </div>
               <TextField label={form.email} type="email" name="email" defaultValue={reviewData?.email} error={errors.email} required />
               <RadioGroupField
@@ -542,6 +572,7 @@ export default function PreBookingForm({
                     date={dates[id]}
                     onDateChange={(d) => setDates((prev) => ({ ...prev, [id]: d }))}
                     errors={errors}
+                    clearError={clearError}
                     photographyOptions={photographyOptions}
                     videographyOptions={videographyOptions}
                   />

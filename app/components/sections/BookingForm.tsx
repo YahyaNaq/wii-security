@@ -63,6 +63,7 @@ function EventFields({
   onCityChange,
   date,
   onDateChange,
+  clearError,
 }: {
   form: BookingForm;
   index: number;
@@ -74,6 +75,7 @@ function EventFields({
   onCityChange: (city: string) => void;
   date: Date | undefined;
   onDateChange: (date: Date | undefined) => void;
+  clearError: (key: string) => void;
 }) {
   const prefix = `events[${index}]`;
   const [venue, setVenue] = useState("");
@@ -135,7 +137,10 @@ function EventFields({
                 options={form.cityOptions}
                 placeholder={form.citySelectPlaceholder}
                 value={city}
-                onValueChange={onCityChange}
+                onValueChange={(value) => {
+                  onCityChange(value);
+                  clearError(`${prefix}[city]`);
+                }}
                 error={errors[`${prefix}[city]`]}
                 required
               />
@@ -143,7 +148,10 @@ function EventFields({
                 label={form.eventDate}
                 name={`${prefix}[date]`}
                 value={date}
-                onValueChange={onDateChange}
+                onValueChange={(d) => {
+                  onDateChange(d);
+                  clearError(`${prefix}[date]`);
+                }}
                 error={errors[`${prefix}[date]`]}
                 required
               />
@@ -320,6 +328,20 @@ export default function BookingForm() {
     });
   };
 
+  const clearError = (key: string) => {
+    setErrors((prev) => {
+      if (!(key in prev)) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
+
+  const handleFieldChange = (e: React.ChangeEvent<HTMLFormElement>) => {
+    const name = (e.target as unknown as HTMLInputElement).name;
+    if (name) clearError(name);
+  };
+
   const validate = (fd: FormData) => {
     const nextErrors: Record<string, string> = {};
     for (const key of TOP_LEVEL_REQUIRED) {
@@ -443,7 +465,7 @@ export default function BookingForm() {
               submitError={submitError}
             />
           ) : (
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit} onChange={handleFieldChange} noValidate>
               <div className="grid gap-4 sm:grid-cols-2">
                 <TextField
                   label={form.fullName}
@@ -459,6 +481,7 @@ export default function BookingForm() {
                   codes={t.bookCta.form.phoneCodes}
                   defaultValue={reviewData?.phone}
                   error={errors.phone}
+                  onChange={() => clearError("phone")}
                   required
                 />
               </div>
@@ -482,6 +505,7 @@ export default function BookingForm() {
                     onCityChange={setCity}
                     date={dates[id]}
                     onDateChange={(d) => setDates((prev) => ({ ...prev, [id]: d }))}
+                    clearError={clearError}
                   />
                 ))}
               </Accordion.Root>

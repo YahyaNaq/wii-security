@@ -20,6 +20,7 @@ export function PhoneField({
   error,
   placeholder = "300 1234567",
   defaultValue,
+  onChange,
 }: {
   label: React.ReactNode;
   name: string;
@@ -28,6 +29,7 @@ export function PhoneField({
   error?: string;
   placeholder?: string;
   defaultValue?: string;
+  onChange?: () => void;
 }) {
   const spaceIndex = defaultValue?.indexOf(" ") ?? -1;
   const defaultCode = spaceIndex > -1 ? defaultValue!.slice(0, spaceIndex) : defaultValue;
@@ -80,7 +82,10 @@ export function PhoneField({
           inputMode="numeric"
           autoComplete="tel-national"
           value={number}
-          onChange={(e) => setNumber(maskNumber(e.target.value))}
+          onChange={(e) => {
+            setNumber(maskNumber(e.target.value));
+            onChange?.();
+          }}
           placeholder={placeholder}
           required={required}
           className={cn(fieldClasses(!!error), "min-w-0 flex-1 rounded-l-none")}
