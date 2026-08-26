@@ -36,7 +36,7 @@ export default async function AdminPouchTiersPricingPage({
         event&apos;s female guest count against these ranges.
       </p>
 
-      <div className="max-h-[65vh] overflow-auto rounded-lg border border-neutral-800">
+      <div className="h-[65vh] overflow-auto rounded-lg border border-neutral-800">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="sticky top-0 z-10 bg-neutral-950">
             <tr className="border-b border-neutral-800 text-neutral-400">
