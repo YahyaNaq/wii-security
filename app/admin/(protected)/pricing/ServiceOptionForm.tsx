@@ -23,6 +23,8 @@ type ServiceOption = {
 const inputClass =
   "w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-sm text-white placeholder:text-neutral-500 focus:border-neutral-600 focus:outline-none";
 const labelClass = "mb-1 block text-xs text-neutral-500";
+const selectLabelClass = "block text-xs text-neutral-500";
+const selectLabelWrapperClass = "flex min-w-0 flex-col gap-1";
 
 export function ServiceOptionForm({
   open,
@@ -59,12 +61,13 @@ export function ServiceOptionForm({
     <DetailDialog open={open} onOpenChange={onOpenChange} title={option ? "Edit Package" : "Add Package"}>
       <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
         <SelectField
-          label={<span className={labelClass}>Service</span>}
+          label={<span className={selectLabelClass}>Service</span>}
           name="serviceType"
           options={SERVICE_TYPE_OPTIONS}
           placeholder="Select a service"
           defaultValue={option?.serviceType}
           required
+          labelClassName={selectLabelWrapperClass}
           triggerClassName={`${inputClass} flex cursor-pointer items-center justify-between gap-2 text-left`}
           contentClassName="z-50 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-md border border-neutral-800 bg-neutral-900 shadow-lg"
           itemClassName="relative flex cursor-pointer select-none items-center rounded-md px-3 py-2 text-sm text-white outline-none data-[highlighted]:bg-neutral-800 data-[state=checked]:font-semibold"

@@ -19,6 +19,7 @@ export function SelectField({
   triggerClassName,
   contentClassName,
   itemClassName,
+  labelClassName,
 }: {
   label: React.ReactNode;
   name: string;
@@ -34,9 +35,10 @@ export function SelectField({
   triggerClassName?: string;
   contentClassName?: string;
   itemClassName?: string;
+  labelClassName?: string;
 }) {
   return (
-    <FieldLabel label={label} error={error}>
+    <FieldLabel label={label} error={error} className={labelClassName}>
       <RadixSelect.Root
         name={name}
         required={required}

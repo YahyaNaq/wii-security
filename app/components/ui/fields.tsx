@@ -25,7 +25,7 @@ export function FieldLabel({
   children: React.ReactNode;
 }) {
   return (
-    <label className={cn("flex min-w-0 flex-col gap-1.5 text-sm text-foreground/70", className)}>
+    <label className={className ?? "flex min-w-0 flex-col gap-1.5 text-sm text-foreground/70"}>
       {label}
       {children}
       {error && <span className="text-xs font-normal normal-case text-red-600">{error}</span>}
