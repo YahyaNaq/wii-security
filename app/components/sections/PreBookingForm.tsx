@@ -17,6 +17,7 @@ import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/va
 import type { ServiceOption } from "../../lib/pricing";
 import { submitQuoteRequest } from "../../(site)/get-a-quote/actions";
 import { formatDateShort } from "../../lib/format";
+import { scrollToField } from "../../lib/scrollToField";
 import { pdfBase64ToUrl, openLoadingTab } from "../../lib/pdf-client";
 
 type BookCtaForm = Translations["bookCta"]["form"];
@@ -414,13 +415,33 @@ export default function PreBookingForm({
     if (name) clearError(name);
   };
 
+  const focusFirstError = (errorKeys: string[]) => {
+    const firstKey = errorKeys[0];
+    if (!firstKey) return;
+    const eventMatch = firstKey.match(/^events\[(\d+)\]/);
+    if (eventMatch) {
+      const id = eventIds[Number(eventMatch[1])];
+      if (id !== undefined) {
+        setOpenIds((prev) => (prev.includes(String(id)) ? prev : [...prev, String(id)]));
+      }
+      // Wait for the accordion's grid-rows expand transition (200ms) before scrolling.
+      setTimeout(() => scrollToField(firstKey), 260);
+    } else {
+      requestAnimationFrame(() => scrollToField(firstKey));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
 
     const validationErrors = validate(fd);
     setErrors(validationErrors);
-    if (Object.keys(validationErrors).length > 0) return;
+    const errorKeys = Object.keys(validationErrors);
+    if (errorKeys.length > 0) {
+      focusFirstError(errorKeys);
+      return;
+    }
 
     setPendingFormData(fd);
     setReviewData({
@@ -530,6 +551,15 @@ export default function PreBookingForm({
             />
           ) : (
             <form className="flex flex-col gap-4" onSubmit={handleSubmit} onChange={handleFieldChange} noValidate>
+              {Object.keys(errors).length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => focusFirstError(Object.keys(errors))}
+                  className="rounded-xl border border-red-300 bg-red-50 px-4 py-2.5 text-left text-sm text-red-700 dark:border-red-800 dark:bg-red-950/40 dark:text-red-400"
+                >
+                  {t.common.formHasErrors}
+                </button>
+              )}
               <div className="grid gap-4 sm:grid-cols-2">
                 <TextField label={form.fullName} type="text" name="name" defaultValue={reviewData?.name} error={errors.name} required />
                 <PhoneField

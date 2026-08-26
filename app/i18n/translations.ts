@@ -12,6 +12,7 @@ const en = {
     invalidPhoneError: "Please enter a valid phone number.",
     invalidNumberError: "Please enter a valid number greater than 0.",
     submitError: "Something went wrong. Please try again.",
+    formHasErrors: "Please review the highlighted fields below.",
   },
   nav: {
     links: {
@@ -385,6 +386,7 @@ const ur: typeof en = {
     invalidPhoneError: "براہ کرم درست فون نمبر درج کریں۔",
     invalidNumberError: "براہ کرم 0 سے زیادہ درست نمبر درج کریں۔",
     submitError: "کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔",
+    formHasErrors: "براہ کرم نیچے نشان زد خانوں کا جائزہ لیں۔",
   },
   nav: {
     links: {
