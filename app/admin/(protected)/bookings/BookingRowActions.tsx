@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { BookingStatus } from "@prisma/client";
-import { formatPkr, formatDateLong } from "../../../lib/format";
+import { formatPkr, formatDateLong, formatDateTime } from "../../../lib/format";
 import { RowActionsMenu, type RowAction } from "../_components/table/RowActionsMenu";
 import { DetailDialog } from "../_components/table/DetailDialog";
 import { updateBookingStatus } from "./actions";
@@ -64,7 +64,7 @@ export function BookingRowActions({ booking }: { booking: BookingDetail }) {
           </div>
           <div className="flex justify-between">
             <dt className="text-neutral-500">Submitted</dt>
-            <dd>{formatDateLong(booking.createdAt)}</dd>
+            <dd>{formatDateTime(booking.createdAt)}</dd>
           </div>
           <div className="flex justify-between">
             <dt className="text-neutral-500">Receipt</dt>
@@ -96,6 +96,37 @@ export function BookingRowActions({ booking }: { booking: BookingDetail }) {
             </dd>
           </div>
         </dl>
+
+        {booking.status === BookingStatus.IN_REVIEW && (
+          <div className="mt-6 flex justify-end gap-2 border-t border-neutral-800 pt-4">
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() =>
+                startTransition(async () => {
+                  await updateBookingStatus(booking.id, BookingStatus.REJECTED);
+                  setViewOpen(false);
+                })
+              }
+              className="rounded-md border border-red-900 px-3 py-1.5 text-sm text-red-400 hover:bg-red-950 disabled:pointer-events-none disabled:opacity-40"
+            >
+              Reject
+            </button>
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() =>
+                startTransition(async () => {
+                  await updateBookingStatus(booking.id, BookingStatus.ACCEPTED);
+                  setViewOpen(false);
+                })
+              }
+              className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm text-white hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-40"
+            >
+              Accept
+            </button>
+          </div>
+        )}
       </DetailDialog>
     </>
   );

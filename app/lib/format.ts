@@ -15,3 +15,14 @@ export function formatDateLong(date: Date): string {
 export function formatDateShort(date: Date): string {
   return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
 }
+
+export function formatDateTime(date: Date): string {
+  return date.toLocaleString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}

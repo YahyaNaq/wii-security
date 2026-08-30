@@ -1,6 +1,6 @@
 import { BookingStatus, Prisma } from "@prisma/client";
 import { prisma } from "../../../lib/db";
-import { formatPkr } from "../../../lib/format";
+import { formatPkr, formatDateTime } from "../../../lib/format";
 import { bookingServiceSummary } from "../../../lib/pricing";
 import { loadPricingTables } from "../../../lib/pricingData";
 import { parseListParams } from "../_lib/list-params";
@@ -138,7 +138,7 @@ export default async function AdminBookingsPage({
                 </td>
                 <td className="px-4 py-3">{formatPkr(booking.totalAmount)}</td>
                 <td className="px-4 py-3 text-neutral-500">
-                  {booking.createdAt.toLocaleDateString()}
+                  {formatDateTime(booking.createdAt)}
                 </td>
                 <td className="px-4 py-3">
                   <StatusBadge label={booking.status} tone={STATUS_TONE[booking.status]} />

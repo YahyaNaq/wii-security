@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { formatPkr, formatDateLong } from "../../../lib/format";
+import { formatPkr, formatDateLong, formatDateTime } from "../../../lib/format";
 import { pdfBase64ToUrl, openLoadingTab } from "../../../lib/pdf-client";
 import { RowActionsMenu, type RowAction } from "../_components/table/RowActionsMenu";
 import { DetailDialog } from "../_components/table/DetailDialog";
@@ -67,7 +67,7 @@ export function QuoteRowActions({ quote }: { quote: QuoteDetail }) {
           </div>
           <div className="flex justify-between">
             <dt className="text-neutral-500">Submitted</dt>
-            <dd>{formatDateLong(quote.createdAt)}</dd>
+            <dd>{formatDateTime(quote.createdAt)}</dd>
           </div>
           <div>
             <dt className="mb-2 text-neutral-500">Events</dt>

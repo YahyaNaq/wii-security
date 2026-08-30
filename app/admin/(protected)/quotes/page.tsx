@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "../../../lib/db";
-import { formatPkr } from "../../../lib/format";
+import { formatPkr, formatDateTime } from "../../../lib/format";
 import { parseListParams } from "../_lib/list-params";
 import { SortableHeader } from "../_components/table/SortableHeader";
 import { Pagination } from "../_components/table/Pagination";
@@ -105,7 +105,7 @@ export default async function AdminQuotesPage({
                   {quote.events.map((event) => event.city).join(", ")}
                 </td>
                 <td className="px-4 py-3">{formatPkr(quote.totalAmount)}</td>
-                <td className="px-4 py-3 text-neutral-500">{quote.createdAt.toLocaleDateString()}</td>
+                <td className="px-4 py-3 text-neutral-500">{formatDateTime(quote.createdAt)}</td>
                 <td className="px-4 py-3 text-right">
                   <QuoteRowActions quote={quote} />
                 </td>
