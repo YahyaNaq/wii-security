@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Button from "../ui/Button";
 import CountUp from "../ui/CountUp";
+import HeroGraphic from "./HeroGraphic";
 import { theme } from "../ui/theme";
 import { useLanguage } from "../../i18n/LanguageContext";
 
@@ -58,22 +58,7 @@ export default function Hero() {
           </dl>
         </div>
 
-        <div className="relative">
-          <div className={`relative mx-auto aspect-[4/5] w-full max-w-md overflow-hidden rounded-[2.5rem] ${theme.gradient.soft} shadow-xl ${theme.shadow.sm}`}>
-            <Image
-              src="/front-image.jpeg"
-              alt={t.hero.title}
-              fill
-              sizes="(min-width: 1024px) 28rem, 90vw"
-              className="object-cover brightness-130 contrast-105"
-              priority
-            />
-          </div>
-          <div className={`absolute -bottom-6 -left-6 rounded-2xl border ${theme.border.solid} ${theme.surface} px-5 py-4 shadow-lg ${theme.shadow.sm} sm:left-auto sm:-right-6`}>
-            <p className={`font-display text-sm ${theme.text.accent}`}>&ldquo;{t.hero.testimonialQuote}&rdquo;</p>
-            <p className="mt-1 text-xs text-foreground/50">{t.hero.testimonialAuthor}</p>
-          </div>
-        </div>
+        <HeroGraphic />
       </div>
     </section>
   );
