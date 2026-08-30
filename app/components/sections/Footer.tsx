@@ -7,7 +7,7 @@ import { theme } from "../ui/theme";
 import { useLanguage } from "../../i18n/LanguageContext";
 
 const companyHrefs = ["/#about", "/#services", "/#how-it-works", "#"];
-const legalHrefs = ["#", "/terms"];
+const legalHrefs = ["/privacy", "/terms"];
 
 const socialHrefs = ["https://www.instagram.com/wiisecurity/"];
 
