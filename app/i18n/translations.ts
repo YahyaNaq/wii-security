@@ -30,7 +30,7 @@ const en = {
   },
   hero: {
     badge: "Women-Only Security & Privacy",
-    title: "Elegant protection, uncompromising privacy.",
+    title: "Private moments, protected spaces.",
     description:
       "WII Security delivers trusted, all-female security and privacy protection for women-only events — combining a warm, discreet presence with professional-grade safeguarding of your space, your guests, and your moments.",
     bookNow: "Book Now",
@@ -46,10 +46,8 @@ const en = {
   about: {
     eyebrow: "About WII Security",
     title: "Built by women, for women-only spaces.",
-    paragraph1:
+    paragraph:
       "WII Security was founded to close a gap that many women-only events face: the need for security and privacy protection that respects modesty and cultural sensitivity without feeling intrusive. Our all-female teams are trained in event security, privacy compliance, and calm, professional guest management — so hosts and guests alike can relax and celebrate with complete peace of mind.",
-    paragraph2:
-      "From bridal showers to milestone celebrations, we combine a premium, personal touch with the rigor of a professional security operation.",
     values: [
       {
         title: "Trustworthy",
@@ -87,10 +85,10 @@ const en = {
         bullets: ["Phone Pouches", "Female Monitors", "Roll up Banners"],
       },
       {
-        title: "Photography service",
-        subtitle: "Content Control",
+        title: "Photography & Videography Service",
+        subtitle: "Event Media",
         desc: "We coordinate with photographers and videographers to enforce agreed guidelines, ensuring images and footage respect the privacy wishes of your guests.",
-        bullets: ["Female photographer", "Edited by female"],
+        bullets: ["Female photographer", "Reels, Cinematic highlights, Testimonials", "Edited by female"],
       },
     ],
   },
@@ -363,7 +361,7 @@ const en = {
     legalHeading: "Legal",
     legalLinks: ["Privacy Policy", "Terms & Conditions"],
     followHeading: "Follow Us",
-    social: ["Instagram", "Facebook"],
+    social: ["Instagram"],
     contactHeading: "Contact",
     contactCities: "Karachi · Lahore · Islamabad",
     copyright: "WII Security. All rights reserved.",
@@ -724,7 +722,7 @@ const ur: typeof en = {
     legalHeading: "قانونی",
     legalLinks: ["پرائیویسی پالیسی", "شرائط و ضوابط"],
     followHeading: "ہمیں فالو کریں",
-    social: ["انسٹاگرام", "فیس بک"],
+    social: ["انسٹاگرام"],
     contactHeading: "رابطہ",
     contactCities: "کراچی · لاہور · اسلام آباد",
     copyright: "WII سیکیورٹی۔ جملہ حقوق محفوظ ہیں۔",

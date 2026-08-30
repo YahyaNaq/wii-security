@@ -9,7 +9,7 @@ import { useLanguage } from "../../i18n/LanguageContext";
 const companyHrefs = ["/#about", "/#services", "/#how-it-works", "#"];
 const legalHrefs = ["#", "/terms"];
 
-const socialHrefs = ["https://www.instagram.com/wiisecurity/", "#"];
+const socialHrefs = ["https://www.instagram.com/wiisecurity/"];
 
 const socialIcons = [
   <svg key="instagram" viewBox="0 0 24 24" className="h-4 w-4" fill="none">
@@ -17,14 +17,14 @@ const socialIcons = [
     <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.6" />
     <circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none" />
   </svg>,
-  <svg key="facebook" viewBox="0 0 24 24" className="h-4 w-4" fill="none">
-    <path
-      d="M15 8.5H13.4C12.6 8.5 12 9.2 12 10V12.2H15L14.6 15.2H12V21H9V15.2H7V12.2H9V9.7C9 7.4 10.7 5.5 13 5.5H15V8.5Z"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      strokeLinejoin="round"
-    />
-  </svg>,
+  // <svg key="facebook" viewBox="0 0 24 24" className="h-4 w-4" fill="none">
+  //   <path
+  //     d="M15 8.5H13.4C12.6 8.5 12 9.2 12 10V12.2H15L14.6 15.2H12V21H9V15.2H7V12.2H9V9.7C9 7.4 10.7 5.5 13 5.5H15V8.5Z"
+  //     stroke="currentColor"
+  //     strokeWidth="1.4"
+  //     strokeLinejoin="round"
+  //   />
+  // </svg>,
 ];
 
 export default function Footer() {

@@ -17,10 +17,7 @@ export default function About() {
             {t.about.title}
           </h2>
           <p className="mt-6 text-base leading-8 text-foreground/70">
-            {t.about.paragraph1}
-          </p>
-          <p className="mt-4 text-base leading-8 text-foreground/70">
-            {t.about.paragraph2}
+            {t.about.paragraph}
           </p>
         </div>
 
