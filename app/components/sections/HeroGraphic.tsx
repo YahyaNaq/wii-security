@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { theme } from "../ui/theme";
 
 // Hand-drawn style line icons used as decorative doodles around the hero
@@ -105,24 +104,9 @@ export default function HeroGraphic() {
         <circle cx="200" cy="200" r="178" stroke="currentColor" strokeWidth="1.5" strokeDasharray="2 10" fill="none" />
       </svg>
 
-      {/* Faint hijab-figure silhouette, centered behind the centerpiece and
-          doodles — a soft nod to the brand's "monitor" imagery. The PNG has
-          a black background, so `mix-blend-screen` drops the black out and
-          leaves only the pink glow/scarf, kept subtle with low opacity. */}
-      <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
-        <Image
-          src="/monitor-guard.png"
-          alt=""
-          fill
-          className="pointer-events-none origin-[30%_0%] scale-125 object-cover object-[30%_0%] opacity-[0.14] mix-blend-screen"
-          sizes="(max-width: 768px) 100vw, 448px"
-        />
-      </div>
-
-      {/* Centerpiece card — kept a touch translucent so the silhouette
-          behind it still reads through rather than being fully covered. */}
+      {/* Centerpiece card */}
       <div
-        className={`absolute inset-[12%] flex items-center justify-center rounded-[2.5rem] ${theme.gradient.soft} opacity-80 shadow-xl ${theme.shadow.sm}`}
+        className={`absolute inset-[12%] flex items-center justify-center rounded-[2.5rem] ${theme.gradient.soft} shadow-xl ${theme.shadow.sm}`}
         aria-hidden="true"
       >
         <ShieldLockIcon className="h-28 w-28 text-brand-dark sm:h-32 sm:w-32" strokeWidth={2} />
