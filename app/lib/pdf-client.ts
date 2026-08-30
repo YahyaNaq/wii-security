@@ -4,6 +4,15 @@ export function pdfBase64ToUrl(base64: string) {
   return URL.createObjectURL(blob);
 }
 
+export function triggerDownload(url: string, filename: string) {
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+}
+
 // Opened synchronously in the click handler (before any await) so browsers don't
 // treat it as a blocked popup; we then fill it with a loading state and later
 // navigate it to the finished PDF once the async work resolves.

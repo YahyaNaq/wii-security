@@ -19,7 +19,7 @@ import { guestTierFor, type GuestTier } from "../../lib/guestTiers";
 import { submitQuoteRequest } from "../../(site)/get-a-quote/actions";
 import { formatDateShort } from "../../lib/format";
 import { scrollToField } from "../../lib/scrollToField";
-import { pdfBase64ToUrl, openLoadingTab } from "../../lib/pdf-client";
+import { pdfBase64ToUrl, openLoadingTab, triggerDownload } from "../../lib/pdf-client";
 
 type BookCtaForm = Translations["bookCta"]["form"];
 
@@ -507,6 +507,7 @@ export default function PreBookingForm({
         if (pdfTab && !pdfTab.closed) {
           pdfTab.location.href = url;
         }
+        triggerDownload(url, "quote.pdf");
         setStep("success");
       } else {
         if (pdfTab && !pdfTab.closed) pdfTab.close();
