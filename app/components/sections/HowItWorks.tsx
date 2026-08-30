@@ -15,7 +15,7 @@ export default function HowItWorks() {
         title={t.howItWorks.title}
       />
 
-      <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-5">
         {steps.map((step, i) => (
           <div key={step.n} className="relative">
             <span className="font-display text-5xl text-brand">{step.n}</span>

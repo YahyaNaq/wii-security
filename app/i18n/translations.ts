@@ -116,25 +116,30 @@ const en = {
   },
   howItWorks: {
     eyebrow: "How It Works",
-    title: "Booking peace of mind in four simple steps",
+    title: "Booking peace of mind in five simple steps",
     steps: [
       {
         n: "01",
-        title: "Submit your request",
-        desc: "Tell us about your event — date, venue, guest count, and the services you need.",
+        title: "Get a custom quote",
+        desc: "Tell us about your event — date, venue, guest count, and the services you need to get an instant estimated quote.",
       },
       {
         n: "02",
-        title: "Get a custom quote",
-        desc: "We assess your event and send a tailored plan and quote within 24 hours.",
+        title: "Get your final charges",
+        desc: "Our team reviews your request and confirms the final charges for your event.",
       },
       {
         n: "03",
+        title: "Fill the booking form",
+        desc: "Submit your booking details and share your payment receipt to confirm your slot.",
+      },
+      {
+        n: "04",
         title: "Confirm & prepare",
         desc: "Once booked, our team coordinates logistics, briefings, and venue walkthroughs.",
       },
       {
-        n: "04",
+        n: "05",
         title: "Enjoy a secure event",
         desc: "Our all-female team manages security and privacy on the day, start to finish.",
       },
@@ -486,25 +491,30 @@ const ur: typeof en = {
   },
   howItWorks: {
     eyebrow: "طریقہ کار",
-    title: "چار آسان مراحل میں ذہنی سکون بک کریں",
+    title: "پانچ آسان مراحل میں ذہنی سکون بک کریں",
     steps: [
       {
         n: "01",
-        title: "اپنی درخواست جمع کروائیں",
-        desc: "ہمیں اپنی تقریب کے بارے میں بتائیں — تاریخ، مقام، مہمانوں کی تعداد، اور درکار خدمات۔",
+        title: "اپنی مخصوص قیمت حاصل کریں",
+        desc: "ہمیں اپنی تقریب کے بارے میں بتائیں — تاریخ، مقام، مہمانوں کی تعداد، اور درکار خدمات — اور فوری تخمینی قیمت حاصل کریں۔",
       },
       {
         n: "02",
-        title: "اپنی مخصوص قیمت حاصل کریں",
-        desc: "ہم آپ کی تقریب کا جائزہ لے کر 24 گھنٹوں میں ایک مخصوص منصوبہ اور قیمت بھیجتے ہیں۔",
+        title: "حتمی قیمت حاصل کریں",
+        desc: "ہماری ٹیم آپ کی درخواست کا جائزہ لے کر آپ کی تقریب کی حتمی قیمت کی تصدیق کرتی ہے۔",
       },
       {
         n: "03",
+        title: "بکنگ فارم پُر کریں",
+        desc: "اپنی بکنگ کی تفصیلات جمع کروائیں اور اپنی جگہ کی تصدیق کے لیے ادائیگی کی رسید فراہم کریں۔",
+      },
+      {
+        n: "04",
         title: "تصدیق اور تیاری",
         desc: "بکنگ کے بعد ہماری ٹیم لاجسٹکس، بریفنگز اور مقام کے دورے کا انتظام کرتی ہے۔",
       },
       {
-        n: "04",
+        n: "05",
         title: "محفوظ تقریب سے لطف اندوز ہوں",
         desc: "ہماری مکمل خواتین ٹیم تقریب کے آغاز سے اختتام تک سیکیورٹی اور پرائیویسی کا انتظام کرتی ہے۔",
       },
