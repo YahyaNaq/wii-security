@@ -18,7 +18,7 @@ export default function Faqs({ limit }: { limit?: number } = {}) {
     : t.faqs.items.filter((faq) => faq.q.toLowerCase().includes(query.trim().toLowerCase()));
 
   return (
-    <section className="bg-blush/60 py-24">
+    <section className="bg-blush/60 py-20">
       <div className="mx-auto max-w-3xl px-6 lg:px-8">
         <SectionHeading centered constrain={false} eyebrow={t.faqs.eyebrow} title={t.faqs.title} />
 

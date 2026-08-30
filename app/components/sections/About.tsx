@@ -12,7 +12,7 @@ export default function About() {
   const { before, handle, after } = t.about.paragraph;
 
   return (
-    <section id="about" className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
+    <section id="about" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
       <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
         <div>
           <Eyebrow>{t.about.eyebrow}</Eyebrow>

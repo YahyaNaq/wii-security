@@ -78,7 +78,7 @@ export default function Cities() {
   const { t } = useLanguage();
 
   return (
-    <section id="cities" className="bg-blush/60 py-24">
+    <section id="cities" className="bg-blush/60 py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <SectionHeading
           centered
