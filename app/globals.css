@@ -78,3 +78,40 @@ body {
 .admin-portal ::-webkit-scrollbar-thumb:hover {
   background-color: #525252;
 }
+
+@keyframes doodle-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes doodle-sparkle {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.animate-doodle-float {
+  animation: doodle-float 6s ease-in-out infinite;
+}
+
+.animate-doodle-sparkle {
+  animation: doodle-sparkle 3.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-doodle-float,
+  .animate-doodle-sparkle {
+    animation: none;
+  }
+}

@@ -42,14 +42,14 @@ function CameraIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-function FingerprintIcon(props: React.SVGProps<SVGSVGElement>) {
+function NoPhotosIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg viewBox="0 0 40 40" fill="none" {...props}>
-      <path d="M20 8 C11 8 6 15 6 22 c0 3 1 6 2 8" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M20 12 C14 12 10 17 10 22 c0 4 1 7 3 9" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M20 16 C17 16 14 19 14 23 c0 4 2 7 4 9" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M20 8 c9 0 14 7 14 14 0 4-1 7-2 9" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M20 12 c6 0 10 5 10 10 0 4-1 6-2 8" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+      <rect x="9" y="13" width="22" height="16" rx="3.5" stroke="currentColor" strokeWidth="2.2" />
+      <circle cx="20" cy="21" r="4.5" stroke="currentColor" strokeWidth="2" />
+      <path d="M14 13 L16.5 8 H23.5 L26 13" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <circle cx="20" cy="20" r="17" stroke="currentColor" strokeWidth="2.2" />
+      <path d="M8 32 L32 8" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
     </svg>
   );
 }
@@ -113,45 +113,86 @@ export default function HeroGraphic() {
       </div>
 
       {/* Orbiting doodles — fixed positions + gentle rotation for a
-          hand-placed feel rather than a random scatter. */}
+          hand-placed feel, plus a slow vertical float (staggered per
+          doodle) so the composition feels alive rather than static. The
+          float animation lives on this outer wrapper so it doesn't fight
+          the static rotation set on the inner badge. */}
       <div
-        className={`absolute left-[2%] top-[8%] flex h-16 w-16 -rotate-6 items-center justify-center rounded-2xl border ${theme.border.solid} bg-surface shadow-lg ${theme.shadow.sm}`}
+        className="animate-doodle-float absolute left-[2%] top-[8%]"
+        style={{ animationDuration: "6.5s", animationDelay: "-1.2s" }}
         aria-hidden="true"
       >
-        <CameraIcon className="h-8 w-8 text-brand" />
+        <div
+          className={`flex h-16 w-16 -rotate-6 items-center justify-center rounded-2xl border ${theme.border.solid} bg-surface shadow-lg ${theme.shadow.sm}`}
+        >
+          <CameraIcon className="h-8 w-8 text-brand" />
+        </div>
       </div>
 
       <div
-        className={`absolute -right-2 top-[18%] flex h-14 w-14 rotate-6 items-center justify-center rounded-full border ${theme.border.solid} bg-surface shadow-lg ${theme.shadow.sm}`}
+        className="animate-doodle-float absolute -right-2 top-[18%]"
+        style={{ animationDuration: "5.5s", animationDelay: "-3s" }}
         aria-hidden="true"
       >
-        <RingsIcon className="h-6 w-8 text-brand-dark" />
+        <div
+          className={`flex h-14 w-14 rotate-6 items-center justify-center rounded-full border ${theme.border.solid} bg-surface shadow-lg ${theme.shadow.sm}`}
+        >
+          <RingsIcon className="h-6 w-8 text-brand-dark" />
+        </div>
       </div>
 
       <div
-        className={`absolute -left-4 bottom-[26%] flex h-16 w-14 rotate-3 items-center justify-center rounded-2xl border ${theme.border.solid} bg-surface shadow-lg ${theme.shadow.sm}`}
+        className="animate-doodle-float absolute -left-4 bottom-[26%]"
+        style={{ animationDuration: "7s", animationDelay: "-0.4s" }}
         aria-hidden="true"
       >
-        <BannerIcon className="h-9 w-7 text-brand" />
+        <div
+          className={`flex h-16 w-14 rotate-3 items-center justify-center rounded-2xl border ${theme.border.solid} bg-surface shadow-lg ${theme.shadow.sm}`}
+        >
+          <BannerIcon className="h-9 w-7 text-brand" />
+        </div>
       </div>
 
       <div
-        className={`absolute right-[4%] bottom-[10%] flex h-16 w-16 -rotate-3 items-center justify-center rounded-2xl border ${theme.border.solid} bg-surface shadow-lg ${theme.shadow.sm}`}
+        className="animate-doodle-float absolute right-[4%] bottom-[10%]"
+        style={{ animationDuration: "6s", animationDelay: "-2.2s" }}
         aria-hidden="true"
       >
-        <FingerprintIcon className="h-9 w-9 text-brand-dark" />
+        <div
+          className={`flex h-16 w-16 -rotate-3 items-center justify-center rounded-2xl border ${theme.border.solid} bg-surface shadow-lg ${theme.shadow.sm}`}
+        >
+          <NoPhotosIcon className="h-9 w-9 text-brand-dark" />
+        </div>
       </div>
 
-      <div
-        className={`absolute left-1/2 bottom-[-4%] flex h-14 w-14 -translate-x-1/2 rotate-6 items-center justify-center rounded-full border ${theme.border.solid} bg-surface shadow-lg ${theme.shadow.sm}`}
+      <div className="absolute left-1/2 bottom-[4%] -translate-x-1/2" aria-hidden="true">
+        <div
+          className="animate-doodle-float"
+          style={{ animationDuration: "5.8s", animationDelay: "-4.1s" }}
+        >
+          <div
+            className={`flex h-14 w-14 rotate-6 items-center justify-center rounded-full border ${theme.border.solid} bg-surface shadow-lg ${theme.shadow.sm}`}
+          >
+            <HeartLockIcon className="h-7 w-7 text-brand" />
+          </div>
+        </div>
+      </div>
+
+      <SparkleIcon
+        className="animate-doodle-sparkle absolute right-[16%] top-[2%] h-5 w-5 text-brand-dark/70"
+        style={{ animationDelay: "-0.6s" }}
         aria-hidden="true"
-      >
-        <HeartLockIcon className="h-7 w-7 text-brand" />
-      </div>
-
-      <SparkleIcon className="absolute right-[16%] top-[2%] h-5 w-5 text-brand-dark/70" aria-hidden="true" />
-      <SparkleIcon className="absolute left-[20%] top-[46%] h-4 w-4 text-brand/60" aria-hidden="true" />
-      <SparkleIcon className="absolute right-[2%] bottom-[36%] h-4 w-4 text-brand-dark/50" aria-hidden="true" />
+      />
+      <SparkleIcon
+        className="animate-doodle-sparkle absolute left-[20%] top-[46%] h-4 w-4 text-brand/60"
+        style={{ animationDelay: "-1.8s" }}
+        aria-hidden="true"
+      />
+      <SparkleIcon
+        className="animate-doodle-sparkle absolute right-[2%] bottom-[36%] h-4 w-4 text-brand-dark/50"
+        style={{ animationDelay: "-2.5s" }}
+        aria-hidden="true"
+      />
     </div>
   );
 }

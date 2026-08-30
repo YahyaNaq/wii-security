@@ -21,7 +21,7 @@ export default function Hero() {
         aria-hidden="true"
       />
 
-      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-2 lg:items-center lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 lg:grid-cols-2 lg:items-center lg:px-8">
         <div>
           <span className={`inline-flex items-center rounded-full border ${theme.border.solid} bg-surface/70 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest ${theme.text.accent}`}>
             {t.hero.badge}
