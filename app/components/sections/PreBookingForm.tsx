@@ -23,6 +23,25 @@ import { pdfBase64ToUrl, openLoadingTab } from "../../lib/pdf-client";
 
 type BookCtaForm = Translations["bookCta"]["form"];
 
+function DisclaimerNote({ text }: { text: string }) {
+  return (
+    <div className={`flex items-start gap-2.5 rounded-xl border ${theme.border.accent} bg-blush px-4 py-3 text-xs leading-5 text-foreground/70`}>
+      <svg
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        className={`mt-0.5 h-4 w-4 shrink-0 ${theme.text.accent}`}
+      >
+        <path
+          fillRule="evenodd"
+          d="M8.257 3.099c.765-1.36 2.72-1.36 3.486 0l6.28 11.18c.75 1.334-.213 2.987-1.744 2.987H3.72c-1.53 0-2.493-1.653-1.744-2.987l6.28-11.18ZM10 6a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 6Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+          clipRule="evenodd"
+        />
+      </svg>
+      <span>{text}</span>
+    </div>
+  );
+}
+
 const MAX_EVENTS = 10;
 
 type ReviewEvent = {
@@ -204,6 +223,7 @@ function Review({
   form,
   review,
   data,
+  dateDisclaimer,
   onEdit,
   onConfirm,
   submitting,
@@ -214,6 +234,7 @@ function Review({
   form: BookCtaForm;
   review: Translations["bookCta"]["review"];
   data: ReviewData;
+  dateDisclaimer: string;
   onEdit: () => void;
   onConfirm: () => void;
   submitting: boolean;
@@ -282,6 +303,8 @@ function Review({
           </dl>
         </div>
       ))}
+
+      <DisclaimerNote text={dateDisclaimer} />
 
       {submitError && <p className="text-sm text-red-600">{submitError}</p>}
 
@@ -549,6 +572,7 @@ export default function PreBookingForm({
               form={form}
               review={t.bookCta.review}
               data={reviewData}
+              dateDisclaimer={t.bookCta.dateDisclaimer}
               onEdit={() => setStep("form")}
               onConfirm={handleConfirm}
               submitting={submitting}
@@ -630,6 +654,8 @@ export default function PreBookingForm({
                   + {form.addEvent}
                 </Button>
               )}
+
+              <DisclaimerNote text={t.bookCta.dateDisclaimer} />
 
               <Button type="submit" size="compact" className="mt-2">
                 {form.submit}

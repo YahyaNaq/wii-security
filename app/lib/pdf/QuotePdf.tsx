@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
   totalValue: { fontSize: 26, fontFamily: "Playfair Display", fontWeight: 600, color: colors.text },
   totalDots: { position: "absolute", right: -10, top: 0 },
   footer: { marginTop: 32, fontSize: 9, color: colors.footerText },
-  footerRow: { flexDirection: "row", gap: 5, marginTop: 12 },
+  footerRow: { flexDirection: "row", alignItems: "flex-start", gap: 5, marginTop: 12 },
   footerIcon: { backgroundColor: colors.brandLightTint, padding: 6, marginTop: 1, borderRadius: 15 },
   footerText: { flex: 1 },
 });
@@ -319,8 +319,9 @@ export function QuotePdf({ name, quoteId, createdAt, events, total, tables }: Qu
             <InfoIcon color={colors.brandDark} size={10} />
           </View>
           <Text style={[styles.footer, styles.footerText, { marginTop: 0 }]}>
-            This is an estimated quote based on the details you submitted. Final charges are confirmed
-            when you proceed with booking. Prices are in Pakistani Rupees (PKR).
+            This is an estimated quote based on the details you submitted. It does not reserve your event date — another event may already be
+            booked for it. Availability and final charges are confirmed when you proceed with
+            booking. Prices are in Pakistani Rupees (PKR).
           </Text>
         </View>
 

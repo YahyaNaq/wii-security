@@ -225,6 +225,8 @@ const en = {
       "Phone pouch & photography compliance included",
       "Available in Karachi, Lahore & Islamabad",
     ],
+    dateDisclaimer:
+      "Requesting a quote does not reserve your event date — another event may already be booked for it. Availability is confirmed once you proceed with booking.",
     form: {
       fullName: "Full name",
       phoneNumber: "Phone number",
@@ -593,6 +595,8 @@ const ur: typeof en = {
       "فون پاؤچ اور فوٹوگرافی کی پابندی شامل",
       "کراچی، لاہور اور اسلام آباد میں دستیاب",
     ],
+    dateDisclaimer:
+      "قیمت حاصل کرنے سے آپ کی تقریب کی تاریخ محفوظ نہیں ہوتی — اسی تاریخ پر پہلے سے کوئی اور تقریب بک ہو سکتی ہے۔ یہ تخمینہ صرف قیمتوں کا اندازہ دینے کے لیے ہے؛ دستیابی کی تصدیق صرف بکنگ مکمل کرنے پر ہوتی ہے۔",
     form: {
       fullName: "پورا نام",
       phoneNumber: "فون نمبر",
