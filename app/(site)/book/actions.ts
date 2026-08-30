@@ -4,7 +4,7 @@ import { z } from "zod";
 import { prisma } from "../../lib/db";
 import { guestTierFor } from "../../lib/pricing";
 import { loadPricingTables } from "../../lib/pricingData";
-import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
+import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 
 const MAX_RECEIPT_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_RECEIPT_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"];
@@ -33,6 +33,7 @@ const eventSchema = z
 const bookingSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   phone: z.string().trim().refine(isValidPhoneNumber, "Enter a valid phone number"),
+  email: z.string().trim().refine(isValidEmail, "Enter a valid email"),
   totalAmount: z
     .string()
     .refine((v) => isPositiveNumber(v), "Enter a valid amount")
@@ -66,6 +67,7 @@ function parseFormData(formData: FormData): unknown {
   return {
     name: formData.get("name"),
     phone: formData.get("phone"),
+    email: formData.get("email"),
     totalAmount: formData.get("totalAmount"),
     agreeToTerms: formData.get("agreeToTerms"),
     events,
@@ -118,6 +120,7 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
       data: {
         name: data.name,
         phone: data.phone,
+        email: data.email,
         totalAmount: data.totalAmount,
         receiptFileName: data.receipt.name,
         receiptMimeType: data.receipt.type,

@@ -310,6 +310,7 @@ const en = {
     form: {
       fullName: "Full name",
       contactNumber: "Contact number",
+      email: "Email",
       eventDate: "Event date",
       reportingTime: "Event reporting time",
       eventType: "Event type",
@@ -685,6 +686,7 @@ const ur: typeof en = {
     form: {
       fullName: "پورا نام",
       contactNumber: "رابطہ نمبر",
+      email: "ای میل",
       eventDate: "تقریب کی تاریخ",
       reportingTime: "تقریب کے رپورٹنگ کا وقت",
       eventType: "تقریب کی قسم",

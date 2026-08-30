@@ -12,7 +12,7 @@ import SuccessBadge from "../ui/SuccessBadge";
 import ReviewField from "../ui/ReviewField";
 import { theme } from "../ui/theme";
 import { useLanguage } from "../../i18n/LanguageContext";
-import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
+import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 import type { Translations } from "../../i18n/translations";
 import type { ServiceOption } from "../../lib/pricing";
 import { guestTierFor, type GuestTier } from "../../lib/guestTiers";
@@ -23,7 +23,7 @@ import { submitBooking } from "../../(site)/book/actions";
 type BookingForm = Translations["booking"]["form"];
 
 const EVENT_FIELDS = ["city", "date", "reportingTime", "venue", "eventType", "femaleGuests"];
-const TOP_LEVEL_REQUIRED = ["name", "phone", "totalAmount"];
+const TOP_LEVEL_REQUIRED = ["name", "phone", "email", "totalAmount"];
 const MAX_EVENTS = 10;
 
 function formatTime12h(time: string) {
@@ -53,6 +53,7 @@ type ReviewEvent = {
 type ReviewData = {
   name: string;
   phone: string;
+  email: string;
   totalAmount: string;
   receiptFileName: string;
   agreeToTerms: boolean;
@@ -282,6 +283,7 @@ function Review({
         <dl className="grid gap-3 sm:grid-cols-2">
           <ReviewField label={form.fullName} value={data.name || notProvided} />
           <ReviewField label={form.contactNumber} value={data.phone || notProvided} />
+          <ReviewField label={form.email} value={data.email || notProvided} />
           <ReviewField
             label={form.totalAmount}
             value={data.totalAmount ? formatPkr(Number(data.totalAmount)) : notProvided}
@@ -437,6 +439,9 @@ export default function BookingForm({
     const phone = String(fd.get("phone") ?? "").trim();
     if (phone && !isValidPhoneNumber(phone)) nextErrors.phone = t.common.invalidPhoneError;
 
+    const email = String(fd.get("email") ?? "").trim();
+    if (email && !isValidEmail(email)) nextErrors.email = t.common.invalidEmailError;
+
     eventIds.forEach((_, i) => {
       for (const field of EVENT_FIELDS) {
         const key = `events[${i}][${field}]`;
@@ -498,6 +503,7 @@ export default function BookingForm({
     setReviewData({
       name: String(fd.get("name") ?? ""),
       phone: String(fd.get("phone") ?? ""),
+      email: String(fd.get("email") ?? ""),
       totalAmount: String(fd.get("totalAmount") ?? ""),
       receiptFileName: receipt instanceof File ? receipt.name : "",
       agreeToTerms: !!fd.get("agreeToTerms"),
@@ -612,6 +618,14 @@ export default function BookingForm({
                   defaultValue={reviewData?.phone}
                   error={errors.phone}
                   onChange={() => clearError("phone")}
+                  required
+                />
+                <TextField
+                  label={form.email}
+                  type="email"
+                  name="email"
+                  defaultValue={reviewData?.email}
+                  error={errors.email}
                   required
                 />
               </div>
