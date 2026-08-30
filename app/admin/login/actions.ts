@@ -15,10 +15,17 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
     return { error: "Enter your email and password." };
   }
 
-  const admin = await prisma.adminUser.findUnique({ where: { email: email.toLowerCase() } });
+  const normalizedEmail = email.toLowerCase();
+  const allowedEmail = process.env.ALLOWED_ADMIN_EMAIL?.toLowerCase();
+
+  const admin = await prisma.adminUser.findUnique({ where: { email: normalizedEmail } });
   const isValid = admin ? await verifyPassword(password, admin.passwordHash) : false;
 
   if (!admin || !isValid) {
+    return { error: "Invalid email or password." };
+  }
+
+  if (allowedEmail && normalizedEmail !== allowedEmail) {
     return { error: "Invalid email or password." };
   }
 

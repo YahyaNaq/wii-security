@@ -28,5 +28,10 @@ export const getCurrentAdmin = cache(async () => {
     redirect("/admin/login");
   }
 
+  const allowedEmail = process.env.ALLOWED_ADMIN_EMAIL?.toLowerCase();
+  if (allowedEmail && admin.email.toLowerCase() !== allowedEmail) {
+    redirect("/admin/login");
+  }
+
   return admin;
 });
