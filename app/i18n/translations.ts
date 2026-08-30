@@ -46,8 +46,12 @@ const en = {
   about: {
     eyebrow: "About WII Security",
     title: "Built by women, for women-only spaces.",
-    paragraph:
-      "WII Security was founded to close a gap that many women-only events face: the need for security and privacy protection that respects modesty and cultural sensitivity without feeling intrusive. Our all-female teams are trained in event security, privacy compliance, and calm, professional guest management — so hosts and guests alike can relax and celebrate with complete peace of mind.",
+    paragraph: {
+      before: "Founded by ",
+      handle: "womeninislam.wii",
+      after:
+        " to close a gap that many women-only events face: the need for security and privacy protection that respects modesty and cultural sensitivity without feeling intrusive. Our all-female teams are trained in event security, privacy compliance, and calm, professional guest management — so hosts and guests alike can relax and celebrate with complete peace of mind.",
+    },
     values: [
       {
         title: "Trustworthy",
@@ -410,10 +414,12 @@ const ur: typeof en = {
   about: {
     eyebrow: "WII سیکیورٹی کے بارے میں",
     title: "خواتین کی جانب سے، خواتین کے مخصوص مقامات کے لیے تیار کردہ۔",
-    paragraph1:
-      "WII سیکیورٹی اس خلا کو پر کرنے کے لیے قائم کی گئی جس کا سامنا بہت سی خواتین کی مخصوص تقریبات کو ہوتا ہے: ایسی سیکیورٹی اور پرائیویسی تحفظ کی ضرورت جو حیا اور ثقافتی حساسیت کا احترام کرے بغیر مداخلت کا احساس دلائے۔ ہماری مکمل خواتین ٹیمیں تقریب کی سیکیورٹی، پرائیویسی کی پابندی، اور پرسکون، پیشہ ورانہ مہمان نوازی میں تربیت یافتہ ہیں — تاکہ میزبان اور مہمان دونوں مکمل ذہنی سکون کے ساتھ جشن منا سکیں۔",
-    paragraph2:
-      "دلہن کی مہندی سے لے کر یادگار تقریبات تک، ہم ایک شاندار، ذاتی نوعیت کے انداز کو پیشہ ورانہ سیکیورٹی آپریشن کی سختی کے ساتھ یکجا کرتے ہیں۔",
+    paragraph: {
+      before: "",
+      handle: "womeninislam.wii",
+      after:
+        " کی جانب سے اس خلا کو پر کرنے کے لیے قائم کیا گیا جس کا سامنا بہت سی خواتین کی مخصوص تقریبات کو ہوتا ہے: ایسی سیکیورٹی اور پرائیویسی تحفظ کی ضرورت جو حیا اور ثقافتی حساسیت کا احترام کرے بغیر مداخلت کا احساس دلائے۔ ہماری مکمل خواتین ٹیمیں تقریب کی سیکیورٹی، پرائیویسی کی پابندی، اور پرسکون، پیشہ ورانہ مہمان نوازی میں تربیت یافتہ ہیں — تاکہ میزبان اور مہمان دونوں مکمل ذہنی سکون کے ساتھ جشن منا سکیں۔",
+    },
     values: [
       {
         title: "قابلِ اعتماد",

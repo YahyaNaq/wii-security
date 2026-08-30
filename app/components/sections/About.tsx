@@ -5,8 +5,11 @@ import Card from "../ui/Card";
 import { theme } from "../ui/theme";
 import { useLanguage } from "../../i18n/LanguageContext";
 
+const WOMENINISLAM_INSTAGRAM_URL = "https://www.instagram.com/womeninislam.wii/";
+
 export default function About() {
   const { t } = useLanguage();
+  const { before, handle, after } = t.about.paragraph;
 
   return (
     <section id="about" className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
@@ -17,7 +20,16 @@ export default function About() {
             {t.about.title}
           </h2>
           <p className="mt-6 text-base leading-8 text-foreground/70">
-            {t.about.paragraph}
+            {before}
+            <a
+              href={WOMENINISLAM_INSTAGRAM_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`font-semibold ${theme.text.accent} decoration-2 underline-offset-2 hover:opacity-80`}
+            >
+              {handle}
+            </a>
+            {after}
           </p>
         </div>
 
