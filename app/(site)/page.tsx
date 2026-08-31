@@ -4,6 +4,7 @@ import Services from "../components/sections/Services";
 import HowItWorks from "../components/sections/HowItWorks";
 import Cities from "../components/sections/Cities";
 import Gallery from "../components/sections/Gallery";
+import Testimonials from "../components/sections/Testimonials";
 import Faqs from "../components/sections/Faqs";
 
 export default function Home() {
@@ -13,6 +14,7 @@ export default function Home() {
       <About />
       <Services />
       <Gallery />
+      <Testimonials />
       <HowItWorks />
       <Cities />
       <Faqs limit={5} />

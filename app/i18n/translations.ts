@@ -40,8 +40,6 @@ const en = {
       { value: "100%", label: "Female staff" },
       { value: "86+", label: "Events secured" },
     ],
-    testimonialQuote: "We felt completely at ease.",
-    testimonialAuthor: "Bride, Lahore",
   },
   about: {
     eyebrow: "About WII Security",
@@ -156,6 +154,47 @@ const en = {
       "Rollup Banners",
     ],
     viewFullScreen: "View full screen",
+  },
+  testimonials: {
+    eyebrow: "Client Love",
+    title: "Trusted by hosts who wanted it done right",
+    items: [
+      {
+        quote: "We felt completely at ease.",
+        name: "Bride",
+        location: "Lahore",
+      },
+      {
+        quote:
+          "The phone pouch setup meant our guests could actually be present, not filming. It changed the whole mood of the event.",
+        name: "Event Host",
+        location: "Karachi",
+      },
+      {
+        quote:
+          "Having an all-female team meant our families were comfortable from the moment they walked in — no awkwardness, just professionalism.",
+        name: "Bride's Mother",
+        location: "Islamabad",
+      },
+      {
+        quote:
+          "The monitoring team was so discreet, guests didn't even realize how closely the venue was being managed. Everything just felt calm.",
+        name: "Event Planner",
+        location: "Lahore",
+      },
+      {
+        quote:
+          "Our videographer was warm and unobtrusive — she got beautiful footage without ever making anyone feel watched.",
+        name: "Bride",
+        location: "Karachi",
+      },
+      {
+        quote:
+          "We booked WII for a corporate women's retreat and the professionalism was on another level. Would book again in a heartbeat.",
+        name: "HR Lead",
+        location: "Islamabad",
+      },
+    ],
   },
   faqs: {
     eyebrow: "FAQs",
@@ -415,8 +454,6 @@ const ur: typeof en = {
       { value: "100%", label: "خواتین عملہ" },
       { value: "500+", label: "محفوظ تقریبات" },
     ],
-    testimonialQuote: "ہم بالکل بےفکر محسوس کر رہے تھے۔",
-    testimonialAuthor: "دلہن، لاہور",
   },
   about: {
     eyebrow: "WII سیکیورٹی کے بارے میں",
@@ -531,6 +568,47 @@ const ur: typeof en = {
       "رول اپ بینرز",
     ],
     viewFullScreen: "پوری اسکرین پر دیکھیں",
+  },
+  testimonials: {
+    eyebrow: "کلائنٹس کی رائے",
+    title: "میزبانوں کا اعتماد جنہوں نے بہترین کا انتخاب کیا",
+    items: [
+      {
+        quote: "ہم بالکل بےفکر محسوس کر رہے تھے۔",
+        name: "دلہن",
+        location: "لاہور",
+      },
+      {
+        quote:
+          "فون پاؤچ سیٹ اپ کی وجہ سے ہمارے مہمان واقعی موجود رہے، فلمنگ میں مصروف نہیں — اس نے پوری تقریب کا موڈ بدل دیا۔",
+        name: "تقریب کے میزبان",
+        location: "کراچی",
+      },
+      {
+        quote:
+          "مکمل خواتین ٹیم کی وجہ سے ہمارے خاندان شروع سے ہی بےفکر تھے — کوئی عجیب پن نہیں، صرف پیشہ ورانہ رویہ۔",
+        name: "دلہن کی والدہ",
+        location: "اسلام آباد",
+      },
+      {
+        quote:
+          "مانیٹرنگ ٹیم اتنی باوقار تھی کہ مہمانوں کو احساس ہی نہیں ہوا کہ وینیو کتنی احتیاط سے سنبھالا جا رہا ہے۔",
+        name: "ایونٹ پلانر",
+        location: "لاہور",
+      },
+      {
+        quote:
+          "ہماری ویڈیوگرافر بہت نرم مزاج اور غیر محسوس تھیں — خوبصورت فوٹیج لی بغیر کسی کو یہ احساس دلائے کہ وہ دیکھی جا رہی ہیں۔",
+        name: "دلہن",
+        location: "کراچی",
+      },
+      {
+        quote:
+          "ہم نے WII کو خواتین کے کارپوریٹ ریٹریٹ کے لیے بک کیا اور پیشہ ورانہ معیار بہت اعلیٰ تھا۔ دوبارہ ضرور بک کریں گے۔",
+        name: "ایچ آر لیڈ",
+        location: "اسلام آباد",
+      },
+    ],
   },
   faqs: {
     eyebrow: "اکثر سوالات",
