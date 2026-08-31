@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Logo from "./Logo";
 import Button from "./ui/Button";
@@ -11,7 +11,20 @@ import { useLanguage } from "../i18n/LanguageContext";
 
 export default function Nav() {
   const [open, setOpen] = useState(false);
+  const [heroCtaVisible, setHeroCtaVisible] = useState(false);
   const { t } = useLanguage();
+
+  useEffect(() => {
+    const heroCta = document.getElementById("hero-cta");
+    if (!heroCta) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setHeroCtaVisible(entry.isIntersecting);
+    });
+    observer.observe(heroCta);
+
+    return () => observer.disconnect();
+  }, []);
 
   const links = [
     // { href: "/#home", label: t.nav.links.home },
@@ -84,14 +97,16 @@ export default function Nav() {
               {link.label}
             </a>
           ))}
-          <div className="mt-2 flex flex-col gap-2">
-            <Button href="/get-a-quote" size="sm" variant="secondary" onClick={() => setOpen(false)}>
-              {t.hero.getQuote}
-            </Button>
-            <Button href="/book" size="sm" onClick={() => setOpen(false)}>
-              {t.nav.bookNow}
-            </Button>
-          </div>
+          {!heroCtaVisible && (
+            <div className="mt-2 flex flex-col gap-2">
+              <Button href="/get-a-quote" size="sm" variant="secondary" onClick={() => setOpen(false)}>
+                {t.hero.getQuote}
+              </Button>
+              <Button href="/book" size="sm" onClick={() => setOpen(false)}>
+                {t.nav.bookNow}
+              </Button>
+            </div>
+          )}
         </nav>
       )}
     </header>

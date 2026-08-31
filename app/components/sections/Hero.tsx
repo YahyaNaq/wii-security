@@ -32,7 +32,7 @@ export default function Hero() {
           <p className="mt-6 max-w-xl text-lg leading-8 text-foreground/70">
             {t.hero.description}
           </p>
-          <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+          <div id="hero-cta" className="mt-9 flex flex-col gap-4 sm:flex-row">
             <Button href="/book" shadow="md">
               {t.hero.bookNow}
             </Button>
