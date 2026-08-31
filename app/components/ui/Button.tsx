@@ -27,9 +27,9 @@ const variants = {
 };
 
 const sizes = {
-  sm: "px-6 py-2.5",
-  compact: "px-6 py-3.5",
-  md: "px-8 py-3.5",
+  sm: "px-6 py-2.5 text-sm",
+  compact: "px-6 py-3.5 text-sm",
+  md: "px-8 py-3.5 text-sm",
 };
 
 const shadows = {
@@ -47,7 +47,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const classes = cn(
-    "inline-flex cursor-pointer items-center justify-center rounded-full text-center text-sm font-semibold transition-colors",
+    "inline-flex cursor-pointer items-center justify-center rounded-full text-center font-semibold transition-colors",
     variants[variant],
     sizes[size],
     shadows[shadow],

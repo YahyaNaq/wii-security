@@ -5,6 +5,7 @@ import Card from "../ui/Card";
 import IconBadge from "../ui/IconBadge";
 import Eyebrow from "../ui/Eyebrow";
 import CheckIcon from "../ui/CheckIcon";
+import ArrowLink from "../ui/ArrowLink";
 import { theme } from "../ui/theme";
 import { useLanguage } from "../../i18n/LanguageContext";
 
@@ -60,12 +61,9 @@ export default function Services() {
                   </li>
                 ))}
               </ul>
-              <a
-                href="/get-a-quote"
-                className={`mt-6 inline-flex items-center gap-1.5 text-sm font-semibold ${theme.text.accent}`}
-              >
-                {t.services.learnMore} <span aria-hidden="true">&rarr;</span>
-              </a>
+              <ArrowLink href="/get-a-quote" className="mt-6">
+                {t.hero.getQuote}
+              </ArrowLink>
             </Card>
           ))}
         </div>

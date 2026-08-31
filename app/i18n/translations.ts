@@ -74,7 +74,6 @@ const en = {
   services: {
     eyebrow: "Our Services",
     title: "Comprehensive privacy & security, tailored for women-only events",
-    learnMore: "Learn more",
     items: [
       {
         title: "Women-Only Event Security",
@@ -450,7 +449,6 @@ const ur: typeof en = {
   services: {
     eyebrow: "ہماری خدمات",
     title: "خواتین کی مخصوص تقریبات کے لیے تیار کردہ جامع پرائیویسی اور سیکیورٹی",
-    learnMore: "مزید جانیں",
     items: [
       {
         title: "خواتین کے لیے مخصوص تقریب سیکیورٹی",

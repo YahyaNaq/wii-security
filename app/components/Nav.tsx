@@ -84,9 +84,14 @@ export default function Nav() {
               {link.label}
             </a>
           ))}
-          <Button href="/book" size="sm" onClick={() => setOpen(false)} className="mt-2">
-            {t.nav.bookNow}
-          </Button>
+          <div className="mt-2 flex flex-col gap-2">
+            <Button href="/get-a-quote" size="sm" variant="secondary" onClick={() => setOpen(false)}>
+              {t.hero.getQuote}
+            </Button>
+            <Button href="/book" size="sm" onClick={() => setOpen(false)}>
+              {t.nav.bookNow}
+            </Button>
+          </div>
         </nav>
       )}
     </header>
