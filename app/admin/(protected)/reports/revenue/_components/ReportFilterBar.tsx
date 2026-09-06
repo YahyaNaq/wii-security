@@ -3,8 +3,8 @@
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { BookingStatus } from "@prisma/client";
 import { buildHref } from "../../../_lib/build-href";
-import { SelectField } from "../../../../../components/ui/Select";
-import { DateField } from "../../../../../components/ui/DateField";
+import { Select } from "../../../../_components/Select";
+import { DateField } from "../../../../_components/DateField";
 import Button from "../../../../_components/Button";
 
 const ALL = "ALL";
@@ -16,16 +16,7 @@ const STATUS_OPTIONS = [
   { value: BookingStatus.REJECTED, label: "Rejected" },
 ];
 
-const inputClass =
-  "rounded-md border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-sm text-white focus:border-neutral-600 focus:outline-none";
 const labelClass = "mb-1 block text-xs text-neutral-400";
-const selectTriggerClass = `${inputClass} flex cursor-pointer items-center justify-between gap-2 text-left`;
-const selectContentClass =
-  "admin-portal z-50 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-md border border-neutral-800 bg-neutral-900 shadow-lg";
-const selectItemClass =
-  "relative flex cursor-pointer select-none items-center rounded-md px-3 py-2 text-sm text-white outline-none data-[highlighted]:bg-neutral-800 data-[state=checked]:font-semibold";
-const dateTriggerClass = `${inputClass} flex cursor-pointer items-center justify-between gap-2 text-left`;
-const dateContentClass = "admin-portal z-50 rounded-md border border-neutral-800 bg-neutral-900 p-3 shadow-lg";
 
 function parseIsoDate(value: string): Date | undefined {
   return value ? new Date(`${value}T00:00:00`) : undefined;
@@ -69,51 +60,36 @@ export function ReportFilterBar({
         name="from"
         value={parseIsoDate(from)}
         onValueChange={(date) => update({ from: toIsoDate(date) })}
-        disabled={false}
-        triggerClassName={dateTriggerClass}
-        contentClassName={dateContentClass}
       />
       <DateField
         label={<span className={labelClass}>To</span>}
         name="to"
         value={parseIsoDate(to)}
         onValueChange={(date) => update({ to: toIsoDate(date) })}
-        disabled={false}
-        triggerClassName={dateTriggerClass}
-        contentClassName={dateContentClass}
       />
-      <SelectField
+      <Select
         label={<span className={labelClass}>City</span>}
         name="city"
         value={city || ALL}
         onValueChange={(value) => update({ city: value === ALL ? null : value })}
         options={[{ value: ALL, label: "All cities" }, ...cityOptions.map((option) => ({ value: option, label: option }))]}
         placeholder="All cities"
-        triggerClassName={selectTriggerClass}
-        contentClassName={selectContentClass}
-        itemClassName={selectItemClass}
       />
-      <SelectField
+      <Select
         label={<span className={labelClass}>Event type</span>}
         name="eventType"
         value={eventType || ALL}
         onValueChange={(value) => update({ eventType: value === ALL ? null : value })}
         options={[{ value: ALL, label: "All event types" }, ...eventTypeOptions.map((option) => ({ value: option, label: option }))]}
         placeholder="All event types"
-        triggerClassName={selectTriggerClass}
-        contentClassName={selectContentClass}
-        itemClassName={selectItemClass}
       />
-      <SelectField
+      <Select
         label={<span className={labelClass}>Status</span>}
         name="status"
         value={status}
         onValueChange={(value) => update({ status: value })}
         options={STATUS_OPTIONS}
         placeholder="Status"
-        triggerClassName={selectTriggerClass}
-        contentClassName={selectContentClass}
-        itemClassName={selectItemClass}
       />
       <Button href={pathname} variant="secondary" size="sm">
         Reset

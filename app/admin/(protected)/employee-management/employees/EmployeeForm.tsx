@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { EmploymentStatus } from "@prisma/client";
 import { DetailDialog } from "../../_components/table/DetailDialog";
-import { SelectField } from "../../../../components/ui/Select";
+import { Select } from "../../../_components/Select";
 import Button from "../../../_components/Button";
 import type { EmployeeActionResult } from "./actions";
 
@@ -43,7 +43,6 @@ const inputClass =
   "w-full rounded-md border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-sm text-white placeholder:text-neutral-500 focus:border-neutral-600 focus:outline-none";
 const labelClass = "mb-1 block text-xs text-neutral-500";
 const selectLabelClass = "block text-xs text-neutral-500";
-const selectLabelWrapperClass = "flex min-w-0 flex-col gap-1";
 
 export function EmployeeForm({
   open,
@@ -95,17 +94,14 @@ export function EmployeeForm({
               required
             />
           </div>
-          <SelectField
+          <Select
             label={<span className={selectLabelClass}>Job Title</span>}
             name="jobTitleId"
             options={jobTitleOptions.map((option) => ({ value: option.id, label: option.title }))}
             placeholder="Select a job title"
             defaultValue={employee?.jobTitleId}
             required
-            labelClassName={selectLabelWrapperClass}
-            triggerClassName={`${inputClass} flex cursor-pointer items-center justify-between gap-2 text-left`}
-            contentClassName="admin-portal z-50 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-md border border-neutral-800 bg-neutral-900 shadow-lg"
-            itemClassName="relative flex cursor-pointer select-none items-center rounded-md px-3 py-2 text-sm text-white outline-none data-[highlighted]:bg-neutral-800 data-[state=checked]:font-semibold"
+            fullWidth
           />
         </div>
         <div className="grid grid-cols-2 gap-3">
@@ -152,17 +148,14 @@ export function EmployeeForm({
               required
             />
           </div>
-          <SelectField
+          <Select
             label={<span className={selectLabelClass}>City</span>}
             name="city"
             options={CITY_OPTIONS}
             placeholder="Select a city"
             defaultValue={employee?.city}
             required
-            labelClassName={selectLabelWrapperClass}
-            triggerClassName={`${inputClass} flex cursor-pointer items-center justify-between gap-2 text-left`}
-            contentClassName="admin-portal z-50 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-md border border-neutral-800 bg-neutral-900 shadow-lg"
-            itemClassName="relative flex cursor-pointer select-none items-center rounded-md px-3 py-2 text-sm text-white outline-none data-[highlighted]:bg-neutral-800 data-[state=checked]:font-semibold"
+            fullWidth
           />
         </div>
         <div>
@@ -178,17 +171,14 @@ export function EmployeeForm({
             required
           />
         </div>
-        <SelectField
+        <Select
           label={<span className={selectLabelClass}>Employment Status</span>}
           name="employmentStatus"
           options={EMPLOYMENT_STATUS_OPTIONS}
           placeholder="Select a status"
           defaultValue={employee?.employmentStatus ?? EmploymentStatus.ACTIVE}
           required
-          labelClassName={selectLabelWrapperClass}
-          triggerClassName={`${inputClass} flex cursor-pointer items-center justify-between gap-2 text-left`}
-          contentClassName="admin-portal z-50 w-[var(--radix-select-trigger-width)] overflow-hidden rounded-md border border-neutral-800 bg-neutral-900 shadow-lg"
-          itemClassName="relative flex cursor-pointer select-none items-center rounded-md px-3 py-2 text-sm text-white outline-none data-[highlighted]:bg-neutral-800 data-[state=checked]:font-semibold"
+          fullWidth
         />
         <div className="grid grid-cols-2 gap-3">
           <div>
