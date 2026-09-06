@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { EmploymentStatus } from "@prisma/client";
 import { DetailDialog } from "../../_components/table/DetailDialog";
 import { SelectField } from "../../../../components/ui/Select";
+import Button from "../../../_components/Button";
 import type { EmployeeActionResult } from "./actions";
 
 export type Employee = {
@@ -218,20 +219,12 @@ export function EmployeeForm({
         {error && <p className="text-sm text-red-400">{error}</p>}
 
         <div className="flex justify-end gap-2 pt-2">
-          <button
-            type="button"
-            onClick={() => onOpenChange(false)}
-            className="rounded-md border border-neutral-800 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-900"
-          >
+          <Button type="button" onClick={() => onOpenChange(false)} variant="secondary" size="sm">
             Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={pending}
-            className="rounded-md bg-white px-3 py-1.5 text-sm font-medium text-neutral-950 hover:bg-neutral-200 disabled:opacity-50"
-          >
+          </Button>
+          <Button type="submit" disabled={pending} variant="primary" size="sm">
             {pending ? "Saving…" : "Save"}
-          </button>
+          </Button>
         </div>
       </form>
     </DetailDialog>

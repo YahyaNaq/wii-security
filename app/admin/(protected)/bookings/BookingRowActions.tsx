@@ -6,6 +6,7 @@ import { formatPkr, formatDateLong, formatDateTime } from "../../../lib/format";
 import { RowActionsMenu, type RowAction } from "../_components/table/RowActionsMenu";
 import { DetailDialog } from "../_components/table/DetailDialog";
 import { updateBookingStatus } from "./actions";
+import Button from "../../_components/Button";
 
 type BookingDetail = {
   id: string;
@@ -99,7 +100,7 @@ export function BookingRowActions({ booking }: { booking: BookingDetail }) {
 
         {booking.status === BookingStatus.IN_REVIEW && (
           <div className="mt-6 flex justify-end gap-2 border-t border-neutral-800 pt-4">
-            <button
+            <Button
               type="button"
               disabled={pending}
               onClick={() =>
@@ -108,11 +109,12 @@ export function BookingRowActions({ booking }: { booking: BookingDetail }) {
                   setViewOpen(false);
                 })
               }
-              className="rounded-md border border-red-900 px-3 py-1.5 text-sm text-red-400 hover:bg-red-950 disabled:pointer-events-none disabled:opacity-40"
+              variant="danger"
+              size="sm"
             >
               Reject
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
               disabled={pending}
               onClick={() =>
@@ -121,10 +123,11 @@ export function BookingRowActions({ booking }: { booking: BookingDetail }) {
                   setViewOpen(false);
                 })
               }
-              className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm text-white hover:bg-emerald-500 disabled:pointer-events-none disabled:opacity-40"
+              variant="success"
+              size="sm"
             >
               Accept
-            </button>
+            </Button>
           </div>
         )}
       </DetailDialog>

@@ -2,19 +2,16 @@
 
 import { useState } from "react";
 import { GuestTierForm, type GuestTierActions } from "./GuestTierForm";
+import Button from "../../_components/Button";
 
 export function AddGuestTierButton({ actions }: { actions: GuestTierActions }) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="rounded-md bg-white px-3 py-1.5 text-sm font-medium text-neutral-950 hover:bg-neutral-200"
-      >
+      <Button type="button" onClick={() => setOpen(true)} variant="primary" size="sm">
         Add Tier
-      </button>
+      </Button>
       <GuestTierForm open={open} onOpenChange={setOpen} actions={actions} />
     </>
   );

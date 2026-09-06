@@ -5,6 +5,7 @@ import { BookingStatus } from "@prisma/client";
 import { buildHref } from "../../../_lib/build-href";
 import { SelectField } from "../../../../../components/ui/Select";
 import { DateField } from "../../../../../components/ui/DateField";
+import Button from "../../../../_components/Button";
 
 const ALL = "ALL";
 
@@ -114,9 +115,9 @@ export function ReportFilterBar({
         contentClassName={selectContentClass}
         itemClassName={selectItemClass}
       />
-      <a href={pathname} className="mb-0.5 text-sm text-neutral-400 hover:text-white">
+      <Button href={pathname} variant="secondary" size="sm">
         Reset
-      </a>
+      </Button>
     </div>
   );
 }

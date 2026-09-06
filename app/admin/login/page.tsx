@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useActionState, useState } from "react";
 import { login } from "./actions";
+import Button from "../_components/Button";
 
 export default function AdminLoginPage() {
   const [state, formAction, pending] = useActionState(login, undefined);
@@ -93,13 +94,9 @@ export default function AdminLoginPage() {
 
         {state?.error && <p className="mb-4 text-sm text-red-400">{state.error}</p>}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-full rounded-md bg-white px-3 py-2 font-medium text-neutral-950 transition hover:bg-neutral-200 disabled:opacity-60"
-        >
+        <Button type="submit" disabled={pending} variant="primary" size="md" fullWidth>
           {pending ? "Signing in…" : "Sign in"}
-        </button>
+        </Button>
       </form>
     </div>
   );

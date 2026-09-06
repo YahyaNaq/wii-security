@@ -6,6 +6,7 @@ import { DetailDialog } from "../../_components/table/DetailDialog";
 import { StatusBadge } from "../../_components/table/StatusBadge";
 import { formatPkr, formatDateLong } from "../../../../lib/format";
 import { getEmployeeSalaryPeriods, releaseSalaryPeriod, type SalaryPeriod } from "./salaryActions";
+import Button from "../../../_components/Button";
 
 function monthLabel(year: number, month: number) {
   return new Date(year, month - 1, 1).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
@@ -65,14 +66,15 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
               onChange={(e) => setReleaseDate(e.target.value)}
               className="rounded-md border border-neutral-800 bg-neutral-900 px-2 py-1 text-xs text-white focus:border-neutral-600 focus:outline-none"
             />
-            <button
+            <Button
               type="button"
               onClick={handleRelease}
               disabled={pending || period.gigs.length === 0 || !releaseDate}
-              className="rounded-md bg-white px-2.5 py-1 text-xs font-medium text-neutral-950 hover:bg-neutral-200 disabled:opacity-50"
+              variant="primary"
+              size="xs"
             >
               {pending ? "Releasing…" : "Release"}
-            </button>
+            </Button>
           </>
         )}
       </div>

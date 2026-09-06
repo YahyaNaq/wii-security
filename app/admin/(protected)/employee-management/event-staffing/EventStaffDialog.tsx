@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { DetailDialog } from "../../_components/table/DetailDialog";
 import { setEventStaff } from "./actions";
+import Button from "../../../_components/Button";
 
 export type StaffableEmployee = {
   id: string;
@@ -84,21 +85,12 @@ export function EventStaffDialog({
       {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
 
       <div className="mt-4 flex justify-end gap-2 pt-2">
-        <button
-          type="button"
-          onClick={() => onOpenChange(false)}
-          className="rounded-md border border-neutral-800 px-3 py-1.5 text-sm text-neutral-300 hover:bg-neutral-900"
-        >
+        <Button type="button" onClick={() => onOpenChange(false)} variant="secondary" size="sm">
           Cancel
-        </button>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={pending}
-          className="rounded-md bg-white px-3 py-1.5 text-sm font-medium text-neutral-950 hover:bg-neutral-200 disabled:opacity-50"
-        >
+        </Button>
+        <Button type="button" onClick={handleSave} disabled={pending} variant="primary" size="sm">
           {pending ? "Saving…" : "Save"}
-        </button>
+        </Button>
       </div>
     </DetailDialog>
   );

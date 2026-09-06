@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { EventStaffDialog, type StaffableEmployee } from "./EventStaffDialog";
+import Button from "../../../_components/Button";
 
 export function ManageStaffButton({
   eventLabel,
@@ -20,13 +21,9 @@ export function ManageStaffButton({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="rounded-md border border-neutral-800 px-2.5 py-1 text-xs text-neutral-300 hover:bg-neutral-900 hover:text-white"
-      >
+      <Button type="button" onClick={() => setOpen(true)} variant="secondary" size="xs">
         Manage Staff
-      </button>
+      </Button>
       <EventStaffDialog
         open={open}
         onOpenChange={setOpen}

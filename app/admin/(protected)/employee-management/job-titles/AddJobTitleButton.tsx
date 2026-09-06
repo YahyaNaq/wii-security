@@ -2,19 +2,16 @@
 
 import { useState } from "react";
 import { JobTitleForm, type JobTitleActions } from "./JobTitleForm";
+import Button from "../../../_components/Button";
 
 export function AddJobTitleButton({ actions }: { actions: JobTitleActions }) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="rounded-md bg-white px-3 py-1.5 text-sm font-medium text-neutral-950 hover:bg-neutral-200"
-      >
+      <Button type="button" onClick={() => setOpen(true)} variant="primary" size="sm">
         Add Job Title
-      </button>
+      </Button>
       <JobTitleForm open={open} onOpenChange={setOpen} actions={actions} />
     </>
   );

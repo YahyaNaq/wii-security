@@ -2,18 +2,21 @@
 
 import { useTransition } from "react";
 import { logout } from "./actions";
+import Button from "../_components/Button";
 
 export default function LogoutButton() {
   const [pending, startTransition] = useTransition();
 
   return (
-    <button
+    <Button
       type="button"
       disabled={pending}
       onClick={() => startTransition(() => logout())}
-      className="w-full rounded-md border border-neutral-700 px-3 py-1.5 text-xs text-neutral-300 transition hover:bg-neutral-900 disabled:opacity-60"
+      variant="secondary"
+      size="sm"
+      fullWidth
     >
       {pending ? "Signing out…" : "Sign out"}
-    </button>
+    </Button>
   );
 }

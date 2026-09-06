@@ -1,6 +1,7 @@
 import { formatPkr, formatDateTime } from "../../../../lib/format";
 import { EmptyRow } from "../../_components/table/EmptyRow";
 import { ReportFilterBar } from "./_components/ReportFilterBar";
+import Button from "../../../_components/Button";
 import {
   loadReportData,
   parseReportFilters,
@@ -38,12 +39,9 @@ export default async function AdminReportsPage({
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Revenue &amp; Bookings Report</h1>
-        <a
-          href={`/admin/reports/revenue/export?${exportQuery.toString()}`}
-          className="rounded-md border border-neutral-800 px-3 py-1.5 text-sm hover:bg-neutral-900"
-        >
+        <Button href={`/admin/reports/revenue/export?${exportQuery.toString()}`} variant="secondary" size="sm">
           Export CSV
-        </a>
+        </Button>
       </div>
 
       <ReportFilterBar
