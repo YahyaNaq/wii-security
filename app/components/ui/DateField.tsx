@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, type Matcher } from "react-day-picker";
 import { FieldLabel, fieldClasses } from "./fields";
 import { theme } from "./theme";
 import { cn } from "./cn";
@@ -39,6 +39,10 @@ export function DateField({
   placeholder = "Select a date",
   value,
   onValueChange,
+  disabled = { before: new Date() },
+  triggerClassName,
+  contentClassName,
+  labelClassName,
 }: {
   label: React.ReactNode;
   name: string;
@@ -47,6 +51,14 @@ export function DateField({
   placeholder?: string;
   value?: Date;
   onValueChange?: (date: Date | undefined) => void;
+  // Dates the calendar won't let you pick. Defaults to "no past dates", which
+  // fits the booking forms this was built for; pass `false` to allow any date
+  // (e.g. filtering a report by a historical date range).
+  disabled?: Matcher | Matcher[];
+  // Full overrides (not merged) for callers whose surrounding UI doesn't use the brand theme tokens.
+  triggerClassName?: string;
+  contentClassName?: string;
+  labelClassName?: string;
 }) {
   const [internalDate, setInternalDate] = useState<Date | undefined>();
   const date = value !== undefined ? value : internalDate;
@@ -60,16 +72,19 @@ export function DateField({
     : "";
 
   return (
-    <FieldLabel label={label} error={error}>
+    <FieldLabel label={label} error={error} className={labelClassName}>
       <Popover.Root open={open} onOpenChange={setOpen}>
         <Popover.Trigger
           id={id}
           type="button"
-          className={cn(
-            fieldClasses(!!error),
-            "flex cursor-pointer items-center justify-between gap-2 text-left",
-            !date && "text-foreground/40"
-          )}
+          className={
+            triggerClassName ??
+            cn(
+              fieldClasses(!!error),
+              "flex cursor-pointer items-center justify-between gap-2 text-left",
+              !date && "text-foreground/40"
+            )
+          }
         >
           {formatted || placeholder}
           <svg viewBox="0 0 20 20" className="h-4 w-4 shrink-0 text-foreground/40" fill="none">
@@ -84,7 +99,10 @@ export function DateField({
             align="start"
             sideOffset={6}
             avoidCollisions={false}
-            className={`z-50 rounded-xl border ${theme.border.solid} ${theme.surface} p-3 shadow-lg ${theme.shadow.sm}`}
+            className={
+              contentClassName ??
+              `z-50 rounded-xl border ${theme.border.solid} ${theme.surface} p-3 shadow-lg ${theme.shadow.sm}`
+            }
           >
             <DayPicker
               mode="single"
@@ -93,7 +111,7 @@ export function DateField({
                 setDate(d);
                 setOpen(false);
               }}
-              disabled={{ before: new Date() }}
+              disabled={disabled}
               classNames={calendarClassNames}
             />
           </Popover.Content>

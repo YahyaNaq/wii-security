@@ -4,6 +4,7 @@ import { getCurrentAdmin } from "../../lib/admin/dal";
 import LogoutButton from "./LogoutButton";
 import { PricingNav } from "./_components/PricingNav";
 import { EmployeeManagementNav } from "./_components/EmployeeManagementNav";
+import { ReportsNav } from "./_components/ReportsNav";
 
 export default async function AdminProtectedLayout({
   children,
@@ -41,6 +42,7 @@ export default async function AdminProtectedLayout({
           </Link>
           <PricingNav />
           <EmployeeManagementNav />
+          <ReportsNav />
         </nav>
         <div className="border-t border-neutral-800 pt-4">
           <p className="mb-2 truncate text-xs text-neutral-400">{admin.email}</p>
