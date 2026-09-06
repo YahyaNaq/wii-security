@@ -1,7 +1,7 @@
 import { cn } from "../../components/ui/cn";
 
 type CommonProps = {
-  variant?: "primary" | "secondary" | "success" | "danger";
+  variant?: "primary" | "secondary" | "success" | "danger" | "ghost";
   size?: "xs" | "sm" | "md";
   fullWidth?: boolean;
   className?: string;
@@ -25,6 +25,7 @@ const variants = {
   secondary: "border border-neutral-800 text-neutral-300 hover:bg-neutral-900 hover:text-white",
   success: "bg-emerald-600 text-white hover:bg-emerald-500",
   danger: "border border-red-900 text-red-400 hover:bg-red-950",
+  ghost: "text-neutral-500 hover:text-neutral-300",
 };
 
 const sizes = {
