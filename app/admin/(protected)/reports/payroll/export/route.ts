@@ -1,4 +1,5 @@
 import { verifyAdminSession } from "../../../../../lib/admin/dal";
+import { adminFilenames } from "../../../../../lib/filenames";
 import { loadPayrollData, parsePayrollFilters, MONTH_LABELS } from "../_lib/report-query";
 
 function csvEscape(value: string): string {
@@ -32,7 +33,7 @@ export async function GET(request: Request) {
   return new Response(csv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="payroll-report-${periodLabel}.csv"`,
+      "Content-Disposition": `attachment; filename="${adminFilenames.payrollReportCsv(periodLabel)}"`,
       "Cache-Control": "private, no-store",
     },
   });

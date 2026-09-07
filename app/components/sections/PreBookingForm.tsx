@@ -20,6 +20,7 @@ import { submitQuoteRequest } from "../../(site)/get-a-quote/actions";
 import { formatDateShort } from "../../lib/format";
 import { scrollToField } from "../../lib/scrollToField";
 import { pdfBase64ToUrl, openLoadingTab, triggerDownload } from "../../lib/pdf-client";
+import { siteFilenames } from "../../lib/filenames";
 
 type BookCtaForm = Translations["bookCta"]["form"];
 
@@ -351,6 +352,7 @@ export default function PreBookingForm({
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [quoteId, setQuoteId] = useState<string | null>(null);
 
   useEffect(() => {
     return () => {
@@ -501,13 +503,14 @@ export default function PreBookingForm({
       if (result.success) {
         const url = pdfBase64ToUrl(result.pdfBase64);
         setPdfUrl(url);
+        setQuoteId(result.quoteId);
         // If the tab is missing or was closed while we waited, don't retry opening one —
         // a window.open() this far from the click is reliably popup-blocked. The success
         // screen's fallback download link covers that case instead.
         if (pdfTab && !pdfTab.closed) {
           pdfTab.location.href = url;
         }
-        triggerDownload(url, "quote.pdf");
+        triggerDownload(url, siteFilenames.quotePdf(result.quoteId));
         setStep("success");
       } else {
         if (pdfTab && !pdfTab.closed) pdfTab.close();
@@ -561,7 +564,7 @@ export default function PreBookingForm({
                   href={pdfUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  download="quote.pdf"
+                  download={quoteId ? siteFilenames.quotePdf(quoteId) : "quote.pdf"}
                   className={`text-sm font-medium underline ${theme.text.accent}`}
                 >
                   {t.bookCta.success.downloadPdf}

@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import { BookingStatus } from "@prisma/client";
 import { formatPkr, formatDateLong } from "./format";
+import { siteFilenames } from "./filenames";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -86,7 +87,7 @@ export async function sendQuoteEmail({
     text: `Hi ${name},\n\nThanks for requesting a quote. We've attached your estimated quote as a PDF. Our team will follow up with you shortly.\n\nQuote reference: ${quoteId}`,
     attachments: [
       {
-        filename: `quote-${quoteId}.pdf`,
+        filename: siteFilenames.quotePdf(quoteId),
         content: pdfBuffer,
       },
     ],
