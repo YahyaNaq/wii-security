@@ -208,6 +208,9 @@ model EmployeeSalaryPeriod {
   month      Int
   status     SalaryStatus @default(RELEASED)
   amount     Int
+  // Discretionary top-up folded into `amount` at release time; kept separately
+  // too so the breakdown (base gigs pay vs. bonus) stays visible afterwards.
+  bonus      Int          @default(0)
   releasedAt DateTime     @default(now())
 
   @@unique([employeeId, year, month])

@@ -20,6 +20,7 @@ export type SalaryPeriod = {
   month: number;
   status: SalaryStatus;
   amount: number;
+  bonus: number;
   releasedAt: Date | null;
   gigs: SalaryGig[];
 };
@@ -84,6 +85,7 @@ async function computeSalaryPeriods(employeeId: string): Promise<SalaryPeriod[]>
       month,
       status: released ? SalaryStatus.RELEASED : SalaryStatus.PENDING,
       amount: released ? released.amount : gigs.length * employee.jobTitle.salary,
+      bonus: released?.bonus ?? 0,
       releasedAt: released?.releasedAt ?? null,
       gigs: sortedGigs,
     };
@@ -104,12 +106,16 @@ export async function releaseSalaryPeriod(
   employeeId: string,
   year: number,
   month: number,
-  releaseDate: Date
+  releaseDate: Date,
+  bonus = 0
 ): Promise<ReleaseSalaryResult> {
   await verifyAdminSession();
 
   if (Number.isNaN(releaseDate.getTime())) {
     return { success: false, error: "Enter a valid release date" };
+  }
+  if (!Number.isInteger(bonus) || bonus < 0) {
+    return { success: false, error: "Enter a valid bonus amount" };
   }
 
   const periods = await computeSalaryPeriods(employeeId);
@@ -122,10 +128,12 @@ export async function releaseSalaryPeriod(
     return { success: false, error: "This month has already been released" };
   }
 
+  const amount = target.amount + bonus;
+
   await prisma.employeeSalaryPeriod.upsert({
     where: { employeeId_year_month: { employeeId, year, month } },
-    create: { employeeId, year, month, status: SalaryStatus.RELEASED, amount: target.amount, releasedAt: releaseDate },
-    update: { status: SalaryStatus.RELEASED, amount: target.amount, releasedAt: releaseDate },
+    create: { employeeId, year, month, status: SalaryStatus.RELEASED, amount, bonus, releasedAt: releaseDate },
+    update: { status: SalaryStatus.RELEASED, amount, bonus, releasedAt: releaseDate },
   });
 
   revalidatePath("/admin/employee-management/employees");
