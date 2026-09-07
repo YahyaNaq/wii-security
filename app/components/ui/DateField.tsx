@@ -2,13 +2,13 @@
 
 import { useId, useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
-import { DayPicker, type Matcher } from "react-day-picker";
+import { DayPicker, type ClassNames, type Matcher } from "react-day-picker";
 import { FieldLabel, fieldClasses } from "./fields";
 import { theme } from "./theme";
 import { cn } from "./cn";
 import { formatDateShort } from "../../lib/format";
 
-const calendarClassNames = {
+const defaultCalendarClassNames: Partial<ClassNames> = {
   months: "relative flex flex-col",
   month: "space-y-3",
   month_caption: "flex items-center justify-center pt-1 pb-2",
@@ -43,6 +43,7 @@ export function DateField({
   triggerClassName,
   contentClassName,
   labelClassName,
+  calendarClassNames,
 }: {
   label: React.ReactNode;
   name: string;
@@ -59,6 +60,7 @@ export function DateField({
   triggerClassName?: string;
   contentClassName?: string;
   labelClassName?: string;
+  calendarClassNames?: Partial<ClassNames>;
 }) {
   const [internalDate, setInternalDate] = useState<Date | undefined>();
   const date = value !== undefined ? value : internalDate;
@@ -112,7 +114,7 @@ export function DateField({
                 setOpen(false);
               }}
               disabled={disabled}
-              classNames={calendarClassNames}
+              classNames={calendarClassNames ?? defaultCalendarClassNames}
             />
           </Popover.Content>
         </Popover.Portal>
