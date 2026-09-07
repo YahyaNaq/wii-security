@@ -23,8 +23,11 @@ const calendarClassNames: Partial<ClassNames> = {
   day: "relative h-9 w-9 p-0 text-center text-sm",
   day_button:
     "h-9 w-9 cursor-pointer rounded-full text-sm font-normal text-neutral-200 transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:text-neutral-700 disabled:hover:bg-transparent",
+  // `selected` and `today` can both apply (today is selected) — `selected`'s bg/text
+  // classes must win then, so `today` only adds a ring, never a text color, to avoid
+  // white-on-white text when the two combine.
   selected: "[&>button]:bg-white [&>button]:text-neutral-950 [&>button]:font-semibold [&>button]:hover:bg-neutral-200",
-  today: "[&>button]:text-white [&>button]:font-semibold",
+  today: "[&>button]:font-semibold [&>button]:ring-1 [&>button]:ring-inset [&>button]:ring-white/50",
   outside: "text-neutral-700",
   disabled: "",
   hidden: "invisible",

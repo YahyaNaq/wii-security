@@ -7,26 +7,23 @@ import { StatusBadge } from "../../_components/table/StatusBadge";
 import { formatPkr, formatDateLong } from "../../../../lib/format";
 import { getEmployeeSalaryPeriods, releaseSalaryPeriod, type SalaryPeriod } from "./salaryActions";
 import Button from "../../../_components/Button";
+import { DateField } from "../../../_components/DateField";
 
 function monthLabel(year: number, month: number) {
   return new Date(year, month - 1, 1).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 }
 
-function todayInputValue() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-}
-
 function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; period: SalaryPeriod; onReleased: () => void }) {
   const [expanded, setExpanded] = useState(false);
-  const [releaseDate, setReleaseDate] = useState(todayInputValue());
+  const [releaseDate, setReleaseDate] = useState<Date | undefined>(() => new Date());
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   const handleRelease = () => {
+    if (!releaseDate) return;
     setError(null);
     startTransition(async () => {
-      const result = await releaseSalaryPeriod(employeeId, period.year, period.month, new Date(releaseDate));
+      const result = await releaseSalaryPeriod(employeeId, period.year, period.month, releaseDate);
       if (result.success) {
         onReleased();
       } else {
@@ -60,12 +57,7 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
           </span>
         ) : (
           <>
-            <input
-              type="date"
-              value={releaseDate}
-              onChange={(e) => setReleaseDate(e.target.value)}
-              className="rounded-md border border-neutral-800 bg-neutral-900 px-2 py-1 text-xs text-white focus:border-neutral-600 focus:outline-none"
-            />
+            <DateField label="" name="releaseDate" value={releaseDate} onValueChange={setReleaseDate} disabled={false} />
             <Button
               type="button"
               onClick={handleRelease}
