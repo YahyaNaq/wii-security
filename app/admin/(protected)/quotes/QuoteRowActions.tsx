@@ -6,6 +6,7 @@ import { pdfBase64ToUrl, openLoadingTab } from "../../../lib/pdf-client";
 import { RowActionsMenu, type RowAction } from "../_components/table/RowActionsMenu";
 import { DetailDialog } from "../_components/table/DetailDialog";
 import { generateQuotePdf } from "./actions";
+import Button from "../../_components/Button";
 
 type QuoteDetail = {
   id: string;
@@ -52,6 +53,11 @@ export function QuoteRowActions({ quote }: { quote: QuoteDetail }) {
     <>
       <RowActionsMenu actions={actions} />
       <DetailDialog open={viewOpen} onOpenChange={setViewOpen} title={quote.name}>
+        <div className="mb-4 flex justify-end">
+          <Button variant="secondary" size="sm" disabled={pending} onClick={handleGeneratePdf}>
+            {pending ? "Generating…" : "Generate PDF"}
+          </Button>
+        </div>
         <dl className="space-y-3 text-sm">
           <div className="flex justify-between">
             <dt className="text-neutral-500">Phone</dt>
