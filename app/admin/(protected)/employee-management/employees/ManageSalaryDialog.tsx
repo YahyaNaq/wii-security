@@ -34,18 +34,25 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
 
   return (
     <div className="rounded-md border border-neutral-800">
-      <div className="flex items-center justify-between gap-3 px-3 py-2.5">
-        <button
-          type="button"
-          onClick={() => setExpanded((e) => !e)}
-          className="flex flex-1 items-center gap-2 text-left text-sm"
-        >
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => setExpanded((e) => !e)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setExpanded((exp) => !exp);
+          }
+        }}
+        className="flex cursor-pointer items-center justify-between gap-3 px-3 py-2.5"
+      >
+        <div className="flex flex-1 items-center gap-2 text-sm">
           <span className={`text-[10px] text-neutral-600 transition-transform ${expanded ? "rotate-90" : ""}`}>▶</span>
           <span>{monthLabel(period.year, period.month)}</span>
           <span className="text-xs text-neutral-500">
             {period.gigs.length} gig{period.gigs.length === 1 ? "" : "s"}
           </span>
-        </button>
+        </div>
         <span className="text-sm font-medium">{formatPkr(period.amount)}</span>
         <StatusBadge
           label={period.status === SalaryStatus.RELEASED ? "Released" : "Pending"}
@@ -56,8 +63,14 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
             {period.releasedAt && `on ${formatDateLong(period.releasedAt)}`}
           </span>
         ) : (
-          <>
-            <DateField label="" name="releaseDate" value={releaseDate} onValueChange={setReleaseDate} disabled={false} />
+          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            <DateField
+              label=""
+              name="releaseDate"
+              value={releaseDate}
+              onValueChange={setReleaseDate}
+              disabled={{ after: new Date() }}
+            />
             <Button
               type="button"
               onClick={handleRelease}
@@ -67,7 +80,7 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
             >
               {pending ? "Releasing…" : "Release"}
             </Button>
-          </>
+          </div>
         )}
       </div>
       {error && <p className="px-3 pb-2 text-xs text-red-400">{error}</p>}
