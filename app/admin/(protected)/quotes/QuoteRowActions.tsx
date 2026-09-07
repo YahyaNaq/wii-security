@@ -53,11 +53,6 @@ export function QuoteRowActions({ quote }: { quote: QuoteDetail }) {
     <>
       <RowActionsMenu actions={actions} />
       <DetailDialog open={viewOpen} onOpenChange={setViewOpen} title={quote.name}>
-        <div className="mb-4 flex justify-end">
-          <Button variant="secondary" size="sm" disabled={pending} onClick={handleGeneratePdf}>
-            {pending ? "Generating…" : "Generate PDF"}
-          </Button>
-        </div>
         <dl className="space-y-3 text-sm">
           <div className="flex justify-between">
             <dt className="text-neutral-500">Phone</dt>
@@ -90,6 +85,12 @@ export function QuoteRowActions({ quote }: { quote: QuoteDetail }) {
             </dd>
           </div>
         </dl>
+
+        <div className="mt-6 flex justify-end gap-2 border-t border-neutral-800 pt-4">
+          <Button type="button" variant="secondary" size="sm" disabled={pending} onClick={handleGeneratePdf}>
+            {pending ? "Generating…" : "Generate PDF"}
+          </Button>
+        </div>
       </DetailDialog>
     </>
   );
