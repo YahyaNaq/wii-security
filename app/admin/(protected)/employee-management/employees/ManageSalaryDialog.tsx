@@ -16,14 +16,18 @@ function monthLabel(year: number, month: number) {
 function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; period: SalaryPeriod; onReleased: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [releaseDate, setReleaseDate] = useState<Date | undefined>(() => new Date());
+  const [bonusInput, setBonusInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
+  const bonus = bonusInput ? Number(bonusInput) : 0;
+  const bonusValid = Number.isInteger(bonus) && bonus >= 0;
+
   const handleRelease = () => {
-    if (!releaseDate) return;
+    if (!releaseDate || !bonusValid) return;
     setError(null);
     startTransition(async () => {
-      const result = await releaseSalaryPeriod(employeeId, period.year, period.month, releaseDate);
+      const result = await releaseSalaryPeriod(employeeId, period.year, period.month, releaseDate, bonus);
       if (result.success) {
         onReleased();
       } else {
@@ -46,7 +50,7 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
         }}
         className="flex cursor-pointer items-center justify-between gap-3 px-3 py-2.5"
       >
-        <div className="flex flex-1 items-center gap-2 text-sm">
+        <div className="flex flex-1 items-center gap-2 text-sm font-medium">
           <span className={`text-[10px] text-neutral-600 transition-transform ${expanded ? "rotate-90" : ""}`}>▶</span>
           <span>{monthLabel(period.year, period.month)}</span>
           <span className="text-xs text-neutral-500">
@@ -61,6 +65,7 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
         {period.status === SalaryStatus.RELEASED && (
           <span className="text-xs text-neutral-500">
             {period.releasedAt && `on ${formatDateLong(period.releasedAt)}`}
+            {period.bonus > 0 && ` · +${formatPkr(period.bonus)} bonus`}
           </span>
         )}
       </div>
@@ -72,7 +77,7 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
               <p className="text-xs text-neutral-500">No gigs on record for this month.</p>
             ) : (
               period.gigs.map((gig) => (
-                <div key={gig.id} className="text-xs">
+                <div key={gig.id} className="text-sm">
                   <p className="text-neutral-300">
                     {formatDateLong(gig.date)} — {gig.venue}, {gig.city}
                   </p>
@@ -83,6 +88,18 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
           </div>
           {period.status !== SalaryStatus.RELEASED && (
             <div className="flex items-center justify-end gap-2 border-t border-neutral-800 pt-3">
+              <label className="flex items-center gap-1.5 text-xs text-neutral-500">
+                Bonus
+                <input
+                  type="number"
+                  min={0}
+                  step={1}
+                  value={bonusInput}
+                  onChange={(e) => setBonusInput(e.target.value)}
+                  placeholder="0"
+                  className="w-24 rounded-md border border-neutral-800 bg-neutral-900 px-2 py-1.5 text-sm text-white placeholder:text-neutral-600 focus:border-neutral-600 focus:outline-none"
+                />
+              </label>
               <DateField
                 label=""
                 name="releaseDate"
@@ -93,7 +110,7 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
               <Button
                 type="button"
                 onClick={handleRelease}
-                disabled={pending || period.gigs.length === 0 || !releaseDate}
+                disabled={pending || period.gigs.length === 0 || !releaseDate || !bonusValid}
                 variant="primary"
                 size="sm"
               >
