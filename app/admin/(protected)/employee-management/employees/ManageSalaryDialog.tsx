@@ -124,8 +124,13 @@ export function ManageSalaryDialog({
   }, [open, employeeId]);
 
   return (
-    <DetailDialog open={open} onOpenChange={onOpenChange} title={`Manage Salary — ${employeeName}`}>
-      <div className="max-h-[60vh] space-y-2 overflow-y-auto pr-1">
+    <DetailDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={`Manage Salary — ${employeeName}`}
+      maxWidthClassName="max-w-3xl"
+    >
+      <div className="max-h-[70vh] space-y-2 overflow-y-auto pr-1">
         {periods === null && <p className="py-4 text-center text-sm text-neutral-500">Loading…</p>}
         {periods?.length === 0 && (
           <p className="py-4 text-center text-sm text-neutral-500">No gigs recorded for this employee yet.</p>
