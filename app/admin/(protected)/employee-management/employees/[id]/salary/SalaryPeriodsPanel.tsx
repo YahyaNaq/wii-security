@@ -2,12 +2,11 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { SalaryStatus } from "@prisma/client";
-import { DetailDialog } from "../../_components/table/DetailDialog";
-import { StatusBadge } from "../../_components/table/StatusBadge";
-import { formatPkr, formatDateLong } from "../../../../lib/format";
-import { getEmployeeSalaryPeriods, releaseSalaryPeriod, type SalaryPeriod } from "./salaryActions";
-import Button from "../../../_components/Button";
-import { DateField } from "../../../_components/DateField";
+import { StatusBadge } from "../../../../_components/table/StatusBadge";
+import { formatPkr, formatDateLong } from "../../../../../../lib/format";
+import { getEmployeeSalaryPeriods, releaseSalaryPeriod, type SalaryPeriod } from "../../salaryActions";
+import Button from "../../../../../_components/Button";
+import { DateField } from "../../../../../_components/DateField";
 
 function monthLabel(year: number, month: number) {
   return new Date(year, month - 1, 1).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
@@ -124,17 +123,7 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
   );
 }
 
-export function ManageSalaryDialog({
-  open,
-  onOpenChange,
-  employeeId,
-  employeeName,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  employeeId: string;
-  employeeName: string;
-}) {
+export function SalaryPeriodsPanel({ employeeId }: { employeeId: string }) {
   const [periods, setPeriods] = useState<SalaryPeriod[] | null>(null);
 
   const load = () => {
@@ -143,32 +132,20 @@ export function ManageSalaryDialog({
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch salary data when the dialog opens
-    if (open) load();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch salary data on mount
+    load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, employeeId]);
+  }, [employeeId]);
 
   return (
-    <DetailDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      title={`Manage Salary — ${employeeName}`}
-      maxWidthClassName="max-w-3xl"
-    >
-      <div className="max-h-[70vh] space-y-2 overflow-y-auto pr-1">
-        {periods === null && <p className="py-4 text-center text-sm text-neutral-500">Loading…</p>}
-        {periods?.length === 0 && (
-          <p className="py-4 text-center text-sm text-neutral-500">No gigs recorded for this employee yet.</p>
-        )}
-        {periods?.map((period) => (
-          <PeriodRow
-            key={`${period.year}-${period.month}`}
-            employeeId={employeeId}
-            period={period}
-            onReleased={load}
-          />
-        ))}
-      </div>
-    </DetailDialog>
+    <div className="space-y-2">
+      {periods === null && <p className="py-4 text-center text-sm text-neutral-500">Loading…</p>}
+      {periods?.length === 0 && (
+        <p className="py-4 text-center text-sm text-neutral-500">No gigs recorded for this employee yet.</p>
+      )}
+      {periods?.map((period) => (
+        <PeriodRow key={`${period.year}-${period.month}`} employeeId={employeeId} period={period} onReleased={load} />
+      ))}
+    </div>
   );
 }

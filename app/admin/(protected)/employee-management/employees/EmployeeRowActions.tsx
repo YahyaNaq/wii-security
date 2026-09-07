@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { RowActionsMenu, type RowAction } from "../../_components/table/RowActionsMenu";
 import { EmployeeForm, type Employee, type EmployeeActions, type JobTitleOption } from "./EmployeeForm";
-import { ManageSalaryDialog } from "./ManageSalaryDialog";
 
 export function EmployeeRowActions({
   employee,
@@ -15,11 +14,10 @@ export function EmployeeRowActions({
   jobTitleOptions: JobTitleOption[];
 }) {
   const [editOpen, setEditOpen] = useState(false);
-  const [salaryOpen, setSalaryOpen] = useState(false);
 
   const rowActions: RowAction[] = [
     { label: "Edit", onClick: () => setEditOpen(true) },
-    { label: "Manage Salary", onClick: () => setSalaryOpen(true) },
+    { label: "Manage Salary", href: `/admin/employee-management/employees/${employee.id}/salary` },
   ];
 
   return (
@@ -31,12 +29,6 @@ export function EmployeeRowActions({
         employee={employee}
         actions={actions}
         jobTitleOptions={jobTitleOptions}
-      />
-      <ManageSalaryDialog
-        open={salaryOpen}
-        onOpenChange={setSalaryOpen}
-        employeeId={employee.id}
-        employeeName={employee.name}
       />
     </>
   );
