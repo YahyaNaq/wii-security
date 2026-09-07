@@ -21,6 +21,7 @@ export default async function AdminPayrollReportPage({
     .reduce((sum, row) => sum + row.amount, 0);
   const pendingAmount = totalAmount - releasedAmount;
   const totalGigs = rows.reduce((sum, row) => sum + row.gigCount, 0);
+  const totalBonus = rows.reduce((sum, row) => sum + row.bonus, 0);
 
   const periodLabel = `${MONTH_LABELS[filters.month - 1]} ${filters.year}`;
 
@@ -45,7 +46,7 @@ export default async function AdminPayrollReportPage({
         availableYears={availableYears}
       />
 
-      <div className="mb-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mb-10 grid grid-cols-2 gap-4 lg:grid-cols-5">
         <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-5">
           <p className="text-xs text-neutral-400">Employees paid</p>
           <p className="mt-2 text-2xl font-semibold">{rows.length}</p>
@@ -62,6 +63,10 @@ export default async function AdminPayrollReportPage({
           <p className="text-xs text-neutral-400">Pending</p>
           <p className="mt-2 text-2xl font-semibold text-amber-400">{formatPkr(pendingAmount)}</p>
         </div>
+        <div className="rounded-lg border border-neutral-800 bg-neutral-900 p-5">
+          <p className="text-xs text-neutral-400">Bonuses paid</p>
+          <p className="mt-2 text-2xl font-semibold">{formatPkr(totalBonus)}</p>
+        </div>
       </div>
 
       <div>
@@ -74,6 +79,7 @@ export default async function AdminPayrollReportPage({
                 <th className="px-4 py-3 font-medium">Job Title</th>
                 <th className="px-4 py-3 font-medium">Gigs</th>
                 <th className="px-4 py-3 font-medium">Amount</th>
+                <th className="px-4 py-3 font-medium">Bonus</th>
                 <th className="px-4 py-3 font-medium">Status</th>
               </tr>
             </thead>
@@ -84,6 +90,7 @@ export default async function AdminPayrollReportPage({
                   <td className="px-4 py-3 text-neutral-400">{row.jobTitle}</td>
                   <td className="px-4 py-3 text-neutral-400">{row.gigCount}</td>
                   <td className="px-4 py-3 text-neutral-400">{formatPkr(row.amount)}</td>
+                  <td className="px-4 py-3 text-neutral-400">{row.bonus > 0 ? formatPkr(row.bonus) : "—"}</td>
                   <td className="px-4 py-3">
                     <StatusBadge
                       label={row.status === SalaryStatus.RELEASED ? "Released" : "Pending"}
@@ -92,7 +99,7 @@ export default async function AdminPayrollReportPage({
                   </td>
                 </tr>
               ))}
-              {rows.length === 0 && <EmptyRow colSpan={5} message="No payroll activity for this period." />}
+              {rows.length === 0 && <EmptyRow colSpan={6} message="No payroll activity for this period." />}
             </tbody>
           </table>
         </div>

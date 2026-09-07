@@ -12,6 +12,7 @@ export type SalaryGig = {
   date: Date;
   venue: string;
   city: string;
+  customerName: string;
   serviceSummary: string;
 };
 
@@ -48,6 +49,7 @@ async function computeSalaryPeriods(employeeId: string): Promise<SalaryPeriod[]>
             guestService: true,
             photographyTier: true,
             videographyTier: true,
+            booking: { select: { name: true } },
           },
         },
       },
@@ -67,6 +69,7 @@ async function computeSalaryPeriods(employeeId: string): Promise<SalaryPeriod[]>
       date: bookingEvent.date,
       venue: bookingEvent.venue,
       city: bookingEvent.city,
+      customerName: bookingEvent.booking.name,
       serviceSummary: bookingServiceSummary(tables, bookingEvent),
     });
   }
@@ -107,6 +110,7 @@ export async function releaseSalaryPeriod(
   year: number,
   month: number,
   releaseDate: Date,
+  baseAmount: number,
   bonus = 0
 ): Promise<ReleaseSalaryResult> {
   await verifyAdminSession();
@@ -116,6 +120,9 @@ export async function releaseSalaryPeriod(
   }
   if (!Number.isInteger(bonus) || bonus < 0) {
     return { success: false, error: "Enter a valid bonus amount" };
+  }
+  if (!Number.isInteger(baseAmount) || baseAmount < 0) {
+    return { success: false, error: "Enter a valid amount" };
   }
 
   const periods = await computeSalaryPeriods(employeeId);
@@ -127,8 +134,12 @@ export async function releaseSalaryPeriod(
   if (target.status === SalaryStatus.RELEASED) {
     return { success: false, error: "This month has already been released" };
   }
+  // Deductions only — the calculated salary (target.amount) is the ceiling, never the floor.
+  if (baseAmount > target.amount) {
+    return { success: false, error: "Amount can't exceed the calculated salary" };
+  }
 
-  const amount = target.amount + bonus;
+  const amount = baseAmount + bonus;
 
   await prisma.employeeSalaryPeriod.upsert({
     where: { employeeId_year_month: { employeeId, year, month } },

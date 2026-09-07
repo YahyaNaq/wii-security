@@ -17,12 +17,13 @@ export async function GET(request: Request) {
   const filters = parsePayrollFilters(searchParams);
   const { rows } = await loadPayrollData(filters);
 
-  const header = ["Employee", "Job Title", "Gigs", "Amount (PKR)", "Status", "Released At"];
+  const header = ["Employee", "Job Title", "Gigs", "Amount (PKR)", "Bonus (PKR)", "Status", "Released At"];
   const csvRows = rows.map((row) => [
     row.name,
     row.jobTitle,
     String(row.gigCount),
     String(row.amount),
+    String(row.bonus),
     row.status,
     row.releasedAt ? row.releasedAt.toISOString() : "",
   ]);

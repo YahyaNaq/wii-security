@@ -52,6 +52,7 @@ export type PayrollRow = {
   employmentStatus: string;
   gigCount: number;
   amount: number;
+  bonus: number;
   status: SalaryStatus;
   releasedAt: Date | null;
 };
@@ -80,6 +81,7 @@ export async function loadPayrollData(filters: PayrollFilters) {
         employeeId: true,
         status: true,
         amount: true,
+        bonus: true,
         releasedAt: true,
         employee: {
           select: { name: true, employmentStatus: true, jobTitle: { select: { title: true } } },
@@ -105,6 +107,7 @@ export async function loadPayrollData(filters: PayrollFilters) {
         employmentStatus: assignment.employee.employmentStatus,
         gigCount: 1,
         amount: 0,
+        bonus: 0,
         status: SalaryStatus.PENDING,
         releasedAt: null,
       });
@@ -122,6 +125,7 @@ export async function loadPayrollData(filters: PayrollFilters) {
     if (existing) {
       existing.status = period.status;
       existing.amount = period.amount;
+      existing.bonus = period.bonus;
       existing.releasedAt = period.releasedAt;
     } else {
       rows.set(period.employeeId, {
@@ -131,6 +135,7 @@ export async function loadPayrollData(filters: PayrollFilters) {
         employmentStatus: period.employee.employmentStatus,
         gigCount: 0,
         amount: period.amount,
+        bonus: period.bonus,
         status: period.status,
         releasedAt: period.releasedAt,
       });

@@ -15,18 +15,21 @@ function monthLabel(year: number, month: number) {
 function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; period: SalaryPeriod; onReleased: () => void }) {
   const [expanded, setExpanded] = useState(false);
   const [releaseDate, setReleaseDate] = useState<Date | undefined>(() => new Date());
+  const [amountInput, setAmountInput] = useState(() => String(period.amount));
   const [bonusInput, setBonusInput] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
+  const amount = amountInput ? Number(amountInput) : NaN;
+  const amountValid = Number.isInteger(amount) && amount >= 0 && amount <= period.amount;
   const bonus = bonusInput ? Number(bonusInput) : 0;
   const bonusValid = Number.isInteger(bonus) && bonus >= 0;
 
   const handleRelease = () => {
-    if (!releaseDate || !bonusValid) return;
+    if (!releaseDate || !amountValid || !bonusValid) return;
     setError(null);
     startTransition(async () => {
-      const result = await releaseSalaryPeriod(employeeId, period.year, period.month, releaseDate, bonus);
+      const result = await releaseSalaryPeriod(employeeId, period.year, period.month, releaseDate, amount, bonus);
       if (result.success) {
         onReleased();
       } else {
@@ -64,7 +67,7 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
         {period.status === SalaryStatus.RELEASED && (
           <span className="text-xs text-neutral-500">
             {period.releasedAt && `on ${formatDateLong(period.releasedAt)}`}
-            {period.bonus > 0 && ` · +${formatPkr(period.bonus)} bonus`}
+            {period.bonus > 0 && ` · ${formatPkr(period.bonus)} bonus`}
           </span>
         )}
       </div>
@@ -78,7 +81,7 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
               period.gigs.map((gig) => (
                 <div key={gig.id} className="text-sm">
                   <p className="text-neutral-300">
-                    {formatDateLong(gig.date)} — {gig.venue}, {gig.city}
+                    {gig.customerName} — {formatDateLong(gig.date)} — {gig.venue}, {gig.city}
                   </p>
                   <p className="text-neutral-500">{gig.serviceSummary}</p>
                 </div>
@@ -86,7 +89,24 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
             )}
           </div>
           {period.status !== SalaryStatus.RELEASED && (
-            <div className="flex items-center justify-end gap-2 border-t border-neutral-800 pt-3">
+            <div className="flex flex-wrap items-center justify-end gap-2 border-t border-neutral-800 pt-3">
+              {!amountValid && (
+                <span className="text-xs text-red-400">
+                  Amount can&apos;t exceed the calculated salary of {formatPkr(period.amount)}
+                </span>
+              )}
+              <label className="flex items-center gap-1.5 text-xs text-neutral-500">
+                Amount
+                <input
+                  type="number"
+                  min={0}
+                  max={period.amount}
+                  step={1}
+                  value={amountInput}
+                  onChange={(e) => setAmountInput(e.target.value)}
+                  className="w-28 rounded-md border border-neutral-800 bg-neutral-900 px-2 py-1.5 text-sm text-white focus:border-neutral-600 focus:outline-none"
+                />
+              </label>
               <label className="flex items-center gap-1.5 text-xs text-neutral-500">
                 Bonus
                 <input
@@ -109,7 +129,7 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
               <Button
                 type="button"
                 onClick={handleRelease}
-                disabled={pending || period.gigs.length === 0 || !releaseDate || !bonusValid}
+                disabled={pending || period.gigs.length === 0 || !releaseDate || !amountValid || !bonusValid}
                 variant="primary"
                 size="sm"
               >
