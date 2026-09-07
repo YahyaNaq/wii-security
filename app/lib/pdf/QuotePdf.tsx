@@ -314,7 +314,7 @@ export function QuotePdf({ name, quoteId, createdAt, events, total, tables }: Qu
           </View>
         </View>
 
-        <View style={styles.footerRow}>
+        <View style={styles.footerRow} wrap={false}>
           <View style={styles.footerIcon}>
             <InfoIcon color={colors.brandDark} size={10} />
           </View>
