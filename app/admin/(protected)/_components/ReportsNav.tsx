@@ -4,7 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
-const CHILDREN = [{ href: "/admin/reports/revenue", label: "Revenue & Bookings" }];
+const CHILDREN = [
+  { href: "/admin/reports/revenue", label: "Revenue & Bookings" },
+  { href: "/admin/reports/payroll", label: "Staffing & Payroll" },
+];
 
 export function ReportsNav() {
   const pathname = usePathname();
