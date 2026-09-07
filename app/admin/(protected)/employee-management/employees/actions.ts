@@ -20,6 +20,9 @@ const employeeSchema = z.object({
   employmentStatus: z.enum(EmploymentStatus),
   emergencyContactName: z.string().trim().optional().transform((v) => v || undefined),
   emergencyContactNumber: z.string().trim().optional().transform((v) => v || undefined),
+  bankName: z.string().trim().min(1, "Bank name is required"),
+  accountTitle: z.string().trim().min(1, "Account title is required"),
+  accountNumber: z.string().trim().min(1, "Account number is required"),
 });
 
 export type EmployeeActionResult = { success: true } | { success: false; error: string };
@@ -36,6 +39,9 @@ function parseEmployeeFormData(formData: FormData) {
     employmentStatus: formData.get("employmentStatus"),
     emergencyContactName: formData.get("emergencyContactName"),
     emergencyContactNumber: formData.get("emergencyContactNumber"),
+    bankName: formData.get("bankName"),
+    accountTitle: formData.get("accountTitle"),
+    accountNumber: formData.get("accountNumber"),
   };
 }
 
@@ -51,8 +57,15 @@ export async function createEmployee(formData: FormData): Promise<EmployeeAction
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
+  const { bankName, accountTitle, accountNumber, ...employeeData } = parsed.data;
+
   try {
-    await prisma.employee.create({ data: parsed.data });
+    await prisma.employee.create({
+      data: {
+        ...employeeData,
+        bankDetails: { create: { bankName, accountTitle, accountNumber } },
+      },
+    });
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
       return { success: false, error: "An employee with this CNIC already exists" };
@@ -72,8 +85,21 @@ export async function updateEmployee(employeeId: string, formData: FormData): Pr
     return { success: false, error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
+  const { bankName, accountTitle, accountNumber, ...employeeData } = parsed.data;
+
   try {
-    await prisma.employee.update({ where: { id: employeeId }, data: parsed.data });
+    await prisma.employee.update({
+      where: { id: employeeId },
+      data: {
+        ...employeeData,
+        bankDetails: {
+          upsert: {
+            create: { bankName, accountTitle, accountNumber },
+            update: { bankName, accountTitle, accountNumber },
+          },
+        },
+      },
+    });
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
       return { success: false, error: "An employee with this CNIC already exists" };

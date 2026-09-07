@@ -53,7 +53,7 @@ export default async function AdminEmployeesPage({
     sort === "jobTitle" ? { jobTitle: { title: dir } } : { [sort]: dir };
 
   const [employees, total, jobTitles] = await Promise.all([
-    prisma.employee.findMany({ where, orderBy, skip, take, include: { jobTitle: true } }),
+    prisma.employee.findMany({ where, orderBy, skip, take, include: { jobTitle: true, bankDetails: true } }),
     prisma.employee.count({ where }),
     prisma.jobTitle.findMany({ orderBy: { title: "asc" } }),
   ]);

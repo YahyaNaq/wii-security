@@ -161,6 +161,16 @@ model Employee {
 
   eventAssignments EventAssignment[]
   salaryPeriods    EmployeeSalaryPeriod[]
+  bankDetails      EmployeeBankDetails?
+}
+
+model EmployeeBankDetails {
+  id            String   @id @default(cuid())
+  employeeId    String   @unique
+  employee      Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  bankName      String
+  accountTitle  String
+  accountNumber String
 }
 
 model JobTitle {

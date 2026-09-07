@@ -19,6 +19,11 @@ export type Employee = {
   employmentStatus: EmploymentStatus;
   emergencyContactName: string | null;
   emergencyContactNumber: string | null;
+  bankDetails: {
+    bankName: string;
+    accountTitle: string;
+    accountNumber: string;
+  } | null;
 };
 
 export type JobTitleOption = {
@@ -206,6 +211,51 @@ export function EmployeeForm({
             />
           </div>
         </div>
+        <div className="border-t border-neutral-800 pt-4">
+          <h3 className="mb-3 text-xs font-medium uppercase tracking-wide text-neutral-500">Bank Details</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass} htmlFor="bankName">
+                Bank Name
+              </label>
+              <input
+                id="bankName"
+                name="bankName"
+                type="text"
+                defaultValue={employee?.bankDetails?.bankName}
+                className={inputClass}
+                required
+              />
+            </div>
+            <div>
+              <label className={labelClass} htmlFor="accountTitle">
+                Account Title
+              </label>
+              <input
+                id="accountTitle"
+                name="accountTitle"
+                type="text"
+                defaultValue={employee?.bankDetails?.accountTitle}
+                className={inputClass}
+                required
+              />
+            </div>
+          </div>
+          <div className="mt-3">
+            <label className={labelClass} htmlFor="accountNumber">
+              Account Number
+            </label>
+            <input
+              id="accountNumber"
+              name="accountNumber"
+              type="text"
+              defaultValue={employee?.bankDetails?.accountNumber}
+              className={inputClass}
+              required
+            />
+          </div>
+        </div>
+
         {error && <p className="text-sm text-red-400">{error}</p>}
 
         <div className="flex justify-end gap-2 pt-2">
