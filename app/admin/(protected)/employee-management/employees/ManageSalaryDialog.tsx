@@ -58,45 +58,48 @@ function PeriodRow({ employeeId, period, onReleased }: { employeeId: string; per
           label={period.status === SalaryStatus.RELEASED ? "Released" : "Pending"}
           tone={period.status === SalaryStatus.RELEASED ? "emerald" : "amber"}
         />
-        {period.status === SalaryStatus.RELEASED ? (
+        {period.status === SalaryStatus.RELEASED && (
           <span className="text-xs text-neutral-500">
             {period.releasedAt && `on ${formatDateLong(period.releasedAt)}`}
           </span>
-        ) : (
-          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-            <DateField
-              label=""
-              name="releaseDate"
-              value={releaseDate}
-              onValueChange={setReleaseDate}
-              disabled={{ after: new Date() }}
-            />
-            <Button
-              type="button"
-              onClick={handleRelease}
-              disabled={pending || period.gigs.length === 0 || !releaseDate}
-              variant="primary"
-              size="xs"
-            >
-              {pending ? "Releasing…" : "Release"}
-            </Button>
-          </div>
         )}
       </div>
       {error && <p className="px-3 pb-2 text-xs text-red-400">{error}</p>}
       {expanded && (
-        <div className="space-y-1.5 border-t border-neutral-800 px-3 py-2.5">
-          {period.gigs.length === 0 ? (
-            <p className="text-xs text-neutral-500">No gigs on record for this month.</p>
-          ) : (
-            period.gigs.map((gig) => (
-              <div key={gig.id} className="flex items-center justify-between text-xs text-neutral-400">
-                <span>
-                  {formatDateLong(gig.date)} — {gig.venue}, {gig.city}
-                </span>
-                <span className="text-neutral-500">{gig.serviceSummary}</span>
-              </div>
-            ))
+        <div className="space-y-3 border-t border-neutral-800 px-3 py-2.5">
+          <div className="space-y-1.5">
+            {period.gigs.length === 0 ? (
+              <p className="text-xs text-neutral-500">No gigs on record for this month.</p>
+            ) : (
+              period.gigs.map((gig) => (
+                <div key={gig.id} className="text-xs">
+                  <p className="text-neutral-300">
+                    {formatDateLong(gig.date)} — {gig.venue}, {gig.city}
+                  </p>
+                  <p className="text-neutral-500">{gig.serviceSummary}</p>
+                </div>
+              ))
+            )}
+          </div>
+          {period.status !== SalaryStatus.RELEASED && (
+            <div className="flex items-center justify-end gap-2 border-t border-neutral-800 pt-3">
+              <DateField
+                label=""
+                name="releaseDate"
+                value={releaseDate}
+                onValueChange={setReleaseDate}
+                disabled={{ after: new Date() }}
+              />
+              <Button
+                type="button"
+                onClick={handleRelease}
+                disabled={pending || period.gigs.length === 0 || !releaseDate}
+                variant="primary"
+                size="sm"
+              >
+                {pending ? "Releasing…" : "Release"}
+              </Button>
+            </div>
           )}
         </div>
       )}
