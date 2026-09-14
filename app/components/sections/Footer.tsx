@@ -94,7 +94,14 @@ export default function Footer() {
           <div>
             <Eyebrow as="h3">{f.contactHeading}</Eyebrow>
             <ul className="mt-4 space-y-2.5 text-sm text-foreground/65">
-              <li>info@wiisecurity.com</li>
+              <li>
+                <a
+                  href="mailto:info@wiisecurity.com"
+                  className={`${theme.text.accent} decoration-brand-dark/40 underline-offset-2 transition-colors hover:decoration-brand-dark`}
+                >
+                  info@wiisecurity.com
+                </a>
+              </li>
               {/* <li>+92 300 000 0000</li> */}
               <li>{f.contactCities}</li>
             </ul>
