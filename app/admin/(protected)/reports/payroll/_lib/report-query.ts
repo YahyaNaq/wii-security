@@ -1,20 +1,7 @@
 import { SalaryStatus } from "@prisma/client";
 import { prisma } from "../../../../../lib/db";
 
-export const MONTH_LABELS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
+export { MONTH_LABELS } from "./constants";
 
 export type PayrollFilters = {
   year: number;
