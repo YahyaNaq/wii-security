@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaNeon } from "@prisma/adapter-neon";
+import { createPrismaAdapter } from "../app/lib/prismaAdapter";
 
 try {
   process.loadEnvFile();
@@ -7,7 +7,7 @@ try {
   // no .env file present (e.g. CI provides env vars directly)
 }
 
-const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL });
+const adapter = createPrismaAdapter(process.env.DATABASE_URL!);
 const prisma = new PrismaClient({ adapter });
 
 const guestTiers = [
