@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { SalaryStatus } from "@prisma/client";
 import { Select } from "../../../../_components/Select";
 import Button from "../../../../_components/Button";
-import { MONTH_LABELS } from "../_lib/report-query";
+import { MONTH_LABELS } from "../_lib/constants";
 
 const ALL = "ALL";
 
