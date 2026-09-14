@@ -11,9 +11,9 @@ export default function SiteLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  if (!isLaunched()) {
-    return <ComingSoon launchAt={LAUNCH_AT} />;
-  }
+  // if (!isLaunched()) {
+  //   return <ComingSoon launchAt={LAUNCH_AT} />;
+  // }
 
   return (
     <LanguageProvider>
