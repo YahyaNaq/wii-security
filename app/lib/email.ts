@@ -55,7 +55,7 @@ function emailShell(bodyHtml: string) {
             </tr>
             <tr>
               <td style="background-color:${BRAND.brandDark};padding:20px 32px;text-align:center;">
-                <div style="font-size:12px;color:#ffffff;">info@wiisecurity.com &nbsp;·&nbsp; +92 300 000 0000</div>
+                <div style="font-size:12px;color:#ffffff;">info@wiisecurity.com &nbsp;·&nbsp; <a href="https://www.instagram.com/wiisecurity/" style="color:#ffffff;text-decoration:underline;">@wiisecurity</a></div>
                 <div style="margin-top:4px;font-size:11px;color:${BRAND.brandLight};">Karachi · Lahore · Islamabad</div>
                 <div style="margin-top:10px;font-size:10px;color:${BRAND.brandLight};">&copy; ${new Date().getFullYear()} WII Security. All rights reserved.</div>
               </td>
