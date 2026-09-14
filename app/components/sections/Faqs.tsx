@@ -12,6 +12,19 @@ import { useLanguage } from "../../i18n/LanguageContext";
 export default function Faqs({ limit }: { limit?: number } = {}) {
   const { t } = useLanguage();
   const [query, setQuery] = useState("");
+  const [openQuestions, setOpenQuestions] = useState<Set<string>>(new Set());
+
+  const toggleQuestion = (question: string) => {
+    setOpenQuestions((prev) => {
+      const next = new Set(prev);
+      if (next.has(question)) {
+        next.delete(question);
+      } else {
+        next.add(question);
+      }
+      return next;
+    });
+  };
 
   const items = limit
     ? t.faqs.items.slice(0, limit)
@@ -46,26 +59,46 @@ export default function Faqs({ limit }: { limit?: number } = {}) {
           {items.length === 0 && (
             <p className="text-center text-sm text-foreground/50">{t.faqs.noResults}</p>
           )}
-          {items.map((faq) => (
-            <details
-              key={faq.q}
-              className={`group rounded-2xl border ${theme.border.subtle} ${theme.surface} p-6 open:shadow-sm open:${theme.shadow.xs}`}
-            >
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-display text-base text-foreground">
-                {faq.q}
-                <IconBadge
-                  size="h-7 w-7"
-                  shape="rounded-full"
-                  className="shrink-0 transition-transform group-open:rotate-45"
+          {items.map((faq) => {
+            const isOpen = openQuestions.has(faq.q);
+            return (
+              <div
+                key={faq.q}
+                className={cn(
+                  "rounded-2xl border transition-shadow duration-300",
+                  theme.border.subtle,
+                  theme.surface,
+                  isOpen && `shadow-sm ${theme.shadow.xs}`,
+                )}
+              >
+                <button
+                  type="button"
+                  onClick={() => toggleQuestion(faq.q)}
+                  aria-expanded={isOpen}
+                  className="flex w-full cursor-pointer list-none items-center justify-between gap-4 p-6 text-left font-display text-base text-foreground"
                 >
-                  <svg viewBox="0 0 12 12" className="h-3 w-3" fill="none">
-                    <path d="M6 1V11M1 6H11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                  </svg>
-                </IconBadge>
-              </summary>
-              <p className="mt-3 text-sm leading-6 text-foreground/65">{faq.a}</p>
-            </details>
-          ))}
+                  {faq.q}
+                  <IconBadge
+                    size="h-7 w-7"
+                    shape="rounded-full"
+                    className={cn("shrink-0 transition-transform duration-300", isOpen && "rotate-45")}
+                  >
+                    <svg viewBox="0 0 12 12" className="h-3 w-3" fill="none">
+                      <path d="M6 1V11M1 6H11" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    </svg>
+                  </IconBadge>
+                </button>
+                <div
+                  className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+                  style={{ gridTemplateRows: isOpen ? "1fr" : "0fr" }}
+                >
+                  <div className="overflow-hidden">
+                    <p className="px-6 pb-6 text-sm leading-6 text-foreground/65">{faq.a}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {limit && (
