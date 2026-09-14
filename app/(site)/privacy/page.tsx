@@ -38,7 +38,7 @@ const sections = [
 
 export default function PrivacyPolicyPage() {
   return (
-    <section className="mx-auto max-w-3xl px-6 py-24 lg:px-8">
+    <section className="mx-auto max-w-3xl px-6 pb-24 pt-10 lg:px-8 lg:pt-14">
       <span className="text-xs font-semibold uppercase tracking-widest text-brand-dark">
         Privacy
       </span>
