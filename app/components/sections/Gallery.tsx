@@ -14,7 +14,7 @@ export default function Gallery() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="gallery" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+    <section id="gallery" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-20 lg:px-8">
       <SectionHeading
         centered
         eyebrow={t.gallery.eyebrow}

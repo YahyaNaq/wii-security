@@ -9,7 +9,7 @@ export default function HowItWorks() {
   const steps = t.howItWorks.steps;
 
   return (
-    <section id="how-it-works" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+    <section id="how-it-works" className="mx-auto max-w-7xl scroll-mt-24 px-6 py-20 lg:px-8">
       <SectionHeading
         centered
         eyebrow={t.howItWorks.eyebrow}

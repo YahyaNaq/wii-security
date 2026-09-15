@@ -32,7 +32,7 @@ export default function Footer() {
   const f = t.footer;
 
   return (
-    <footer id="contact" className={`border-t ${theme.border.subtle} bg-blush/50`}>
+    <footer id="contact" className={`scroll-mt-24 border-t ${theme.border.subtle} bg-blush/50`}>
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
           <div>
