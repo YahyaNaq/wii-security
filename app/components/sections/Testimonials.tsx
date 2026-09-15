@@ -63,9 +63,17 @@ export default function Testimonials() {
   const items = t.testimonials.items;
   const count = items.length;
   const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
 
-  const go = (direction: 1 | -1) =>
-    setIndex((i) => (i + direction + count) % count);
+  const go = (dir: 1 | -1) => {
+    setDirection(dir);
+    setIndex((i) => (i + dir + count) % count);
+  };
+
+  const goTo = (i: number) => {
+    setDirection(i > index ? 1 : -1);
+    setIndex(i);
+  };
 
   const touchStartX = useRef<number | null>(null);
 
@@ -108,18 +116,27 @@ export default function Testimonials() {
           </button>
 
           <div
-            className="grid w-full max-w-4xl touch-pan-y grid-cols-1 items-center gap-6 lg:grid-cols-3"
+            className="w-full max-w-4xl touch-pan-y overflow-hidden"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <div className="hidden lg:block">
-              <TestimonialCard item={prevItem} prominent={false} />
-            </div>
-            <div>
-              <TestimonialCard item={current} prominent />
-            </div>
-            <div className="hidden lg:block">
-              <TestimonialCard item={nextItem} prominent={false} />
+            <div
+              key={index}
+              className={`grid grid-cols-1 items-center gap-6 lg:grid-cols-3 ${
+                direction === 1
+                  ? "animate-testimonial-slide-right"
+                  : "animate-testimonial-slide-left"
+              }`}
+            >
+              <div className="hidden lg:block">
+                <TestimonialCard item={prevItem} prominent={false} />
+              </div>
+              <div>
+                <TestimonialCard item={current} prominent />
+              </div>
+              <div className="hidden lg:block">
+                <TestimonialCard item={nextItem} prominent={false} />
+              </div>
             </div>
           </div>
 
@@ -140,7 +157,7 @@ export default function Testimonials() {
             <button
               key={item.name + i}
               type="button"
-              onClick={() => setIndex(i)}
+              onClick={() => goTo(i)}
               aria-label={`Go to testimonial ${i + 1}`}
               aria-current={i === index}
               className={`h-2 rounded-full transition-all ${
