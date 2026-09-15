@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import Button from "../ui/Button";
-import { TextField, RadioGroupField } from "../ui/fields";
+import { TextField } from "../ui/fields";
 import { PhoneField } from "../ui/PhoneField";
+import { ServiceSelectionFields } from "./ServiceSelectionFields";
 import CheckIcon from "../ui/CheckIcon";
 import SuccessBadge from "../ui/SuccessBadge";
 import ReviewField from "../ui/ReviewField";
@@ -60,8 +61,6 @@ function EventFields({
   reviewEvent: ReviewEvent | undefined;
 }) {
   const prefix = `events[${index}]`;
-  const [guestService, setGuestService] = useState(reviewEvent?.guestService ?? "");
-  const needsGuestCount = guestService === "phone-pouches" || guestService === "monitoring";
 
   return (
     <Accordion.Item
@@ -99,53 +98,17 @@ function EventFields({
       >
         <div className="overflow-hidden">
           <div className="flex flex-col gap-4 px-1 pb-4 sm:px-5 sm:pb-5">
-            <div className="flex flex-col gap-3">
-              <div>
-                <h5 className="text-sm font-medium text-foreground">{form.servicesGroupHeading}</h5>
-                <p className="text-xs text-foreground/50">{form.servicesGroupNote}</p>
-              </div>
-
-              <RadioGroupField
-                label={form.guestServiceLabel}
-                name={`${prefix}[guestService]`}
-                options={form.guestServiceOptions}
-                defaultValue={reviewEvent?.guestService}
-                error={errors[`${prefix}[guestService]`]}
-                onChange={setGuestService}
-                hideOptionalMark
-              />
-
-              {needsGuestCount && (
-                <TextField
-                  label={form.femaleGuests}
-                  type="number"
-                  name={`${prefix}[femaleGuests]`}
-                  min={0}
-                  placeholder={form.femaleGuestsPlaceholder}
-                  defaultValue={reviewEvent?.femaleGuests}
-                  error={errors[`${prefix}[femaleGuests]`]}
-                  required
-                />
-              )}
-
-              <RadioGroupField
-                label={form.photographyTierLabel}
-                name={`${prefix}[photographyTier]`}
-                options={photographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
-                defaultValue={reviewEvent?.photographyTier}
-                error={errors[`${prefix}[photographyTier]`]}
-                hideOptionalMark
-              />
-
-              <RadioGroupField
-                label={form.videographyTierLabel}
-                name={`${prefix}[videographyTier]`}
-                options={videographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
-                defaultValue={reviewEvent?.videographyTier}
-                error={errors[`${prefix}[videographyTier]`]}
-                hideOptionalMark
-              />
-            </div>
+            <ServiceSelectionFields
+              form={form}
+              prefix={prefix}
+              errors={errors}
+              photographyOptions={photographyOptions}
+              videographyOptions={videographyOptions}
+              defaultGuestService={reviewEvent?.guestService}
+              defaultFemaleGuests={reviewEvent?.femaleGuests}
+              defaultPhotographyTier={reviewEvent?.photographyTier}
+              defaultVideographyTier={reviewEvent?.videographyTier}
+            />
           </div>
         </div>
       </Accordion.Content>
