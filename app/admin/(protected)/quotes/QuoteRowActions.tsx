@@ -69,7 +69,9 @@ export function QuoteRowActions({ quote }: { quote: QuoteDetail }) {
               {quote.events.map((event, i) => (
                 <div key={event.id} className="rounded-md border border-neutral-800 p-3">
                   <p className="font-medium">Event {i + 1}</p>
-                  <p className="text-neutral-400">{event.femaleGuests} female guests</p>
+                  {event.femaleGuests > 0 && (
+                    <p className="text-neutral-400">{event.femaleGuests} female guests</p>
+                  )}
                   <p className="text-neutral-500">{formatPkr(event.subtotal)}</p>
                 </div>
               ))}

@@ -144,10 +144,14 @@ function bookingStatusEmailEventsHtml(events: BookingStatusEmailEvent[]) {
                 <td style="padding:3px 0;color:${BRAND.muted};">Reporting time</td>
                 <td style="padding:3px 0;font-weight:500;">${escapeHtml(event.reportingTime)}</td>
               </tr>
-              <tr>
+              ${
+                event.femaleGuests > 0
+                  ? `<tr>
                 <td style="padding:3px 0;color:${BRAND.muted};">Female guests</td>
                 <td style="padding:3px 0;font-weight:500;">${escapeHtml(event.femaleGuests)}</td>
-              </tr>
+              </tr>`
+                  : ""
+              }
               <tr>
                 <td style="padding:3px 0;color:${BRAND.muted};">Services</td>
                 <td style="padding:3px 0;font-weight:500;">${escapeHtml(event.serviceSummary || "—")}</td>

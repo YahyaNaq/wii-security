@@ -11,17 +11,23 @@ import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 
 const eventSchema = z
   .object({
-    femaleGuests: z
-      .string()
-      .refine((v) => isPositiveNumber(v), "Enter a valid number of guests")
-      .transform(Number),
+    femaleGuests: z.string().trim().optional(),
     guestService: z.enum(["none", "phone-pouches", "monitoring"]),
     photographyTier: z.string().trim().optional(),
     videographyTier: z.string().trim().optional(),
   })
-  .refine((e) => e.guestService !== "none" || !!e.photographyTier || !!e.videographyTier, {
-    message: "Select at least one service for this event.",
-    path: ["guestService"],
+  .superRefine((e, ctx) => {
+    const needsGuestCount = e.guestService === "phone-pouches" || e.guestService === "monitoring";
+    if (needsGuestCount && !(e.femaleGuests && isPositiveNumber(e.femaleGuests))) {
+      ctx.addIssue({ code: "custom", message: "Enter a valid number of guests", path: ["femaleGuests"] });
+    }
+    if (!needsGuestCount && !e.photographyTier && !e.videographyTier) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Select at least one service for this event.",
+        path: ["guestService"],
+      });
+    }
   });
 
 const quoteSchema = z.object({
@@ -43,7 +49,7 @@ function eventsToPricingInput(events: QuoteFormValues["events"]): EventInput[] {
     if (event.videographyTier) {
       services.push({ type: ServiceType.VIDEOGRAPHY, tier: event.videographyTier });
     }
-    return { femaleGuests: event.femaleGuests, services };
+    return { femaleGuests: event.femaleGuests ? Number(event.femaleGuests) : 0, services };
   });
 }
 
@@ -91,7 +97,7 @@ export async function submitQuoteRequest(formData: FormData): Promise<SubmitQuot
   data.events.forEach((event, i) => {
     if (event.guestService === "none") return;
     const guestTiers = event.guestService === "phone-pouches" ? tables.pouchGuestTiers : tables.monitoringGuestTiers;
-    if (!guestTierFor(guestTiers, event.femaleGuests)) {
+    if (!guestTierFor(guestTiers, Number(event.femaleGuests))) {
       guestCountFieldErrors[`events[${i}][femaleGuests]`] =
         "This guest count isn't supported for the selected service. Please contact us directly for a custom quote.";
     }
@@ -117,7 +123,7 @@ export async function submitQuoteRequest(formData: FormData): Promise<SubmitQuot
       totalAmount: priced.total,
       events: {
         create: data.events.map((event, i) => ({
-          femaleGuests: event.femaleGuests,
+          femaleGuests: event.femaleGuests ? Number(event.femaleGuests) : 0,
           subtotal: priced.events[i].subtotal,
           services: {
             create: priced.events[i].services.map((service) => ({
@@ -140,7 +146,7 @@ export async function submitQuoteRequest(formData: FormData): Promise<SubmitQuot
       createdAt={createdAt}
       total={priced.total}
       events={data.events.map((event, i) => ({
-        femaleGuests: event.femaleGuests,
+        femaleGuests: event.guestService !== "none" ? Number(event.femaleGuests) : undefined,
         priced: priced.events[i],
       }))}
       tables={tables}

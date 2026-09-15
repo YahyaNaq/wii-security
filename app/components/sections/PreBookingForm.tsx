@@ -60,6 +60,8 @@ function EventFields({
   reviewEvent: ReviewEvent | undefined;
 }) {
   const prefix = `events[${index}]`;
+  const [guestService, setGuestService] = useState(reviewEvent?.guestService ?? "");
+  const needsGuestCount = guestService === "phone-pouches" || guestService === "monitoring";
 
   return (
     <Accordion.Item
@@ -97,17 +99,6 @@ function EventFields({
       >
         <div className="overflow-hidden">
           <div className="flex flex-col gap-4 px-1 pb-4 sm:px-5 sm:pb-5">
-            <TextField
-              label={form.femaleGuests}
-              type="number"
-              name={`${prefix}[femaleGuests]`}
-              min={0}
-              placeholder={form.femaleGuestsPlaceholder}
-              defaultValue={reviewEvent?.femaleGuests}
-              error={errors[`${prefix}[femaleGuests]`]}
-              required
-            />
-
             <div className="flex flex-col gap-3">
               <div>
                 <h5 className="text-sm font-medium text-foreground">{form.servicesGroupHeading}</h5>
@@ -120,8 +111,22 @@ function EventFields({
                 options={form.guestServiceOptions}
                 defaultValue={reviewEvent?.guestService}
                 error={errors[`${prefix}[guestService]`]}
+                onChange={setGuestService}
                 hideOptionalMark
               />
+
+              {needsGuestCount && (
+                <TextField
+                  label={form.femaleGuests}
+                  type="number"
+                  name={`${prefix}[femaleGuests]`}
+                  min={0}
+                  placeholder={form.femaleGuestsPlaceholder}
+                  defaultValue={reviewEvent?.femaleGuests}
+                  error={errors[`${prefix}[femaleGuests]`]}
+                  required
+                />
+              )}
 
               <RadioGroupField
                 label={form.photographyTierLabel}
@@ -197,11 +202,13 @@ function Review({
             {form.eventLabel} {i + 1}
           </h4>
           <dl className="mt-3 grid gap-3 sm:grid-cols-2">
-            <ReviewField label={form.femaleGuests} value={event.femaleGuests || notProvided} />
             <ReviewField
               label={form.guestServiceLabel}
               value={event.guestService ? guestServiceLabel(event.guestService) : notProvided}
             />
+            {(event.guestService === "phone-pouches" || event.guestService === "monitoring") && (
+              <ReviewField label={form.femaleGuests} value={event.femaleGuests || notProvided} />
+            )}
             {event.photography && (
               <ReviewField label={form.photographyLabel} value={photographyTierLabel(event.photographyTier)} />
             )}
@@ -274,31 +281,27 @@ export default function PreBookingForm({
     if (phone && !isValidPhoneNumber(phone)) nextErrors.phone = t.common.invalidPhoneError;
 
     eventIds.forEach((_, i) => {
-      const key = `events[${i}][femaleGuests]`;
-      const rawValue = String(fd.get(key) ?? "").trim();
-      if (!rawValue) {
-        nextErrors[key] = t.common.requiredError;
-      } else if (!isPositiveNumber(rawValue)) {
-        nextErrors[key] = t.common.invalidNumberError;
-      }
-
       const guestService = String(fd.get(`events[${i}][guestService]`) ?? "");
-      const femaleGuestsRaw = rawValue;
-      if (
-        (guestService === "phone-pouches" || guestService === "monitoring") &&
-        femaleGuestsRaw &&
-        isPositiveNumber(femaleGuestsRaw)
-      ) {
-        const guestTiers = guestService === "phone-pouches" ? pouchGuestTiers : monitoringGuestTiers;
-        if (!guestTierFor(guestTiers, Number(femaleGuestsRaw))) {
-          nextErrors[`events[${i}][femaleGuests]`] = t.common.guestCountUnsupportedError;
+      const needsGuestCount = guestService === "phone-pouches" || guestService === "monitoring";
+
+      if (needsGuestCount) {
+        const key = `events[${i}][femaleGuests]`;
+        const rawValue = String(fd.get(key) ?? "").trim();
+        if (!rawValue) {
+          nextErrors[key] = t.common.requiredError;
+        } else if (!isPositiveNumber(rawValue)) {
+          nextErrors[key] = t.common.invalidNumberError;
+        } else {
+          const guestTiers = guestService === "phone-pouches" ? pouchGuestTiers : monitoringGuestTiers;
+          if (!guestTierFor(guestTiers, Number(rawValue))) {
+            nextErrors[key] = t.common.guestCountUnsupportedError;
+          }
         }
       }
 
       const photographyTier = String(fd.get(`events[${i}][photographyTier]`) ?? "");
       const videographyTier = String(fd.get(`events[${i}][videographyTier]`) ?? "");
-      const hasGuestService = guestService === "phone-pouches" || guestService === "monitoring";
-      if (!hasGuestService && !photographyTier && !videographyTier) {
+      if (!needsGuestCount && !photographyTier && !videographyTier) {
         nextErrors[`events[${i}][guestService]`] = form.atLeastOneServiceError;
       }
     });

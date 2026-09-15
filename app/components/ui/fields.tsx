@@ -113,6 +113,7 @@ function OptionGroupField({
   otherFieldPlaceholder = "Please specify",
   defaultValue,
   otherDefaultValue,
+  onChange,
 }: {
   type: "radio" | "checkbox";
   label: React.ReactNode;
@@ -130,6 +131,9 @@ function OptionGroupField({
   otherFieldPlaceholder?: string;
   defaultValue?: string;
   otherDefaultValue?: string;
+  // Fires the selected option's value on change — the inputs stay uncontrolled
+  // (defaultChecked) so this is for side effects (e.g. toggling other fields).
+  onChange?: (value: string) => void;
 }) {
   return (
     <fieldset
@@ -162,6 +166,7 @@ function OptionGroupField({
                   required={required}
                   defaultChecked={value === defaultValue}
                   data-other={value === otherOption ? "" : undefined}
+                  onChange={() => onChange?.(value)}
                   className="accent-brand"
                 />
                 {optionLabel}

@@ -17,17 +17,23 @@ const eventSchema = z
     venue: z.string().trim().min(1, "Venue is required"),
     eventType: z.string().trim().min(1, "Event type is required"),
     eventTypeOther: z.string().trim().optional(),
-    femaleGuests: z
-      .string()
-      .refine((v) => isPositiveNumber(v), "Enter a valid number of guests")
-      .transform(Number),
+    femaleGuests: z.string().trim().optional(),
     guestService: z.enum(["none", "phone-pouches", "monitoring"]),
     photographyTier: z.string().trim().optional(),
     videographyTier: z.string().trim().optional(),
   })
-  .refine((e) => e.guestService !== "none" || !!e.photographyTier || !!e.videographyTier, {
-    message: "Select at least one service for this event.",
-    path: ["guestService"],
+  .superRefine((e, ctx) => {
+    const needsGuestCount = e.guestService === "phone-pouches" || e.guestService === "monitoring";
+    if (needsGuestCount && !(e.femaleGuests && isPositiveNumber(e.femaleGuests))) {
+      ctx.addIssue({ code: "custom", message: "Enter a valid number of guests", path: ["femaleGuests"] });
+    }
+    if (!needsGuestCount && !e.photographyTier && !e.videographyTier) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Select at least one service for this event.",
+        path: ["guestService"],
+      });
+    }
   });
 
 const bookingSchema = z.object({
@@ -104,7 +110,7 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
   data.events.forEach((event, i) => {
     if (event.guestService === "none") return;
     const guestTiers = event.guestService === "phone-pouches" ? tables.pouchGuestTiers : tables.monitoringGuestTiers;
-    if (!guestTierFor(guestTiers, event.femaleGuests)) {
+    if (!guestTierFor(guestTiers, Number(event.femaleGuests))) {
       guestCountFieldErrors[`events[${i}][femaleGuests]`] =
         "This guest count isn't supported for the selected service. Please contact us directly for a custom quote.";
     }
@@ -133,7 +139,7 @@ export async function submitBooking(formData: FormData): Promise<SubmitBookingRe
             venue: event.venue,
             eventType: event.eventType,
             eventTypeOther: event.eventTypeOther || null,
-            femaleGuests: event.femaleGuests,
+            femaleGuests: event.femaleGuests ? Number(event.femaleGuests) : 0,
             guestService: event.guestService === "none" ? null : event.guestService,
             photographyTier: event.photographyTier || null,
             videographyTier: event.videographyTier || null,
