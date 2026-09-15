@@ -81,8 +81,7 @@ export async function sendQuoteEmail({
 }) {
   await resend.emails.send({
     from: FROM_EMAIL,
-    // to,
-    to: "yahya.naqvi123@gmail.com",
+    to,
     subject: "We've received your quote request",
     text: `Hi ${name},\n\nThanks for requesting a quote. We've attached your estimated quote as a PDF. Our team will follow up with you shortly.\n\nQuote reference: ${quoteId}`,
     attachments: [
@@ -210,8 +209,7 @@ export async function sendBookingStatusEmail({
 }) {
   await resend.emails.send({
     from: BOOKING_EMAIL_FROM,
-    // to,
-    to: "yahya.naqvi123@gmail.com",
+    to,
     subject: BOOKING_STATUS_EMAIL_SUBJECT[status],
     html: bookingStatusEmailHtml({ name, status, bookingId, totalAmount, events }),
   });
