@@ -177,6 +177,7 @@ function EventFields({
               type="number"
               name={`${prefix}[femaleGuests]`}
               min={0}
+              placeholder={form.femaleGuestsPlaceholder}
               defaultValue={reviewEvent?.femaleGuests}
               error={errors[`${prefix}[femaleGuests]`]}
               required
@@ -606,7 +607,7 @@ export default function PreBookingForm({
                 </button>
               )}
               <div className="grid gap-4 sm:grid-cols-2">
-                <TextField label={form.fullName} type="text" name="name" defaultValue={reviewData?.name} error={errors.name} required />
+                <TextField label={form.fullName} type="text" name="name" placeholder={form.fullNamePlaceholder} defaultValue={reviewData?.name} error={errors.name} required />
                 <PhoneField
                   label={form.phoneNumber}
                   name="phone"
@@ -617,7 +618,7 @@ export default function PreBookingForm({
                   required
                 />
               </div>
-              <TextField label={form.email} type="email" name="email" defaultValue={reviewData?.email} error={errors.email} required />
+              <TextField label={form.email} type="email" name="email" placeholder={form.emailPlaceholder} defaultValue={reviewData?.email} error={errors.email} required />
               <RadioGroupField
                 label={form.hearAboutUs}
                 name="hearAboutUs"

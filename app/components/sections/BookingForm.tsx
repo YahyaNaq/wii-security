@@ -185,6 +185,7 @@ function EventFields({
               label={form.venue}
               type="text"
               name={`${prefix}[venue]`}
+              placeholder={form.venuePlaceholder}
               value={venue}
               onChange={(e) => setVenue(e.target.value)}
               error={errors[`${prefix}[venue]`]}
@@ -209,6 +210,7 @@ function EventFields({
               type="number"
               name={`${prefix}[femaleGuests]`}
               min={0}
+              placeholder={form.femaleGuestsPlaceholder}
               defaultValue={reviewEvent?.femaleGuests}
               error={errors[`${prefix}[femaleGuests]`]}
               required
@@ -617,6 +619,7 @@ export default function BookingForm({
                   label={form.fullName}
                   type="text"
                   name="name"
+                  placeholder={form.fullNamePlaceholder}
                   defaultValue={reviewData?.name}
                   error={errors.name}
                   required
@@ -634,6 +637,7 @@ export default function BookingForm({
                   label={form.email}
                   type="email"
                   name="email"
+                  placeholder={form.emailPlaceholder}
                   defaultValue={reviewData?.email}
                   error={errors.email}
                   required
@@ -687,6 +691,7 @@ export default function BookingForm({
                   name="totalAmount"
                   min={0}
                   step={1000}
+                  placeholder={form.totalAmountPlaceholder}
                   value={totalAmount}
                   onChange={(e) => setTotalAmount(e.target.value)}
                   error={errors.totalAmount}
