@@ -14,20 +14,29 @@ export function fieldClasses(hasError?: boolean) {
   );
 }
 
+export function OptionalMark() {
+  return <span className="font-normal normal-case text-foreground/40"> (optional)</span>;
+}
+
 export function FieldLabel({
   label,
+  required,
   error,
   className,
   children,
 }: {
   label: React.ReactNode;
+  required?: boolean;
   error?: string;
   className?: string;
   children: React.ReactNode;
 }) {
   return (
     <label className={className ?? "flex min-w-0 flex-col gap-1.5 text-sm text-foreground/70"}>
-      {label}
+      <span>
+        {label}
+        {!required && <OptionalMark />}
+      </span>
       {children}
       {error && <span className="text-xs font-normal normal-case text-red-600">{error}</span>}
     </label>
@@ -41,7 +50,7 @@ export function TextField({
   ...props
 }: { label: React.ReactNode; error?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <FieldLabel label={label} error={error}>
+    <FieldLabel label={label} required={props.required} error={error}>
       <input className={cn(fieldClasses(!!error), className)} {...props} />
     </FieldLabel>
   );
@@ -96,6 +105,7 @@ function OptionGroupField({
   name,
   options,
   required,
+  hideOptionalMark,
   error,
   className,
   otherOption,
@@ -109,6 +119,10 @@ function OptionGroupField({
   name: string;
   options: Option[];
   required?: boolean;
+  // Suppress the automatic "(optional)" suffix — for fields that aren't
+  // individually required but are covered by a group-level requirement
+  // note/error shown elsewhere (e.g. "choose at least one of the following").
+  hideOptionalMark?: boolean;
   error?: string;
   className?: string;
   otherOption?: string;
@@ -124,7 +138,10 @@ function OptionGroupField({
         className
       )}
     >
-      <legend className="mb-0.5">{label}</legend>
+      <legend className="mb-0.5">
+        {label}
+        {!required && !hideOptionalMark && <OptionalMark />}
+      </legend>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => {
           const { value, label: optionLabel, description } = normalizeOption(option);
@@ -205,7 +222,7 @@ export function FileField({
   const [fileName, setFileName] = useState<string | null>(null);
 
   return (
-    <FieldLabel label={label} error={error}>
+    <FieldLabel label={label} required={required} error={error}>
       <div
         className={cn(
           fieldClasses(!!error),
@@ -241,7 +258,7 @@ export function TextareaField({
   ...props
 }: { label: React.ReactNode; error?: string } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
-    <FieldLabel label={label} error={error}>
+    <FieldLabel label={label} required={props.required} error={error}>
       <textarea
         className={cn("resize-none", fieldClasses(!!error), className)}
         {...props}

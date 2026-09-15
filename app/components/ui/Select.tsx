@@ -38,7 +38,7 @@ export function SelectField({
   labelClassName?: string;
 }) {
   return (
-    <FieldLabel label={label} error={error} className={labelClassName}>
+    <FieldLabel label={label} required={required} error={error} className={labelClassName}>
       <RadixSelect.Root
         name={name}
         required={required}

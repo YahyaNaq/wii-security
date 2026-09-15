@@ -182,29 +182,39 @@ function EventFields({
               required
             />
 
-            <RadioGroupField
-              label={form.guestServiceLabel}
-              name={`${prefix}[guestService]`}
-              options={form.guestServiceOptions}
-              defaultValue={reviewEvent?.guestService}
-              error={errors[`${prefix}[guestService]`]}
-            />
+            <div className="flex flex-col gap-3">
+              <div>
+                <h5 className="text-sm font-medium text-foreground">{form.servicesGroupHeading}</h5>
+                <p className="text-xs text-foreground/50">{form.servicesGroupNote}</p>
+              </div>
 
-            <RadioGroupField
-              label={form.photographyTierLabel}
-              name={`${prefix}[photographyTier]`}
-              options={photographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
-              defaultValue={reviewEvent?.photographyTier}
-              error={errors[`${prefix}[photographyTier]`]}
-            />
+              <RadioGroupField
+                label={form.guestServiceLabel}
+                name={`${prefix}[guestService]`}
+                options={form.guestServiceOptions}
+                defaultValue={reviewEvent?.guestService}
+                error={errors[`${prefix}[guestService]`]}
+                hideOptionalMark
+              />
 
-            <RadioGroupField
-              label={form.videographyTierLabel}
-              name={`${prefix}[videographyTier]`}
-              options={videographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
-              defaultValue={reviewEvent?.videographyTier}
-              error={errors[`${prefix}[videographyTier]`]}
-            />
+              <RadioGroupField
+                label={form.photographyTierLabel}
+                name={`${prefix}[photographyTier]`}
+                options={photographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
+                defaultValue={reviewEvent?.photographyTier}
+                error={errors[`${prefix}[photographyTier]`]}
+                hideOptionalMark
+              />
+
+              <RadioGroupField
+                label={form.videographyTierLabel}
+                name={`${prefix}[videographyTier]`}
+                options={videographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
+                defaultValue={reviewEvent?.videographyTier}
+                error={errors[`${prefix}[videographyTier]`]}
+                hideOptionalMark
+              />
+            </div>
 
             <TextareaField
               label={form.details}
