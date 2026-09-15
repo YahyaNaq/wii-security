@@ -1,6 +1,7 @@
 "use server";
 
 import { renderToBuffer } from "@react-pdf/renderer";
+import { ServiceType } from "@prisma/client";
 import { prisma } from "../../../lib/db";
 import { verifyAdminSession } from "../../../lib/admin/dal";
 import { loadPricingTables } from "../../../lib/pricingData";
@@ -38,10 +39,11 @@ export async function generateQuotePdf(quoteId: string): Promise<GenerateQuotePd
             price: service.price,
           })),
         };
+        const needsGuestCount = event.services.some(
+          (s) => s.type === ServiceType.PHONE_POUCHES || s.type === ServiceType.MONITORING
+        );
         return {
-          city: event.city,
-          date: event.date,
-          femaleGuests: event.femaleGuests,
+          femaleGuests: needsGuestCount ? event.femaleGuests : undefined,
           priced,
         };
       })}

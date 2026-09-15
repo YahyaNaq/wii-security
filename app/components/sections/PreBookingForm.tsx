@@ -3,66 +3,39 @@
 import { useEffect, useRef, useState } from "react";
 import * as Accordion from "@radix-ui/react-accordion";
 import Button from "../ui/Button";
-import { TextField, TextareaField, RadioGroupField } from "../ui/fields";
-import { SelectField } from "../ui/Select";
-import { DateField } from "../ui/DateField";
+import { TextField } from "../ui/fields";
 import { PhoneField } from "../ui/PhoneField";
+import { ServiceSelectionFields } from "./ServiceSelectionFields";
 import CheckIcon from "../ui/CheckIcon";
 import SuccessBadge from "../ui/SuccessBadge";
 import ReviewField from "../ui/ReviewField";
 import { theme } from "../ui/theme";
 import { useLanguage } from "../../i18n/LanguageContext";
 import type { Translations } from "../../i18n/translations";
-import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
+import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 import type { ServiceOption } from "../../lib/pricing";
 import { guestTierFor, type GuestTier } from "../../lib/guestTiers";
 import { submitQuoteRequest } from "../../(site)/get-a-quote/actions";
-import { formatDateShort } from "../../lib/format";
 import { scrollToField } from "../../lib/scrollToField";
 import { pdfBase64ToUrl, openLoadingTab, triggerDownload } from "../../lib/pdf-client";
 import { siteFilenames } from "../../lib/filenames";
 
 type BookCtaForm = Translations["bookCta"]["form"];
 
-function DisclaimerNote({ text }: { text: string }) {
-  return (
-    <div className={`flex items-start gap-2.5 rounded-xl border ${theme.border.accent} bg-blush px-4 py-3 text-xs leading-5 text-foreground/70`}>
-      <svg
-        viewBox="0 0 20 20"
-        fill="currentColor"
-        className={`mt-0.5 h-4 w-4 shrink-0 ${theme.text.accent}`}
-      >
-        <path
-          fillRule="evenodd"
-          d="M8.257 3.099c.765-1.36 2.72-1.36 3.486 0l6.28 11.18c.75 1.334-.213 2.987-1.744 2.987H3.72c-1.53 0-2.493-1.653-1.744-2.987l6.28-11.18ZM10 6a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 6Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-          clipRule="evenodd"
-        />
-      </svg>
-      <span>{text}</span>
-    </div>
-  );
-}
-
 const MAX_EVENTS = 10;
 
 type ReviewEvent = {
-  city: string;
-  date: string;
   femaleGuests: string;
   guestService: string;
   photography: boolean;
   photographyTier: string;
   videography: boolean;
   videographyTier: string;
-  details: string;
 };
 
 type ReviewData = {
   name: string;
   phone: string;
-  email: string;
-  hearAboutUs: string;
-  hearAboutUsOther: string;
   events: ReviewEvent[];
 };
 
@@ -72,12 +45,7 @@ function EventFields({
   eventId,
   onRemove,
   removable,
-  city,
-  onCityChange,
-  date,
-  onDateChange,
   errors,
-  clearError,
   photographyOptions,
   videographyOptions,
   reviewEvent,
@@ -87,23 +55,12 @@ function EventFields({
   eventId: number;
   onRemove: () => void;
   removable: boolean;
-  city: string;
-  onCityChange: (city: string) => void;
-  date: Date | undefined;
-  onDateChange: (date: Date | undefined) => void;
   errors: Record<string, string>;
-  clearError: (key: string) => void;
   photographyOptions: ServiceOption[];
   videographyOptions: ServiceOption[];
   reviewEvent: ReviewEvent | undefined;
 }) {
   const prefix = `events[${index}]`;
-  const summary = [
-    city || null,
-    date ? formatDateShort(date) : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
 
   return (
     <Accordion.Item
@@ -124,11 +81,6 @@ function EventFields({
               {form.eventLabel} {index + 1}
             </span>
           </span>
-          {summary && (
-            <span className="hidden text-xs font-normal text-foreground/45 group-data-[state=closed]:inline">
-              {summary}
-            </span>
-          )}
         </Accordion.Trigger>
         {removable && (
           <button
@@ -146,72 +98,16 @@ function EventFields({
       >
         <div className="overflow-hidden">
           <div className="flex flex-col gap-4 px-1 pb-4 sm:px-5 sm:pb-5">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <SelectField
-                label={form.city}
-                name={`${prefix}[city]`}
-                options={form.cityOptions}
-                placeholder={form.citySelectPlaceholder}
-                value={city}
-                onValueChange={(value) => {
-                  onCityChange(value);
-                  clearError(`${prefix}[city]`);
-                }}
-                error={errors[`${prefix}[city]`]}
-                required
-              />
-              <DateField
-                label={form.eventDate}
-                name={`${prefix}[date]`}
-                value={date}
-                onValueChange={(d) => {
-                  onDateChange(d);
-                  clearError(`${prefix}[date]`);
-                }}
-                error={errors[`${prefix}[date]`]}
-                required
-              />
-            </div>
-            <TextField
-              label={form.femaleGuests}
-              type="number"
-              name={`${prefix}[femaleGuests]`}
-              min={0}
-              defaultValue={reviewEvent?.femaleGuests}
-              error={errors[`${prefix}[femaleGuests]`]}
-              required
-            />
-
-            <RadioGroupField
-              label={form.guestServiceLabel}
-              name={`${prefix}[guestService]`}
-              options={form.guestServiceOptions}
-              defaultValue={reviewEvent?.guestService}
-              error={errors[`${prefix}[guestService]`]}
-            />
-
-            <RadioGroupField
-              label={form.photographyTierLabel}
-              name={`${prefix}[photographyTier]`}
-              options={photographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
-              defaultValue={reviewEvent?.photographyTier}
-              error={errors[`${prefix}[photographyTier]`]}
-            />
-
-            <RadioGroupField
-              label={form.videographyTierLabel}
-              name={`${prefix}[videographyTier]`}
-              options={videographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
-              defaultValue={reviewEvent?.videographyTier}
-              error={errors[`${prefix}[videographyTier]`]}
-            />
-
-            <TextareaField
-              label={form.details}
-              name={`${prefix}[details]`}
-              rows={3}
-              placeholder={form.detailsPlaceholder}
-              defaultValue={reviewEvent?.details}
+            <ServiceSelectionFields
+              form={form}
+              prefix={prefix}
+              errors={errors}
+              photographyOptions={photographyOptions}
+              videographyOptions={videographyOptions}
+              defaultGuestService={reviewEvent?.guestService}
+              defaultFemaleGuests={reviewEvent?.femaleGuests}
+              defaultPhotographyTier={reviewEvent?.photographyTier}
+              defaultVideographyTier={reviewEvent?.videographyTier}
             />
           </div>
         </div>
@@ -224,7 +120,6 @@ function Review({
   form,
   review,
   data,
-  dateDisclaimer,
   onEdit,
   onConfirm,
   submitting,
@@ -235,7 +130,6 @@ function Review({
   form: BookCtaForm;
   review: Translations["bookCta"]["review"];
   data: ReviewData;
-  dateDisclaimer: string;
   onEdit: () => void;
   onConfirm: () => void;
   submitting: boolean;
@@ -262,15 +156,6 @@ function Review({
         <dl className="mt-3 grid gap-3 sm:grid-cols-2">
           <ReviewField label={form.fullName} value={data.name || notProvided} />
           <ReviewField label={form.phoneNumber} value={data.phone || notProvided} />
-          <ReviewField label={form.email} value={data.email || notProvided} />
-          <ReviewField
-            label={form.hearAboutUs}
-            value={
-              data.hearAboutUs === form.otherOptionValue && data.hearAboutUsOther
-                ? `${data.hearAboutUs} — ${data.hearAboutUsOther}`
-                : data.hearAboutUs || notProvided
-            }
-          />
         </dl>
       </div>
 
@@ -280,32 +165,22 @@ function Review({
             {form.eventLabel} {i + 1}
           </h4>
           <dl className="mt-3 grid gap-3 sm:grid-cols-2">
-            <ReviewField label={form.city} value={event.city || notProvided} />
-            <ReviewField label={form.eventDate} value={event.date || notProvided} />
-            <ReviewField label={form.femaleGuests} value={event.femaleGuests || notProvided} />
             <ReviewField
               label={form.guestServiceLabel}
               value={event.guestService ? guestServiceLabel(event.guestService) : notProvided}
             />
+            {(event.guestService === "phone-pouches" || event.guestService === "monitoring") && (
+              <ReviewField label={form.femaleGuests} value={event.femaleGuests || notProvided} />
+            )}
             {event.photography && (
               <ReviewField label={form.photographyLabel} value={photographyTierLabel(event.photographyTier)} />
             )}
             {event.videography && (
               <ReviewField label={form.videographyLabel} value={videographyTierLabel(event.videographyTier)} />
             )}
-            {event.details && (
-              <div className="col-span-full flex flex-col gap-0.5">
-                <dt className="text-xs font-medium uppercase tracking-wide text-foreground/45">
-                  {form.details}
-                </dt>
-                <dd className="text-sm text-foreground">{event.details}</dd>
-              </div>
-            )}
           </dl>
         </div>
       ))}
-
-      <DisclaimerNote text={dateDisclaimer} />
 
       {submitError && <p className="text-sm text-red-600">{submitError}</p>}
 
@@ -338,8 +213,6 @@ export default function PreBookingForm({
   const [eventIds, setEventIds] = useState([0]);
   const [openIds, setOpenIds] = useState<string[]>(["0"]);
   const nextId = useRef(1);
-  const [city, setCity] = useState("");
-  const [dates, setDates] = useState<Record<number, Date | undefined>>({});
   const [step, setStep] = useState<"form" | "review" | "success">("form");
   const stepRef = useRef<HTMLDivElement>(null);
 
@@ -362,45 +235,36 @@ export default function PreBookingForm({
 
   const validate = (fd: FormData) => {
     const nextErrors: Record<string, string> = {};
-    const requiredTopLevel = ["name", "phone", "email", "hearAboutUs"];
+    const requiredTopLevel = ["name", "phone"];
     for (const key of requiredTopLevel) {
       if (!String(fd.get(key) ?? "").trim()) nextErrors[key] = t.common.requiredError;
     }
-
-    const email = String(fd.get("email") ?? "").trim();
-    if (email && !isValidEmail(email)) nextErrors.email = t.common.invalidEmailError;
 
     const phone = String(fd.get("phone") ?? "").trim();
     if (phone && !isValidPhoneNumber(phone)) nextErrors.phone = t.common.invalidPhoneError;
 
     eventIds.forEach((_, i) => {
-      for (const field of ["city", "date", "femaleGuests"]) {
-        const key = `events[${i}][${field}]`;
+      const guestService = String(fd.get(`events[${i}][guestService]`) ?? "");
+      const needsGuestCount = guestService === "phone-pouches" || guestService === "monitoring";
+
+      if (needsGuestCount) {
+        const key = `events[${i}][femaleGuests]`;
         const rawValue = String(fd.get(key) ?? "").trim();
         if (!rawValue) {
           nextErrors[key] = t.common.requiredError;
-        } else if (field === "femaleGuests" && !isPositiveNumber(rawValue)) {
+        } else if (!isPositiveNumber(rawValue)) {
           nextErrors[key] = t.common.invalidNumberError;
-        }
-      }
-
-      const guestService = String(fd.get(`events[${i}][guestService]`) ?? "");
-      const femaleGuestsRaw = String(fd.get(`events[${i}][femaleGuests]`) ?? "").trim();
-      if (
-        (guestService === "phone-pouches" || guestService === "monitoring") &&
-        femaleGuestsRaw &&
-        isPositiveNumber(femaleGuestsRaw)
-      ) {
-        const guestTiers = guestService === "phone-pouches" ? pouchGuestTiers : monitoringGuestTiers;
-        if (!guestTierFor(guestTiers, Number(femaleGuestsRaw))) {
-          nextErrors[`events[${i}][femaleGuests]`] = t.common.guestCountUnsupportedError;
+        } else {
+          const guestTiers = guestService === "phone-pouches" ? pouchGuestTiers : monitoringGuestTiers;
+          if (!guestTierFor(guestTiers, Number(rawValue))) {
+            nextErrors[key] = t.common.guestCountUnsupportedError;
+          }
         }
       }
 
       const photographyTier = String(fd.get(`events[${i}][photographyTier]`) ?? "");
       const videographyTier = String(fd.get(`events[${i}][videographyTier]`) ?? "");
-      const hasGuestService = guestService === "phone-pouches" || guestService === "monitoring";
-      if (!hasGuestService && !photographyTier && !videographyTier) {
+      if (!needsGuestCount && !photographyTier && !videographyTier) {
         nextErrors[`events[${i}][guestService]`] = form.atLeastOneServiceError;
       }
     });
@@ -416,11 +280,6 @@ export default function PreBookingForm({
   const removeEvent = (id: number) => {
     setEventIds((prev) => (prev.length > 1 ? prev.filter((eventId) => eventId !== id) : prev));
     setOpenIds((prev) => prev.filter((openId) => openId !== String(id)));
-    setDates((prev) => {
-      const next = { ...prev };
-      delete next[id];
-      return next;
-    });
   };
 
   const clearError = (key: string) => {
@@ -469,22 +328,16 @@ export default function PreBookingForm({
     setReviewData({
       name: String(fd.get("name") ?? ""),
       phone: String(fd.get("phone") ?? ""),
-      email: String(fd.get("email") ?? ""),
-      hearAboutUs: String(fd.get("hearAboutUs") ?? ""),
-      hearAboutUsOther: String(fd.get("hearAboutUsOther") ?? ""),
       events: eventIds.map((id, i) => {
         const photographyTier = String(fd.get(`events[${i}][photographyTier]`) ?? "");
         const videographyTier = String(fd.get(`events[${i}][videographyTier]`) ?? "");
         return {
-          city: String(fd.get(`events[${i}][city]`) ?? ""),
-          date: dates[id] ? formatDateShort(dates[id]!) : "",
           femaleGuests: String(fd.get(`events[${i}][femaleGuests]`) ?? ""),
           guestService: String(fd.get(`events[${i}][guestService]`) ?? ""),
           photography: !!photographyTier,
           photographyTier,
           videography: !!videographyTier,
           videographyTier,
-          details: String(fd.get(`events[${i}][details]`) ?? ""),
         };
       }),
     });
@@ -576,7 +429,6 @@ export default function PreBookingForm({
               form={form}
               review={t.bookCta.review}
               data={reviewData}
-              dateDisclaimer={t.bookCta.dateDisclaimer}
               onEdit={() => setStep("form")}
               onConfirm={handleConfirm}
               submitting={submitting}
@@ -596,7 +448,7 @@ export default function PreBookingForm({
                 </button>
               )}
               <div className="grid gap-4 sm:grid-cols-2">
-                <TextField label={form.fullName} type="text" name="name" defaultValue={reviewData?.name} error={errors.name} required />
+                <TextField label={form.fullName} type="text" name="name" placeholder={form.fullNamePlaceholder} defaultValue={reviewData?.name} error={errors.name} required />
                 <PhoneField
                   label={form.phoneNumber}
                   name="phone"
@@ -607,18 +459,6 @@ export default function PreBookingForm({
                   required
                 />
               </div>
-              <TextField label={form.email} type="email" name="email" defaultValue={reviewData?.email} error={errors.email} required />
-              <RadioGroupField
-                label={form.hearAboutUs}
-                name="hearAboutUs"
-                options={form.hearAboutUsOptions}
-                otherOption={form.otherOptionValue}
-                otherFieldPlaceholder={form.otherPlaceholder}
-                defaultValue={reviewData?.hearAboutUs}
-                otherDefaultValue={reviewData?.hearAboutUsOther}
-                error={errors.hearAboutUs}
-                required
-              />
 
               <Accordion.Root
                 type="multiple"
@@ -634,12 +474,7 @@ export default function PreBookingForm({
                     eventId={id}
                     onRemove={() => removeEvent(id)}
                     removable={eventIds.length > 1}
-                    city={city}
-                    onCityChange={setCity}
-                    date={dates[id]}
-                    onDateChange={(d) => setDates((prev) => ({ ...prev, [id]: d }))}
                     errors={errors}
-                    clearError={clearError}
                     photographyOptions={photographyOptions}
                     videographyOptions={videographyOptions}
                     reviewEvent={reviewData?.events[i]}
@@ -658,8 +493,6 @@ export default function PreBookingForm({
                   + {form.addEvent}
                 </Button>
               )}
-
-              <DisclaimerNote text={t.bookCta.dateDisclaimer} />
 
               <Button type="submit" size="compact" className="mt-2">
                 {form.submit}

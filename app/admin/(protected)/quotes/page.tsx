@@ -26,7 +26,6 @@ export default async function AdminQuotesPage({
         OR: [
           { name: { contains: q, mode: "insensitive" } },
           { phone: { contains: q } },
-          { email: { contains: q, mode: "insensitive" } },
         ],
       }
     : {};
@@ -46,7 +45,7 @@ export default async function AdminQuotesPage({
     <div>
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Quote Requests</h1>
-        <SearchInput placeholder="Search by name, phone or email" />
+        <SearchInput placeholder="Search by name or phone" />
       </div>
 
       <div className="h-[65vh] overflow-auto rounded-lg border border-neutral-800">
@@ -65,7 +64,7 @@ export default async function AdminQuotesPage({
                   Name
                 </SortableHeader>
               </th>
-              <th className="px-4 py-3 font-medium">Contact</th>
+              <th className="px-4 py-3 font-medium">Phone</th>
               <th className="px-4 py-3 font-medium">Events</th>
               <th className="px-4 py-3 font-medium">
                 <SortableHeader
@@ -97,12 +96,9 @@ export default async function AdminQuotesPage({
               <tr key={quote.id} className="border-b border-neutral-800 last:border-0">
                 <td className="px-4 py-3 text-neutral-500">{skip + index + 1}</td>
                 <td className="px-4 py-3">{quote.name}</td>
+                <td className="px-4 py-3 text-neutral-400">{quote.phone}</td>
                 <td className="px-4 py-3 text-neutral-400">
-                  <div>{quote.phone}</div>
-                  <div className="text-neutral-500">{quote.email}</div>
-                </td>
-                <td className="px-4 py-3 text-neutral-400">
-                  {quote.events.map((event) => event.city).join(", ")}
+                  {quote.events.length} event{quote.events.length !== 1 ? "s" : ""}
                 </td>
                 <td className="px-4 py-3">{formatPkr(quote.totalAmount)}</td>
                 <td className="px-4 py-3 text-neutral-500">{formatDateTime(quote.createdAt)}</td>

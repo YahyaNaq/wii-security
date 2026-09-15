@@ -67,14 +67,11 @@ model ServiceOptionPrice {
 }
 
 model QuoteRequest {
-  id               String   @id @default(cuid())
-  name             String
-  phone            String
-  email            String
-  hearAboutUs      String
-  hearAboutUsOther String?
-  totalAmount      Int
-  createdAt        DateTime @default(now())
+  id          String   @id @default(cuid())
+  name        String
+  phone       String
+  totalAmount Int
+  createdAt   DateTime @default(now())
 
   events QuoteEvent[]
 }
@@ -83,10 +80,7 @@ model QuoteEvent {
   id             String   @id @default(cuid())
   quoteRequestId String
   quoteRequest   QuoteRequest @relation(fields: [quoteRequestId], references: [id], onDelete: Cascade)
-  city           String
-  date           DateTime
   femaleGuests   Int
-  details        String?
   subtotal       Int
 
   services QuoteService[]

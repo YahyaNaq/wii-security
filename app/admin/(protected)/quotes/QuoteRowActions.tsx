@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { formatPkr, formatDateLong, formatDateTime } from "../../../lib/format";
+import { formatPkr, formatDateTime } from "../../../lib/format";
 import { pdfBase64ToUrl, openLoadingTab } from "../../../lib/pdf-client";
 import { RowActionsMenu, type RowAction } from "../_components/table/RowActionsMenu";
 import { DetailDialog } from "../_components/table/DetailDialog";
@@ -12,13 +12,10 @@ type QuoteDetail = {
   id: string;
   name: string;
   phone: string;
-  email: string;
   totalAmount: number;
   createdAt: Date;
   events: {
     id: string;
-    city: string;
-    date: Date;
     femaleGuests: number;
     subtotal: number;
   }[];
@@ -59,10 +56,6 @@ export function QuoteRowActions({ quote }: { quote: QuoteDetail }) {
             <dd>{quote.phone}</dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-neutral-500">Email</dt>
-            <dd>{quote.email}</dd>
-          </div>
-          <div className="flex justify-between">
             <dt className="text-neutral-500">Total</dt>
             <dd>{formatPkr(quote.totalAmount)}</dd>
           </div>
@@ -73,12 +66,12 @@ export function QuoteRowActions({ quote }: { quote: QuoteDetail }) {
           <div>
             <dt className="mb-2 text-neutral-500">Events</dt>
             <dd className="space-y-2">
-              {quote.events.map((event) => (
+              {quote.events.map((event, i) => (
                 <div key={event.id} className="rounded-md border border-neutral-800 p-3">
-                  <p className="font-medium">{event.city}</p>
-                  <p className="text-neutral-400">
-                    {formatDateLong(event.date)} · {event.femaleGuests} guests
-                  </p>
+                  <p className="font-medium">Event {i + 1}</p>
+                  {event.femaleGuests > 0 && (
+                    <p className="text-neutral-400">{event.femaleGuests} female guests</p>
+                  )}
                   <p className="text-neutral-500">{formatPkr(event.subtotal)}</p>
                 </div>
               ))}

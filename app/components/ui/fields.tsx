@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import * as Popover from "@radix-ui/react-popover";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { cn } from "./cn";
 import { theme } from "./theme";
 
@@ -14,20 +14,29 @@ export function fieldClasses(hasError?: boolean) {
   );
 }
 
+export function OptionalMark() {
+  return <span className="font-normal normal-case text-foreground/40"> (optional)</span>;
+}
+
 export function FieldLabel({
   label,
+  required,
   error,
   className,
   children,
 }: {
   label: React.ReactNode;
+  required?: boolean;
   error?: string;
   className?: string;
   children: React.ReactNode;
 }) {
   return (
     <label className={className ?? "flex min-w-0 flex-col gap-1.5 text-sm text-foreground/70"}>
-      {label}
+      <span>
+        {label}
+        {!required && <OptionalMark />}
+      </span>
       {children}
       {error && <span className="text-xs font-normal normal-case text-red-600">{error}</span>}
     </label>
@@ -41,7 +50,7 @@ export function TextField({
   ...props
 }: { label: React.ReactNode; error?: string } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <FieldLabel label={label} error={error}>
+    <FieldLabel label={label} required={props.required} error={error}>
       <input className={cn(fieldClasses(!!error), className)} {...props} />
     </FieldLabel>
   );
@@ -56,37 +65,31 @@ export function normalizeOption(option: Option) {
 }
 
 function OptionTooltip({ label, description }: { label: string; description: string }) {
-  const [open, setOpen] = useState(false);
-
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger asChild>
-        <button
-          type="button"
-          aria-label={`What's included in ${label}`}
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setOpen(false)}
-          className={`flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border ${theme.border.accentStrong} text-[10px] font-semibold text-brand-dark/70 transition-colors hover:border-brand ${theme.text.hoverAccent}`}
-        >
-          i
-        </button>
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Content
-          role="tooltip"
-          side="top"
-          align="center"
-          sideOffset={8}
-          collisionPadding={8}
-          onOpenAutoFocus={(e) => e.preventDefault()}
-          className="pointer-events-none z-50 w-48 rounded-lg bg-foreground px-3 py-2 text-xs font-normal normal-case leading-5 text-background shadow-lg"
-        >
-          {description}
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+    <Tooltip.Provider delayDuration={150}>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>
+          <button
+            type="button"
+            aria-label={`What's included in ${label}`}
+            className={`flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border ${theme.border.accentStrong} text-[10px] font-semibold text-brand-dark/70 transition-colors hover:border-brand ${theme.text.hoverAccent}`}
+          >
+            i
+          </button>
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content
+            side="top"
+            align="center"
+            sideOffset={8}
+            collisionPadding={8}
+            className="z-50 w-48 rounded-lg bg-foreground px-3 py-2 text-xs font-normal normal-case leading-5 text-background shadow-lg"
+          >
+            {description}
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
   );
 }
 
@@ -96,6 +99,7 @@ function OptionGroupField({
   name,
   options,
   required,
+  hideOptionalMark,
   error,
   className,
   otherOption,
@@ -103,12 +107,17 @@ function OptionGroupField({
   otherFieldPlaceholder = "Please specify",
   defaultValue,
   otherDefaultValue,
+  onChange,
 }: {
   type: "radio" | "checkbox";
   label: React.ReactNode;
   name: string;
   options: Option[];
   required?: boolean;
+  // Suppress the automatic "(optional)" suffix — for fields that aren't
+  // individually required but are covered by a group-level requirement
+  // note/error shown elsewhere (e.g. "choose at least one of the following").
+  hideOptionalMark?: boolean;
   error?: string;
   className?: string;
   otherOption?: string;
@@ -116,6 +125,9 @@ function OptionGroupField({
   otherFieldPlaceholder?: string;
   defaultValue?: string;
   otherDefaultValue?: string;
+  // Fires the selected option's value on change — the inputs stay uncontrolled
+  // (defaultChecked) so this is for side effects (e.g. toggling other fields).
+  onChange?: (value: string) => void;
 }) {
   return (
     <fieldset
@@ -124,7 +136,10 @@ function OptionGroupField({
         className
       )}
     >
-      <legend className="mb-0.5">{label}</legend>
+      <legend className="mb-0.5">
+        {label}
+        {!required && !hideOptionalMark && <OptionalMark />}
+      </legend>
       <div className="flex flex-wrap gap-2">
         {options.map((option) => {
           const { value, label: optionLabel, description } = normalizeOption(option);
@@ -145,6 +160,7 @@ function OptionGroupField({
                   required={required}
                   defaultChecked={value === defaultValue}
                   data-other={value === otherOption ? "" : undefined}
+                  onChange={() => onChange?.(value)}
                   className="accent-brand"
                 />
                 {optionLabel}
@@ -205,7 +221,7 @@ export function FileField({
   const [fileName, setFileName] = useState<string | null>(null);
 
   return (
-    <FieldLabel label={label} error={error}>
+    <FieldLabel label={label} required={required} error={error}>
       <div
         className={cn(
           fieldClasses(!!error),
@@ -241,7 +257,7 @@ export function TextareaField({
   ...props
 }: { label: React.ReactNode; error?: string } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
-    <FieldLabel label={label} error={error}>
+    <FieldLabel label={label} required={props.required} error={error}>
       <textarea
         className={cn("resize-none", fieldClasses(!!error), className)}
         {...props}

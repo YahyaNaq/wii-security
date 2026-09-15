@@ -39,7 +39,7 @@ export function PhoneField({
   const value = number ? `${code} ${number}` : "";
 
   return (
-    <FieldLabel label={label} error={error}>
+    <FieldLabel label={label} required={required} error={error}>
       <div className="flex min-w-0">
         <RadixSelect.Root value={code} onValueChange={setCode} disabled>
           <RadixSelect.Trigger

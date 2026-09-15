@@ -202,7 +202,7 @@ export type QuotePdfProps = {
   name: string;
   quoteId: string;
   createdAt: Date;
-  events: { city: string; date: Date; femaleGuests: number; priced: PricedEvent }[];
+  events: { femaleGuests?: number; priced: PricedEvent }[];
   total: number;
   tables: PricingTables;
 };
@@ -271,7 +271,9 @@ export function QuotePdf({ name, quoteId, createdAt, events, total, tables }: Qu
               <View style={styles.eventHeader}>
                 <Text style={styles.eventLabel}>Event {i + 1}</Text>
                 <Text style={styles.eventSummary}>
-                  {event.city} • {formatDateLong(event.date)} • {event.femaleGuests} female guests
+                  {event.femaleGuests !== undefined
+                    ? `${event.femaleGuests} female guests`
+                    : event.priced.services.map((s) => serviceLabel(s.type)).join(", ")}
                 </Text>
               </View>
               <View style={styles.eventDivider} />
@@ -286,7 +288,7 @@ export function QuotePdf({ name, quoteId, createdAt, events, total, tables }: Qu
                 <View key={j} style={styles.serviceRow}>
                   <Text style={[styles.serviceText, styles.colService]}>{serviceLabel(service.type)}</Text>
                   <Text style={[styles.detailText, styles.colDetail]}>
-                    {serviceDetail(tables, service, event.femaleGuests)}
+                    {serviceDetail(tables, service, event.femaleGuests ?? 0)}
                   </Text>
                   <Text style={[styles.priceText, styles.colPrice]}>{formatAmount(service.price)}</Text>
                 </View>

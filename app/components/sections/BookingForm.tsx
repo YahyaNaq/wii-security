@@ -6,6 +6,7 @@ import { TextField, RadioGroupField, FileField } from "../ui/fields";
 import { SelectField } from "../ui/Select";
 import { DateField } from "../ui/DateField";
 import { PhoneField } from "../ui/PhoneField";
+import { ServiceSelectionFields } from "./ServiceSelectionFields";
 import Button from "../ui/Button";
 import CheckIcon from "../ui/CheckIcon";
 import SuccessBadge from "../ui/SuccessBadge";
@@ -22,7 +23,7 @@ import { submitBooking } from "../../(site)/book/actions";
 
 type BookingForm = Translations["booking"]["form"];
 
-const EVENT_FIELDS = ["city", "date", "reportingTime", "venue", "eventType", "femaleGuests"];
+const EVENT_FIELDS = ["city", "date", "reportingTime", "venue", "eventType"];
 const TOP_LEVEL_REQUIRED = ["name", "phone", "email", "totalAmount"];
 const MAX_EVENTS = 10;
 
@@ -185,6 +186,7 @@ function EventFields({
               label={form.venue}
               type="text"
               name={`${prefix}[venue]`}
+              placeholder={form.venuePlaceholder}
               value={venue}
               onChange={(e) => setVenue(e.target.value)}
               error={errors[`${prefix}[venue]`]}
@@ -204,38 +206,16 @@ function EventFields({
               required
             />
 
-            <TextField
-              label={form.femaleGuests}
-              type="number"
-              name={`${prefix}[femaleGuests]`}
-              min={0}
-              defaultValue={reviewEvent?.femaleGuests}
-              error={errors[`${prefix}[femaleGuests]`]}
-              required
-            />
-
-            <RadioGroupField
-              label={serviceForm.guestServiceLabel}
-              name={`${prefix}[guestService]`}
-              options={serviceForm.guestServiceOptions}
-              defaultValue={reviewEvent?.guestService}
-              error={errors[`${prefix}[guestService]`]}
-            />
-
-            <RadioGroupField
-              label={serviceForm.photographyTierLabel}
-              name={`${prefix}[photographyTier]`}
-              options={photographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
-              defaultValue={reviewEvent?.photographyTier}
-              error={errors[`${prefix}[photographyTier]`]}
-            />
-
-            <RadioGroupField
-              label={serviceForm.videographyTierLabel}
-              name={`${prefix}[videographyTier]`}
-              options={videographyOptions.map((o) => ({ value: o.slug, label: o.label }))}
-              defaultValue={reviewEvent?.videographyTier}
-              error={errors[`${prefix}[videographyTier]`]}
+            <ServiceSelectionFields
+              form={serviceForm}
+              prefix={prefix}
+              errors={errors}
+              photographyOptions={photographyOptions}
+              videographyOptions={videographyOptions}
+              defaultGuestService={reviewEvent?.guestService}
+              defaultFemaleGuests={reviewEvent?.femaleGuests}
+              defaultPhotographyTier={reviewEvent?.photographyTier}
+              defaultVideographyTier={reviewEvent?.videographyTier}
             />
           </div>
         </div>
@@ -314,11 +294,13 @@ function Review({
                   : event.eventType || notProvided
               }
             />
-            <ReviewField label={form.femaleGuests} value={event.femaleGuests || notProvided} />
             <ReviewField
               label={serviceForm.guestServiceLabel}
               value={event.guestService ? guestServiceLabel(event.guestService) : notProvided}
             />
+            {(event.guestService === "phone-pouches" || event.guestService === "monitoring") && (
+              <ReviewField label={form.femaleGuests} value={event.femaleGuests || notProvided} />
+            )}
             {event.photography && (
               <ReviewField label={serviceForm.photographyLabel} value={photographyTierLabel(event.photographyTier)} />
             )}
@@ -448,28 +430,30 @@ export default function BookingForm({
         const rawValue = String(fd.get(key) ?? "").trim();
         if (!rawValue) {
           nextErrors[key] = t.common.requiredError;
-        } else if (field === "femaleGuests" && !isPositiveNumber(rawValue)) {
-          nextErrors[key] = t.common.invalidNumberError;
         }
       }
 
       const guestService = String(fd.get(`events[${i}][guestService]`) ?? "");
-      const femaleGuestsRaw = String(fd.get(`events[${i}][femaleGuests]`) ?? "").trim();
-      if (
-        (guestService === "phone-pouches" || guestService === "monitoring") &&
-        femaleGuestsRaw &&
-        isPositiveNumber(femaleGuestsRaw)
-      ) {
-        const guestTiers = guestService === "phone-pouches" ? pouchGuestTiers : monitoringGuestTiers;
-        if (!guestTierFor(guestTiers, Number(femaleGuestsRaw))) {
-          nextErrors[`events[${i}][femaleGuests]`] = t.common.guestCountUnsupportedError;
+      const needsGuestCount = guestService === "phone-pouches" || guestService === "monitoring";
+
+      if (needsGuestCount) {
+        const key = `events[${i}][femaleGuests]`;
+        const rawValue = String(fd.get(key) ?? "").trim();
+        if (!rawValue) {
+          nextErrors[key] = t.common.requiredError;
+        } else if (!isPositiveNumber(rawValue)) {
+          nextErrors[key] = t.common.invalidNumberError;
+        } else {
+          const guestTiers = guestService === "phone-pouches" ? pouchGuestTiers : monitoringGuestTiers;
+          if (!guestTierFor(guestTiers, Number(rawValue))) {
+            nextErrors[key] = t.common.guestCountUnsupportedError;
+          }
         }
       }
 
       const photographyTier = String(fd.get(`events[${i}][photographyTier]`) ?? "");
       const videographyTier = String(fd.get(`events[${i}][videographyTier]`) ?? "");
-      const hasGuestService = guestService === "phone-pouches" || guestService === "monitoring";
-      if (!hasGuestService && !photographyTier && !videographyTier) {
+      if (!needsGuestCount && !photographyTier && !videographyTier) {
         nextErrors[`events[${i}][guestService]`] = t.bookCta.form.atLeastOneServiceError;
       }
     });
@@ -607,6 +591,7 @@ export default function BookingForm({
                   label={form.fullName}
                   type="text"
                   name="name"
+                  placeholder={form.fullNamePlaceholder}
                   defaultValue={reviewData?.name}
                   error={errors.name}
                   required
@@ -624,6 +609,7 @@ export default function BookingForm({
                   label={form.email}
                   type="email"
                   name="email"
+                  placeholder={form.emailPlaceholder}
                   defaultValue={reviewData?.email}
                   error={errors.email}
                   required
@@ -677,6 +663,7 @@ export default function BookingForm({
                   name="totalAmount"
                   min={0}
                   step={1000}
+                  placeholder={form.totalAmountPlaceholder}
                   value={totalAmount}
                   onChange={(e) => setTotalAmount(e.target.value)}
                   error={errors.totalAmount}

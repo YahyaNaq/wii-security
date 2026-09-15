@@ -7,33 +7,32 @@ import { prisma } from "../../lib/db";
 import { priceQuote, guestTierFor, PricingError, type EventInput, type ServiceSelection } from "../../lib/pricing";
 import { loadPricingTables } from "../../lib/pricingData";
 import { QuotePdf } from "../../lib/pdf/QuotePdf";
-// import { sendQuoteEmail } from "../../lib/email";
-import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
+import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 
 const eventSchema = z
   .object({
-    city: z.string().trim().min(1, "City is required"),
-    date: z.string().trim().min(1, "Date is required"),
-    femaleGuests: z
-      .string()
-      .refine((v) => isPositiveNumber(v), "Enter a valid number of guests")
-      .transform(Number),
-    details: z.string().trim().optional(),
+    femaleGuests: z.string().trim().optional(),
     guestService: z.enum(["none", "phone-pouches", "monitoring"]),
     photographyTier: z.string().trim().optional(),
     videographyTier: z.string().trim().optional(),
   })
-  .refine((e) => e.guestService !== "none" || !!e.photographyTier || !!e.videographyTier, {
-    message: "Select at least one service for this event.",
-    path: ["guestService"],
+  .superRefine((e, ctx) => {
+    const needsGuestCount = e.guestService === "phone-pouches" || e.guestService === "monitoring";
+    if (needsGuestCount && !(e.femaleGuests && isPositiveNumber(e.femaleGuests))) {
+      ctx.addIssue({ code: "custom", message: "Enter a valid number of guests", path: ["femaleGuests"] });
+    }
+    if (!needsGuestCount && !e.photographyTier && !e.videographyTier) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Select at least one service for this event.",
+        path: ["guestService"],
+      });
+    }
   });
 
 const quoteSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   phone: z.string().trim().refine(isValidPhoneNumber, "Enter a valid phone number"),
-  email: z.string().trim().refine(isValidEmail, "Enter a valid email"),
-  hearAboutUs: z.string().trim().min(1, "Required"),
-  hearAboutUsOther: z.string().trim().optional(),
   events: z.array(eventSchema).min(1, "At least one event is required"),
 });
 
@@ -50,7 +49,7 @@ function eventsToPricingInput(events: QuoteFormValues["events"]): EventInput[] {
     if (event.videographyTier) {
       services.push({ type: ServiceType.VIDEOGRAPHY, tier: event.videographyTier });
     }
-    return { femaleGuests: event.femaleGuests, services };
+    return { femaleGuests: event.femaleGuests ? Number(event.femaleGuests) : 0, services };
   });
 }
 
@@ -60,14 +59,8 @@ function parseFormData(formData: FormData): unknown {
   return {
     name: formData.get("name"),
     phone: formData.get("phone"),
-    email: formData.get("email"),
-    hearAboutUs: formData.get("hearAboutUs"),
-    hearAboutUsOther: formData.get("hearAboutUsOther"),
     events: Array.from({ length: eventCount }, (_, i) => ({
-      city: formData.get(`events[${i}][city]`),
-      date: formData.get(`events[${i}][date]`),
       femaleGuests: formData.get(`events[${i}][femaleGuests]`),
-      details: formData.get(`events[${i}][details]`),
       guestService: formData.get(`events[${i}][guestService]`) || "none",
       photographyTier: formData.get(`events[${i}][photographyTier]`) || undefined,
       videographyTier: formData.get(`events[${i}][videographyTier]`) || undefined,
@@ -104,7 +97,7 @@ export async function submitQuoteRequest(formData: FormData): Promise<SubmitQuot
   data.events.forEach((event, i) => {
     if (event.guestService === "none") return;
     const guestTiers = event.guestService === "phone-pouches" ? tables.pouchGuestTiers : tables.monitoringGuestTiers;
-    if (!guestTierFor(guestTiers, event.femaleGuests)) {
+    if (!guestTierFor(guestTiers, Number(event.femaleGuests))) {
       guestCountFieldErrors[`events[${i}][femaleGuests]`] =
         "This guest count isn't supported for the selected service. Please contact us directly for a custom quote.";
     }
@@ -127,16 +120,10 @@ export async function submitQuoteRequest(formData: FormData): Promise<SubmitQuot
     data: {
       name: data.name,
       phone: data.phone,
-      email: data.email,
-      hearAboutUs: data.hearAboutUs,
-      hearAboutUsOther: data.hearAboutUsOther || null,
       totalAmount: priced.total,
       events: {
         create: data.events.map((event, i) => ({
-          city: event.city,
-          date: new Date(event.date),
-          femaleGuests: event.femaleGuests,
-          details: event.details || null,
+          femaleGuests: event.femaleGuests ? Number(event.femaleGuests) : 0,
           subtotal: priced.events[i].subtotal,
           services: {
             create: priced.events[i].services.map((service) => ({
@@ -159,26 +146,12 @@ export async function submitQuoteRequest(formData: FormData): Promise<SubmitQuot
       createdAt={createdAt}
       total={priced.total}
       events={data.events.map((event, i) => ({
-        city: event.city,
-        date: new Date(event.date),
-        femaleGuests: event.femaleGuests,
+        femaleGuests: event.guestService !== "none" ? Number(event.femaleGuests) : undefined,
         priced: priced.events[i],
       }))}
       tables={tables}
     />
   );
-
-  // TODO: re-enable the confirmation email once the PDF layout is finalized.
-  // try {
-  //   await sendQuoteEmail({
-  //     to: data.email,
-  //     name: data.name,
-  //     quoteId: quoteRequest.id,
-  //     pdfBuffer,
-  //   });
-  // } catch (err) {
-  //   console.error("Failed to send quote email", err);
-  // }
 
   return { success: true, quoteId, total: priced.total, pdfBase64: pdfBuffer.toString("base64") };
 }

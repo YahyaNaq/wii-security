@@ -74,7 +74,7 @@ export function DateField({
     : "";
 
   return (
-    <FieldLabel label={label} error={error} className={labelClassName}>
+    <FieldLabel label={label} required={required} error={error} className={labelClassName}>
       <Popover.Root open={open} onOpenChange={setOpen}>
         <Popover.Trigger
           id={id}
