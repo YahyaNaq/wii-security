@@ -202,7 +202,7 @@ export type QuotePdfProps = {
   name: string;
   quoteId: string;
   createdAt: Date;
-  events: { city: string; date: Date; femaleGuests: number; priced: PricedEvent }[];
+  events: { femaleGuests: number; priced: PricedEvent }[];
   total: number;
   tables: PricingTables;
 };
@@ -270,9 +270,7 @@ export function QuotePdf({ name, quoteId, createdAt, events, total, tables }: Qu
             <View key={i} style={styles.eventBlock} wrap={false}>
               <View style={styles.eventHeader}>
                 <Text style={styles.eventLabel}>Event {i + 1}</Text>
-                <Text style={styles.eventSummary}>
-                  {event.city} • {formatDateLong(event.date)} • {event.femaleGuests} female guests
-                </Text>
+                <Text style={styles.eventSummary}>{event.femaleGuests} female guests</Text>
               </View>
               <View style={styles.eventDivider} />
 

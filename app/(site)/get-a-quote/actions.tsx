@@ -7,18 +7,14 @@ import { prisma } from "../../lib/db";
 import { priceQuote, guestTierFor, PricingError, type EventInput, type ServiceSelection } from "../../lib/pricing";
 import { loadPricingTables } from "../../lib/pricingData";
 import { QuotePdf } from "../../lib/pdf/QuotePdf";
-// import { sendQuoteEmail } from "../../lib/email";
-import { isValidEmail, isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
+import { isValidPhoneNumber, isPositiveNumber } from "../../lib/validators";
 
 const eventSchema = z
   .object({
-    city: z.string().trim().min(1, "City is required"),
-    date: z.string().trim().min(1, "Date is required"),
     femaleGuests: z
       .string()
       .refine((v) => isPositiveNumber(v), "Enter a valid number of guests")
       .transform(Number),
-    details: z.string().trim().optional(),
     guestService: z.enum(["none", "phone-pouches", "monitoring"]),
     photographyTier: z.string().trim().optional(),
     videographyTier: z.string().trim().optional(),
@@ -31,9 +27,6 @@ const eventSchema = z
 const quoteSchema = z.object({
   name: z.string().trim().min(1, "Name is required"),
   phone: z.string().trim().refine(isValidPhoneNumber, "Enter a valid phone number"),
-  email: z.string().trim().refine(isValidEmail, "Enter a valid email"),
-  hearAboutUs: z.string().trim().min(1, "Required"),
-  hearAboutUsOther: z.string().trim().optional(),
   events: z.array(eventSchema).min(1, "At least one event is required"),
 });
 
@@ -60,14 +53,8 @@ function parseFormData(formData: FormData): unknown {
   return {
     name: formData.get("name"),
     phone: formData.get("phone"),
-    email: formData.get("email"),
-    hearAboutUs: formData.get("hearAboutUs"),
-    hearAboutUsOther: formData.get("hearAboutUsOther"),
     events: Array.from({ length: eventCount }, (_, i) => ({
-      city: formData.get(`events[${i}][city]`),
-      date: formData.get(`events[${i}][date]`),
       femaleGuests: formData.get(`events[${i}][femaleGuests]`),
-      details: formData.get(`events[${i}][details]`),
       guestService: formData.get(`events[${i}][guestService]`) || "none",
       photographyTier: formData.get(`events[${i}][photographyTier]`) || undefined,
       videographyTier: formData.get(`events[${i}][videographyTier]`) || undefined,
@@ -127,16 +114,10 @@ export async function submitQuoteRequest(formData: FormData): Promise<SubmitQuot
     data: {
       name: data.name,
       phone: data.phone,
-      email: data.email,
-      hearAboutUs: data.hearAboutUs,
-      hearAboutUsOther: data.hearAboutUsOther || null,
       totalAmount: priced.total,
       events: {
         create: data.events.map((event, i) => ({
-          city: event.city,
-          date: new Date(event.date),
           femaleGuests: event.femaleGuests,
-          details: event.details || null,
           subtotal: priced.events[i].subtotal,
           services: {
             create: priced.events[i].services.map((service) => ({
@@ -159,26 +140,12 @@ export async function submitQuoteRequest(formData: FormData): Promise<SubmitQuot
       createdAt={createdAt}
       total={priced.total}
       events={data.events.map((event, i) => ({
-        city: event.city,
-        date: new Date(event.date),
         femaleGuests: event.femaleGuests,
         priced: priced.events[i],
       }))}
       tables={tables}
     />
   );
-
-  // TODO: re-enable the confirmation email once the PDF layout is finalized.
-  // try {
-  //   await sendQuoteEmail({
-  //     to: data.email,
-  //     name: data.name,
-  //     quoteId: quoteRequest.id,
-  //     pdfBuffer,
-  //   });
-  // } catch (err) {
-  //   console.error("Failed to send quote email", err);
-  // }
 
   return { success: true, quoteId, total: priced.total, pdfBase64: pdfBuffer.toString("base64") };
 }

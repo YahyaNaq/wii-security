@@ -39,8 +39,6 @@ export async function generateQuotePdf(quoteId: string): Promise<GenerateQuotePd
           })),
         };
         return {
-          city: event.city,
-          date: event.date,
           femaleGuests: event.femaleGuests,
           priced,
         };

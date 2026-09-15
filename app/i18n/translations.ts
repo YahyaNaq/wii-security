@@ -268,8 +268,6 @@ const en = {
       "Phone pouch & photography compliance included",
       "Available in Karachi, Lahore & Islamabad",
     ],
-    dateDisclaimer:
-      "Requesting a quote does not reserve your event date — another event may already be booked for it. Availability is confirmed once you proceed with booking.",
     form: {
       fullName: "Full name",
       fullNamePlaceholder: "Enter your full name",
@@ -281,18 +279,8 @@ const en = {
         { code: "+44", country: "United Kingdom" },
         { code: "+1", country: "USA / Canada" },
       ],
-      email: "Email",
-      emailPlaceholder: "Enter your email address",
-      city: "City",
-      citySelectPlaceholder: "Select your city",
-      cityOptions: ["Karachi", "Lahore", "Islamabad"],
-      eventDate: "Event date",
       femaleGuests: "Number of female guests",
       femaleGuestsPlaceholder: "Enter number of female guests",
-      hearAboutUs: "How did you hear about us?",
-      hearAboutUsOptions: ["LinkedIn", "Instagram", "Friend/Relative", "Other"],
-      otherOptionValue: "Other",
-      otherPlaceholder: "Please specify",
       guestServiceLabel: "Phone pouches or monitoring",
       guestServiceOptions: [
         {
@@ -315,9 +303,6 @@ const en = {
       servicesGroupHeading: "Choose your services",
       servicesGroupNote: "Select at least one of the three services below.",
       atLeastOneServiceError: "Please select at least one service for this event.",
-      details: "Special requests or details",
-      detailsPlaceholder:
-        "Special instructions, event type, or anything else we should know",
       eventLabel: "Event",
       addEvent: "Add another event",
       removeEvent: "Remove",
@@ -692,8 +677,6 @@ const ur: typeof en = {
       "فون پاؤچ اور فوٹوگرافی کی پابندی شامل",
       "کراچی، لاہور اور اسلام آباد میں دستیاب",
     ],
-    dateDisclaimer:
-      "قیمت حاصل کرنے سے آپ کی تقریب کی تاریخ محفوظ نہیں ہوتی — اسی تاریخ پر پہلے سے کوئی اور تقریب بک ہو سکتی ہے۔ یہ تخمینہ صرف قیمتوں کا اندازہ دینے کے لیے ہے؛ دستیابی کی تصدیق صرف بکنگ مکمل کرنے پر ہوتی ہے۔",
     form: {
       fullName: "پورا نام",
       fullNamePlaceholder: "اپنا پورا نام درج کریں",
@@ -705,18 +688,8 @@ const ur: typeof en = {
         { code: "+44", country: "برطانیہ" },
         { code: "+1", country: "امریکہ / کینیڈا" },
       ],
-      email: "ای میل",
-      emailPlaceholder: "اپنا ای میل ایڈریس درج کریں",
-      city: "شہر",
-      citySelectPlaceholder: "شہر منتخب کریں",
-      cityOptions: ["کراچی", "لاہور", "اسلام آباد"],
-      eventDate: "تقریب کی تاریخ",
       femaleGuests: "خواتین مہمانوں کی تعداد",
       femaleGuestsPlaceholder: "خواتین مہمانوں کی تعداد درج کریں",
-      hearAboutUs: "آپ کو ہمارے بارے میں کیسے پتا چلا؟",
-      hearAboutUsOptions: ["لنکڈان", "انسٹاگرام", "دوست/رشتہ دار", "دیگر"],
-      otherOptionValue: "دیگر",
-      otherPlaceholder: "براہ کرم وضاحت کریں",
       guestServiceLabel: "فون پاؤچز یا نگرانی",
       guestServiceOptions: [
         {
@@ -739,9 +712,6 @@ const ur: typeof en = {
       servicesGroupHeading: "اپنی سروسز منتخب کریں",
       servicesGroupNote: "نیچے دی گئی تین سروسز میں سے کم از کم ایک منتخب کریں۔",
       atLeastOneServiceError: "براہ کرم اس ایونٹ کے لیے کم از کم ایک سروس منتخب کریں۔",
-      details: "خصوصی درخواست یا تفصیلات",
-      detailsPlaceholder:
-        "خصوصی ہدایات، تقریب کی قسم، یا کوئی اور بات جو ہمیں معلوم ہونی چاہیے",
       eventLabel: "تقریب",
       addEvent: "ایک اور تقریب شامل کریں",
       removeEvent: "حذف کریں",
