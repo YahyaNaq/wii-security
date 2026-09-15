@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import * as Popover from "@radix-ui/react-popover";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import { cn } from "./cn";
 import { theme } from "./theme";
 
@@ -65,37 +65,31 @@ export function normalizeOption(option: Option) {
 }
 
 function OptionTooltip({ label, description }: { label: string; description: string }) {
-  const [open, setOpen] = useState(false);
-
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger asChild>
-        <button
-          type="button"
-          aria-label={`What's included in ${label}`}
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setOpen(false)}
-          className={`flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border ${theme.border.accentStrong} text-[10px] font-semibold text-brand-dark/70 transition-colors hover:border-brand ${theme.text.hoverAccent}`}
-        >
-          i
-        </button>
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Content
-          role="tooltip"
-          side="top"
-          align="center"
-          sideOffset={8}
-          collisionPadding={8}
-          onOpenAutoFocus={(e) => e.preventDefault()}
-          className="pointer-events-none z-50 w-48 rounded-lg bg-foreground px-3 py-2 text-xs font-normal normal-case leading-5 text-background shadow-lg"
-        >
-          {description}
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+    <Tooltip.Provider delayDuration={150}>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>
+          <button
+            type="button"
+            aria-label={`What's included in ${label}`}
+            className={`flex h-4 w-4 cursor-pointer items-center justify-center rounded-full border ${theme.border.accentStrong} text-[10px] font-semibold text-brand-dark/70 transition-colors hover:border-brand ${theme.text.hoverAccent}`}
+          >
+            i
+          </button>
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content
+            side="top"
+            align="center"
+            sideOffset={8}
+            collisionPadding={8}
+            className="z-50 w-48 rounded-lg bg-foreground px-3 py-2 text-xs font-normal normal-case leading-5 text-background shadow-lg"
+          >
+            {description}
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
   );
 }
 
